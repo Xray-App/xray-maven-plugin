@@ -1,6 +1,6 @@
 # Xray Maven Plugin
 
-[![build workflow](https://github.com/Xray-App/xray-junit-extensions/actions/workflows/CI.yml/badge.svg)](https://github.com/Xray-App/xray-maven-plugin/actions/workflows/CI.yml)
+[![build workflow](https://github.com/Xray-App/xray-maven-plugin/actions/workflows/CI.yml/badge.svg)](https://github.com/Xray-App/xray-maven-plugin/actions/workflows/CI.yml)
 [![license](https://img.shields.io/badge/License-BSD%203--Clause-green.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/Xray-App/community)
 
@@ -71,6 +71,8 @@ Add the following dependency to your pom.xml, where the `<configuration>` is opt
 Configuration parameters (e.g., "reportFormat") can also be specified from the command line using `-D` (e.g., "-Dxray.reportFormat=junit"). In this case, the parameters have the `xray.` prefix.
 
 There are a set of common configurations related to the Xray details and its authentication. Besides, each task has its own configuration parameters as shown ahead.
+
+This repository provides a bunch of usage [examples](examples), both for Xray cloud and Xray server/datacenter.
 
 ### Common configurations
 

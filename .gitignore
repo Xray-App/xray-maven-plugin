@@ -3,3 +3,5 @@ target/
 examples/
 .vscode/
 features/
+examples/server_datacenter/pom.xml
+examples/cloud/pom.xml
