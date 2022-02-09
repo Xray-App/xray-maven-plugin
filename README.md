@@ -135,6 +135,7 @@ In sum, if we decide to use the first approach we can use these parameters: `pro
 | `testEnvironment` | `xray.testEnvironment` | usually, a [test environment](https://docs.getxray.app/display/XRAYCLOUD/Working+with+Test+Environments) name/identifier (e.g., browser vendor, OS versio , mobile device, testing stage); multiple test environments may be specified though using ";" as delimiter | optional | chrome |
 | `testInfoJson` | `xray.testInfoJson` | path to a JSON file containing attributes to apply on the Test issues that may be created, following Jira issue update syntax | optional | - |
 | `testExecInfoJson` | `xray.testExecInfoJson` | path to a JSON file containing attributes to apply on the Test Execution issue that may be created, following Jira issue update syntax | optional | - |
+| `abortOnError` | abort, if multiple results are being imported, and exit with error if uploading results fails | optional | - |
 
 Xray server/DC and Xray cloud support mostly the same formats, but not exactly for legacy reasons. Besides, not all formats support the same parameters; please check the respective product documentation. The following table sums this info.
 
