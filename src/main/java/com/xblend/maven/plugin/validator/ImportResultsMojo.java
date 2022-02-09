@@ -1,9 +1,8 @@
 package com.xblend.maven.plugin.validator;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
-
 import com.xblend.xray.XrayResultsImporter;
 
 import org.apache.maven.plugin.AbstractMojo;
@@ -13,6 +12,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.util.DirectoryScanner;
 import org.json.JSONObject;
 
 /**
@@ -98,94 +98,134 @@ public class ImportResultsMojo extends AbstractMojo {
 		JSONObject testExecInfo;
 		JSONObject testInfo;
 
-
+        // 
+        String[] reportFiles;
+        File tempReportFile = new File(reportFile);
+        if (tempReportFile.isFile()){
+            // common case: import a given report file
+            reportFiles = new String[] { reportFile };
+        } else if (tempReportFile.isDirectory()){
+            // if directory, then for legacy reasons and because most used formats are XML based,
+            // try to import all .xml files there
+            DirectoryScanner scanner = new DirectoryScanner();
+            scanner.setIncludes(new String[]{"*.xml"});
+            scanner.setBasedir(reportFile);
+            scanner.setCaseSensitive(false);
+            scanner.scan();
+            reportFiles = scanner.getIncludedFiles();
+            for (int i = 0; i < reportFiles.length; i++) {
+                reportFiles[i] = scanner.getBasedir() + File.separator + reportFiles[i];
+                getLog().debug(reportFiles[i]);
+            }
+        } else {
+            // regex can be used to import files, as long as it is *within* the current working directory
+            DirectoryScanner scanner = new DirectoryScanner();
+            scanner.setIncludes(new String[]{reportFile});
+            scanner.setBasedir(".");
+            scanner.setCaseSensitive(false);
+            scanner.scan();
+            reportFiles = scanner.getIncludedFiles();
+            for (int i = 0; i < reportFiles.length; i++) {
+                reportFiles[i] = scanner.getBasedir() + File.separator + reportFiles[i];
+                getLog().debug(reportFiles[i]);
+            }
+        }
+              
         String response = null;
-		try {
-            getLog().debug("clientId from config: " + clientId);
-            getLog().debug("clientSecret from config: " + clientSecret);
-            getLog().debug("cloud from config: " + cloud);
-            getLog().debug("testInfoJson from config: " + testInfoJson);
 
-            if (cloud) {
+        // submit one or more report files
+        for (int i = 0; i < reportFiles.length; i++) {
+            String reportFile = reportFiles[i];
+            System.out.println(reportFile);
 
-                // if testInfo and testExecInfo are not present, then use the standard endpoint
-                // all formats support params, except for cucumber
-                
+            try {
+                getLog().debug("clientId from config: " + clientId);
+                getLog().debug("clientSecret from config: " + clientSecret);
+                getLog().debug("cloud from config: " + cloud);
+                getLog().debug("testInfoJson from config: " + testInfoJson);
 
-                com.xblend.xray.XrayResultsImporter.CloudBuilder xrayImporterBuilder = new XrayResultsImporter.CloudBuilder(clientId, clientSecret);
-                if (testInfoJson==null  && testExecInfoJson==null) {       
-                    if ("xray".equals(reportFormat) || "cucumber".equals(reportFormat)) {
-                        xrayImporter = xrayImporterBuilder.build();
+                if (cloud) {
+
+                    // if testInfo and testExecInfo are not present, then use the standard endpoint
+                    // all formats support params, except for cucumber
+                    
+
+                    com.xblend.xray.XrayResultsImporter.CloudBuilder xrayImporterBuilder = new XrayResultsImporter.CloudBuilder(clientId, clientSecret);
+                    if (testInfoJson==null  && testExecInfoJson==null) {       
+                        if ("xray".equals(reportFormat) || "cucumber".equals(reportFormat)) {
+                            xrayImporter = xrayImporterBuilder.build();
+                        } else {
+                            xrayImporter = xrayImporterBuilder
+                                .withProjectKey(projectKey)
+                                .withVersion(version)
+                                .withRevision(revision)
+                                .withTestPlanKey(testPlanKey)
+                                .withTestExecKey(testExecKey)
+                                .withTestEnvironment(testEnvironment)
+                                .build();                     
+                        }
+                        response = xrayImporter.submit(reportFormat, reportFile);
                     } else {
-                        xrayImporter = xrayImporterBuilder
-                            .withProjectKey(projectKey)
-                            .withVersion(version)
-                            .withRevision(revision)
-                            .withTestPlanKey(testPlanKey)
-                            .withTestExecKey(testExecKey)
-                            .withTestEnvironment(testEnvironment)
-                            .build();                     
+                        if (testInfoJson != null) {
+                            testInfo = new JSONObject(new String(Files.readAllBytes(Paths.get(testInfoJson))));
+                        } else {
+                            testInfo = new JSONObject();
+                        }
+                        if (testExecInfoJson != null) {
+                            testExecInfo = new JSONObject(new String(Files.readAllBytes(Paths.get(testExecInfoJson))));
+                        } else {
+                            testExecInfo = new JSONObject();
+                        }
+                        response = xrayImporterBuilder.build().submitMultipartCloud(reportFormat, reportFile, testExecInfo, testInfo);                  
                     }
-                    response = xrayImporter.submit(reportFormat, reportFile);
+
                 } else {
-                    if (testInfoJson != null) {
-                        testInfo = new JSONObject(new String(Files.readAllBytes(Paths.get(testInfoJson))));
+                    // server/DC
+
+                    com.xblend.xray.XrayResultsImporter.ServerDCBuilder xrayImporterBuilder;
+                    if (jiraToken != null) {
+                        xrayImporterBuilder = new XrayResultsImporter.ServerDCBuilder(jiraBaseUrl, jiraToken);
                     } else {
-                        testInfo = new JSONObject();
+                        xrayImporterBuilder = new XrayResultsImporter.ServerDCBuilder(jiraBaseUrl, jiraUsername, jiraPassword);
                     }
-                    if (testExecInfoJson != null) {
-                        testExecInfo = new JSONObject(new String(Files.readAllBytes(Paths.get(testExecInfoJson))));
+
+                    if (testInfoJson==null  && testExecInfoJson==null) {       
+                        if ("xray".equals(reportFormat) || "cucumber".equals(reportFormat) || "behave".equals(reportFormat)) {
+                            xrayImporter = xrayImporterBuilder.build();
+                        } else {
+                            xrayImporter = xrayImporterBuilder
+                                .withProjectKey(projectKey)
+                                .withVersion(version)
+                                .withRevision(revision)
+                                .withTestPlanKey(testPlanKey)
+                                .withTestExecKey(testExecKey)
+                                .withTestEnvironment(testEnvironment)
+                                .build();  
+                        }
+                        response = xrayImporter.submit(reportFormat, reportFile);   
                     } else {
-                        testExecInfo = new JSONObject();
+                        if (testInfoJson != null) {
+                            testInfo = new JSONObject(new String(Files.readAllBytes(Paths.get(testInfoJson))));
+                        } else {
+                            testInfo = new JSONObject();
+                        }
+                        if (testExecInfoJson != null) {
+                            testExecInfo = new JSONObject(new String(Files.readAllBytes(Paths.get(testExecInfoJson))));
+                        } else {
+                            testExecInfo = new JSONObject();
+                        }
+                        response = xrayImporterBuilder.build().submitMultipartServerDC(reportFormat, reportFile, testExecInfo, testInfo);                  
                     }
-                    response = xrayImporterBuilder.build().submitMultipartCloud(reportFormat, reportFile, testExecInfo, testInfo);                  
+
                 }
 
-            } else {
-                // server/DC
-
-                com.xblend.xray.XrayResultsImporter.ServerDCBuilder xrayImporterBuilder;
-                if (jiraToken != null) {
-                    xrayImporterBuilder = new XrayResultsImporter.ServerDCBuilder(jiraBaseUrl, jiraToken);
-                } else {
-                    xrayImporterBuilder = new XrayResultsImporter.ServerDCBuilder(jiraBaseUrl, jiraUsername, jiraPassword);
-                }
-
-                if (testInfoJson==null  && testExecInfoJson==null) {       
-                    if ("xray".equals(reportFormat) || "cucumber".equals(reportFormat) || "behave".equals(reportFormat)) {
-                        xrayImporter = xrayImporterBuilder.build();
-                    } else {
-                        xrayImporter = xrayImporterBuilder
-                            .withProjectKey(projectKey)
-                            .withVersion(version)
-                            .withRevision(revision)
-                            .withTestPlanKey(testPlanKey)
-                            .withTestExecKey(testExecKey)
-                            .withTestEnvironment(testEnvironment)
-                            .build();  
-                    }
-                    response = xrayImporter.submit(reportFormat, reportFile);   
-                } else {
-                    if (testInfoJson != null) {
-                        testInfo = new JSONObject(new String(Files.readAllBytes(Paths.get(testInfoJson))));
-                    } else {
-                        testInfo = new JSONObject();
-                    }
-                    if (testExecInfoJson != null) {
-                        testExecInfo = new JSONObject(new String(Files.readAllBytes(Paths.get(testExecInfoJson))));
-                    } else {
-                        testExecInfo = new JSONObject();
-                    }
-                    response = xrayImporterBuilder.build().submitMultipartServerDC(reportFormat, reportFile, testExecInfo, testInfo);                  
-                }
-
+                getLog().info("response: " + response);
+            } catch (Exception ex) {
+                getLog().error(ex.getMessage());
+                if (abortOnError)
+                    System.exit(1);
             }
 
-            getLog().info("response: " + response);
-        } catch (Exception ex) {
-            getLog().error(ex.getMessage());
-            if (abortOnError)
-                System.exit(1);
         }
 
     }

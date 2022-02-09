@@ -52,7 +52,7 @@ Add the following dependency to your pom.xml, where the `<configuration>` is opt
 
 ```xml
         <dependency>
-            <groupId>com.idera.xray</groupId>
+            <groupId>com.xblend</groupId>
             <artifactId>xray-maven-plugin</artifactId>
             <version>0.1.0</version>
             <scope>test</scope>
@@ -126,7 +126,7 @@ In sum, if we decide to use the first approach we can use these parameters: `pro
 | setting | command line parameter| description | mandatory/optional| example |
 | --- | --- | --- | --- | --- |
 | `reportFormat` | `xray.reportFormat` | format of the report (junit, testng, nunit, xunit, robot, xunit, cucumber, behave) | mandatory | junit |
-| `reportFile` | `xray.reportFile` | file with the test results (relative or absolute path) | mandatory | target/junit.xml |
+| `reportFile` | `xray.reportFile` | file with the test results (relative or absolute path); it can also be a directory (all .xml files will be imported in this case); finally, it can also be a regex that applies to the current working directory | mandatory | target/junit.xml |
 | `projectKey` | `xray.projectKey` | key of Jira project where to import the results | mandatory (doesn't apply to "cucumber" or "behave" report formats, for legacy reasons) | CALC |
 | `testExecKey` | `xray.testExecKey` | issue key of Test Execution, in case we want to update the results on it | optional | CALC-2 |
 | `testPlanKey` | `xray.testPlanKey` | issue key of Test Plan to link the results to | optional |CALC-1 |
@@ -235,9 +235,6 @@ This project is in early stage; the setting names and other are subject to chang
 
 - add sibling project with test code
 - add e2e example or update existing tutorial (e.g., junit based project using also this plugin)
-- create maven project for abstraction of client library for interacting with Xray REST APIs
-- import multiple test results files at once (bulk import)
-- test against additional JDK versions
 - add timeout configuration
 
 ## References
