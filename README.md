@@ -138,7 +138,7 @@ Xray server/DC and Xray cloud support mostly the same formats, but not exactly f
 
 |reportFormat| supported Xray variant| notes |
 | --- | --- | --- |
-| xray | cloud and server/DC | not yet supported on this implementation |
+| xray | cloud and server/DC |  |
 | junit | cloud and server/DC | |
 | xunit | cloud and server/DC | |
 | nunit | cloud and server/DC | |
