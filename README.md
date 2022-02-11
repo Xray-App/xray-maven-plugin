@@ -15,9 +15,9 @@ For Gherkin-based frameworls (e.g., Cucumber, Behave, SpecFlow), the flow is sli
 
 This plugin provides these tasks:
 
-- `com.xblend:xray-maven-plugin:import-results`
-- `com.xblend:xray-maven-plugin:import-features`
-- `com.xblend:xray-maven-plugin:export-features`
+- `xray:import-results`
+- `xray:import-features`
+- `xray:export-features`
 
 More info about these ahead.
 
@@ -34,6 +34,8 @@ To start using this plugin, configure this maven repository in your `pom.xml`:
             </snapshots>
         </repository>
 ```
+
+... or within the `<pluginRepositories>` section.
 
 In your `.m2/settings.xml`, configure the authentication for the maven repository.
 
@@ -101,17 +103,17 @@ There are also task specific configurations. More info ahead, on the respective 
 
 ### Importing test automation results
 
-In order to import test results, we need to use the `com.xblend:xray-maven-plugin:import-results` task.
+In order to import test results, we need to use the `xray:import-results` task.
 
 ```bash
- mvn clean compile test com.xblend:xray-maven-plugin:import-results
+ mvn clean compile test xray:import-results
 ```
 
 The `pom.xml` needs to be configured properly (see available configurations).
 As an alternative to hardcode the configurations, it's also possible to pass them right from the command line as mentioned earlier, or even have some on the pom.xml and another specificed through command line parameters.
 
 ```bash
- mvn clean compile test com.xblend:xray-maven-plugin:import-results -Dxray.reportFormat=junit -Dxray.reportFile=results/junit.xml
+ mvn clean compile test xray:import-results -Dxray.reportFormat=junit -Dxray.reportFile=results/junit.xml
 ```
 
 #### Configurations for importing test results
@@ -161,7 +163,7 @@ One of the possible workflows for using Gherkin-based frameworks is to use git (
 In order to provide visibility of test results for these tests (i.e. gherkin Scenarios), these need to exist in Xray beforehand. Therefore, we need to import/synchronize them to Xray. Note that there is no direct integration; the integration is adhoc, i.e., the following task is run on a local copy of the respository where the .features are stored in.
 
 ```bash
- mvn clean compile test com.xblend:xray-maven-plugin:import-features -Dxray.featuresPath=features/
+ mvn clean compile test xray:import-features -Dxray.featuresPath=features/
 ```
 
 Note: how Xray relates the Scenarios/Background to the corresponding Test or Precondition issues is described in Xray technical documentation (e.g., [Xray cloud docs](https://docs.getxray.app/display/XRAYCLOUD/Importing+Cucumber+Tests+-+REST+v2)).
@@ -188,7 +190,7 @@ No matter which worflow you decide to use for dealing with Gherkin-based tests (
 This plugin provides a task for this purpose. It will download/generate .feature files to a local folder from existing information in Xray. The Feature, Scenario elements will be properly tagged with info from Xray.
 
 ```bash
- mvn com.xblend:xray-maven-plugin:export-features -Dxray.issueKeys=CALC-1,CALC-2 -Dxray.outputDir=features/
+ mvn xray:export-features -Dxray.issueKeys=CALC-1,CALC-2 -Dxray.outputDir=features/
 ```
 
 Files on the destination folder will be overwritten; however, if this directory contains other information (including other .feature files) you may need to remove them before generating the .feature files into this directory.

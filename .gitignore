@@ -1,6 +1,6 @@
+.DS_Store
 target/
 *.class
-examples/
 .vscode/
 features/
 examples/server_datacenter/pom.xml
