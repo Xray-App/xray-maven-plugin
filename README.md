@@ -241,6 +241,7 @@ This project is in early stage; the setting names and other are subject to chang
 - clarify properly how to setup this in an existing project as some doubts remain about the proper way to do so in terms of `.m2/settings.xml` (help neeeded and appreciated!)
 - add code coverage information with jacoco, as I couldnt get it working (help neeeded and appreciated!)
 - add unit tests
+- option to remove temporary .zip file created whenever importing Gherkin/cucumber .feature files
 - add timeout configuration
 
 ## References
