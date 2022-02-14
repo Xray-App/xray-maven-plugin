@@ -45,6 +45,9 @@ public class XrayFeaturesImporter {
     private String projectId;
     private String source;
 
+    private boolean ignoreSslErrors = false;
+    private boolean useInternalTestProxy = false;
+
     private XrayFeaturesImporter(ServerDCBuilder builder) {
         this.jiraBaseUrl = builder.jiraBaseUrl;
         this.jiraUsername = builder.jiraUsername;
@@ -54,6 +57,9 @@ public class XrayFeaturesImporter {
         this.projectKey = builder.projectKey;
         this.projectId = builder.projectId;
         this.source = builder.source;
+
+        this.ignoreSslErrors = builder.ignoreSslErrors;
+        this.useInternalTestProxy = builder.useInternalTestProxy;
     }
 
     private XrayFeaturesImporter(CloudBuilder builder) {
@@ -63,6 +69,9 @@ public class XrayFeaturesImporter {
         this.projectKey = builder.projectKey;
         this.projectId = builder.projectId;
         this.source = builder.source;
+
+        this.ignoreSslErrors = builder.ignoreSslErrors;
+        this.useInternalTestProxy = builder.useInternalTestProxy;
     }
 
     public static class ServerDCBuilder {
@@ -76,6 +85,9 @@ public class XrayFeaturesImporter {
         private String projectId;   // unused
         private String source;      // unused
 
+        private Boolean ignoreSslErrors = false;
+        private Boolean useInternalTestProxy = false;
+
         public ServerDCBuilder(String jiraBaseUrl, String jiraUsername, String jiraPassword) {
             this.jiraBaseUrl = jiraBaseUrl;
             this.jiraUsername = jiraUsername;
@@ -85,6 +97,16 @@ public class XrayFeaturesImporter {
         public ServerDCBuilder(String jiraBaseUrl, String jiraPersonalAccessToken) {
             this.jiraBaseUrl = jiraBaseUrl;
             this.jiraPersonalAccessToken = jiraPersonalAccessToken;
+        }
+
+        public ServerDCBuilder withIgnoreSslErrors(Boolean ignoreSslErrors) {
+            this.ignoreSslErrors = ignoreSslErrors;
+            return this;
+        }
+
+        public ServerDCBuilder withInternalTestProxy(Boolean useInternalTestProxy) {
+            this.useInternalTestProxy = useInternalTestProxy;
+            return this;
         }
 
         public ServerDCBuilder withProjectKey(String projectKey) {
@@ -107,9 +129,22 @@ public class XrayFeaturesImporter {
         private String projectId;
         private String source;
 
+        private Boolean ignoreSslErrors = false;
+        private Boolean useInternalTestProxy = false;
+
         public CloudBuilder(String clientId, String clientSecret) {
             this.clientId = clientId;
             this.clientSecret = clientSecret;
+        }
+
+        public CloudBuilder withIgnoreSslErrors(Boolean ignoreSslErrors) {
+            this.ignoreSslErrors = ignoreSslErrors;
+            return this;
+        }
+
+        public CloudBuilder withInternalTestProxy(Boolean useInternalTestProxy) {
+            this.useInternalTestProxy = useInternalTestProxy;
+            return this;
         }
 
         public CloudBuilder withProjectKey(String projectKey) {
@@ -158,8 +193,9 @@ public class XrayFeaturesImporter {
     }
 
     public JSONArray importServerDC(String inputPath, String testInfo) throws Exception {
+        OkHttpClient client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors);
+
         File inputFile = new File(inputPath);
-        OkHttpClient client = new OkHttpClient();
         String credentials;
         if (jiraPersonalAccessToken!= null) {
             credentials = "Bearer " + jiraPersonalAccessToken;
@@ -225,8 +261,9 @@ public class XrayFeaturesImporter {
     }
 
     public JSONArray importCloud(String inputPath, String testInfo, String precondInfo) throws Exception {
+        OkHttpClient client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors);
+        
         File inputFile = new File(inputPath);
-        OkHttpClient client = new OkHttpClient();
         String authenticationPayload = "{ \"client_id\": \"" + clientId +"\", \"client_secret\": \"" + clientSecret +"\" }";
         RequestBody body = RequestBody.create(authenticationPayload, MEDIA_TYPE_JSON);
         Request request = new Request.Builder().url(xrayCloudAuthenticateUrl).post(body).build();
@@ -303,7 +340,7 @@ public class XrayFeaturesImporter {
                 responseObj.put(new JSONObject(responseBody));
                 return responseObj;
             } else {
-                System.err.println(responseBody);
+                // System.err.println(responseBody);
                 throw new IOException("Unexpected HTTP code " + response);
             }
         } catch (IOException e) {
@@ -343,12 +380,6 @@ public class XrayFeaturesImporter {
                 // zip only .feature files and subdirs
                 if (!(childFile.isDirectory() || childFile.getName().toLowerCase().endsWith(".feature")))
                     continue;
-
-                /* 
-                    System.out.println("createDir: " + createDir);
-                    System.out.println("filename: " + fileName);
-                    System.out.println("childFile.getName(): " + childFile.getName());
-                */
 
                 if (createDir) {
                     zipFile(childFile, fileName + "/" + childFile.getName(), zipOut, true);

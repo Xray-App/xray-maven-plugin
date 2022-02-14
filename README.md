@@ -87,6 +87,7 @@ For Xray server/datacenter users (i.e., using Xray on Jira server/datacenter):
 | `jiraUsername` | `xray.jiraUsername` | username of Jira user to use on API calls | someuser |
 | `jiraPassword` | `xray.jiraPassword` | password of Jira user to use on API calls | somepass |
 | `jiraToken` | `xray.jiraToken` | Jira PAT (Personal Access Token) used instead of username/password |
+| `ignoreSslErrors` | `xray.ignoreSslErrors` | ignore SSL errors, e.g., expired certificate (default: false) |
 
 For Xray cloud users (i.e., using Xray on Jira cloud):
 
@@ -236,8 +237,10 @@ This project is in early stage; the setting names and other are subject to chang
 
 ## TO DOs
 
-- add sibling project with test code
-- add e2e example or update existing tutorial (e.g., junit based project using also this plugin)
+- review `pom.xml` and make it cleaner (help neeeded and appreciated!)
+- clarify properly how to setup this in an existing project as some doubts remain about the proper way to do so in terms of `.m2/settings.xml` (help neeeded and appreciated!)
+- add code coverage information with jacoco, as I couldnt get it working (help neeeded and appreciated!)
+- add unit tests
 - add timeout configuration
 
 ## References

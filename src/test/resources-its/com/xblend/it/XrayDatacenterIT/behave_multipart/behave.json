@@ -1,0 +1,171 @@
+[{
+        "keyword": "Feature",
+        "name": "Scenario Outline (tutorial04)",
+        "tags": ["REQ_XT-84"],
+        "location": "features/1_XT-84.feature:2",
+        "status": "passed",
+        "elements": [{
+            "type": "scenario",
+            "keyword": "Scenario Outline",
+            "name": "Use Blender with Red Tree Frog -- @1.1 Amphibians",
+            "tags": ["TEST_XT-86"],
+            "location": "features/1_XT-84.feature:12",
+            "steps": [{
+                "keyword": "Given",
+                "step_type": "given",
+                "name": "I put \"Red Tree Frog\" in a blender",
+                "location": "features/1_XT-84.feature:6",
+                "match": {
+                    "location": "features/steps/step_tutorial03.py:9",
+                    "arguments": [{
+                        "value": "Red Tree Frog",
+                        "name": "thing"
+                    }]
+                },
+                "result": {
+                    "status": "passed",
+                    "duration": 0.0002722740173339844
+                }
+            }, {
+                "keyword": "When",
+                "step_type": "when",
+                "name": "I switch the blender on",
+                "location": "features/1_XT-84.feature:7",
+                "match": {
+                    "location": "features/steps/step_tutorial03.py:14",
+                    "arguments": []
+                },
+                "result": {
+                    "status": "passed",
+                    "duration": 9.489059448242188e-05
+                }
+            }, {
+                "keyword": "Then",
+                "step_type": "then",
+                "name": "it should transform into \"mush\"",
+                "location": "features/1_XT-84.feature:8",
+                "match": {
+                    "location": "features/steps/step_tutorial03.py:18",
+                    "arguments": [{
+                        "value": "mush",
+                        "name": "other_thing"
+                    }]
+                },
+                "result": {
+                    "status": "passed",
+                    "duration": 0.00011491775512695312
+                }
+            }],
+            "status": "passed"
+        }, {
+            "type": "scenario",
+            "keyword": "Scenario Outline",
+            "name": "Use Blender with apples -- @1.2 Amphibians",
+            "tags": ["TEST_XT-86"],
+            "location": "features/1_XT-84.feature:13",
+            "steps": [{
+                "keyword": "Given",
+                "step_type": "given",
+                "name": "I put \"apples\" in a blender",
+                "location": "features/1_XT-84.feature:6",
+                "match": {
+                    "location": "features/steps/step_tutorial03.py:9",
+                    "arguments": [{
+                        "value": "apples",
+                        "name": "thing"
+                    }]
+                },
+                "result": {
+                    "status": "passed",
+                    "duration": 0.00010919570922851562
+                }
+            }, {
+                "keyword": "When",
+                "step_type": "when",
+                "name": "I switch the blender on",
+                "location": "features/1_XT-84.feature:7",
+                "match": {
+                    "location": "features/steps/step_tutorial03.py:14",
+                    "arguments": []
+                },
+                "result": {
+                    "status": "passed",
+                    "duration": 7.987022399902344e-05
+                }
+            }, {
+                "keyword": "Then",
+                "step_type": "then",
+                "name": "it should transform into \"apple juice\"",
+                "location": "features/1_XT-84.feature:8",
+                "match": {
+                    "location": "features/steps/step_tutorial03.py:18",
+                    "arguments": [{
+                        "value": "apple juice",
+                        "name": "other_thing"
+                    }]
+                },
+                "result": {
+                    "status": "passed",
+                    "duration": 9.298324584960938e-05
+                }
+            }],
+            "status": "passed"
+        }]
+    },
+
+    {
+        "keyword": "Feature",
+        "name": "Showing off behave",
+        "tags": ["REQ_XT-83"],
+        "location": "features/2_XT-83.feature:2",
+        "status": "passed",
+        "elements": [{
+            "type": "scenario",
+            "keyword": "Scenario",
+            "name": "Run a simple test",
+            "tags": ["TEST_XT-85"],
+            "location": "features/2_XT-83.feature:5",
+            "steps": [{
+                "keyword": "Given",
+                "step_type": "given",
+                "name": "we have behave installed",
+                "location": "features/2_XT-83.feature:6",
+                "match": {
+                    "location": "features/steps/step_tutorial01.py:6",
+                    "arguments": []
+                },
+                "result": {
+                    "status": "passed",
+                    "duration": 8.082389831542969e-05
+                }
+            }, {
+                "keyword": "When",
+                "step_type": "when",
+                "name": "we implement a test",
+                "location": "features/2_XT-83.feature:7",
+                "match": {
+                    "location": "features/steps/step_tutorial01.py:9",
+                    "arguments": []
+                },
+                "result": {
+                    "status": "passed",
+                    "duration": 8.177757263183594e-05
+                }
+            }, {
+                "keyword": "Then",
+                "step_type": "then",
+                "name": "behave will test it for us!",
+                "location": "features/2_XT-83.feature:8",
+                "match": {
+                    "location": "features/steps/step_tutorial01.py:12",
+                    "arguments": []
+                },
+                "result": {
+                    "status": "passed",
+                    "duration": 7.796287536621094e-05
+                }
+            }],
+            "status": "passed"
+        }]
+    }
+]
