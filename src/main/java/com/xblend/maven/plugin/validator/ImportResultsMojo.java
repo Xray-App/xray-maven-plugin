@@ -146,13 +146,10 @@ public class ImportResultsMojo extends AbstractMojo {
 
             try {
                 getLog().debug("cloud from config: " + cloud);
-                getLog().debug("clientId from config: " + clientId);
-                getLog().debug("clientSecret from config: " + clientSecret);
                 getLog().debug("jiraBaseUrl from config: " + jiraBaseUrl);
+                getLog().debug("reportFile: " + reportFile);
                 getLog().debug("testInfoJson from config: " + testInfoJson);
                 getLog().debug("useInternalTestProxy from config: " + useInternalTestProxy);
-
-                System.out.println("useInternalTestProxy from config: " + useInternalTestProxy);
 
                 if (cloud) {
 

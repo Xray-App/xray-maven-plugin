@@ -97,8 +97,6 @@ public class ImportFeaturesMojo extends AbstractMojo {
         JSONArray response = null;
 
 		try {
-            getLog().debug("clientId from config: " + clientId);
-            getLog().debug("clientSecret from config: " + clientSecret);
             getLog().debug("cloud from config: " + cloud);
             getLog().debug("projectKey from config: " + projectKey);
             getLog().debug("projectId from config: " + projectId);

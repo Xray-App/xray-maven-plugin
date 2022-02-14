@@ -83,8 +83,6 @@ public class ExportFeaturesMojo extends AbstractMojo {
         XrayFeaturesExporter xrayFeaturesExporter;
         String response = null;
 		try {
-            getLog().debug("clientId from config: " + clientId);
-            getLog().debug("clientSecret from config: " + clientSecret);
             getLog().debug("cloud from config: " + cloud);
             getLog().debug("issueKeys from config: " + issueKeys);
             getLog().debug("filterId from config: " + filterId);
