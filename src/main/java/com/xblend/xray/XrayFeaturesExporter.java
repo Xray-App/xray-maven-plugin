@@ -36,6 +36,9 @@ public class XrayFeaturesExporter {
     private String issueKeys;
     private String filterId;
 
+    private boolean ignoreSslErrors = false;
+    private boolean useInternalTestProxy = false;
+
     private XrayFeaturesExporter(ServerDCBuilder builder) {
         this.jiraBaseUrl = builder.jiraBaseUrl;
         this.jiraUsername = builder.jiraUsername;
@@ -44,6 +47,9 @@ public class XrayFeaturesExporter {
 
         this.issueKeys = builder.issueKeys;
         this.filterId = builder.filterId;
+
+        this.ignoreSslErrors = builder.ignoreSslErrors;
+        this.useInternalTestProxy = builder.useInternalTestProxy;
     }
 
     private XrayFeaturesExporter(CloudBuilder builder) {
@@ -52,6 +58,9 @@ public class XrayFeaturesExporter {
 
         this.issueKeys = builder.issueKeys;
         this.filterId = builder.filterId;
+
+        this.ignoreSslErrors = builder.ignoreSslErrors;
+        this.useInternalTestProxy = builder.useInternalTestProxy;
     }
 
     public static class ServerDCBuilder {
@@ -64,6 +73,9 @@ public class XrayFeaturesExporter {
         private String issueKeys;
         private String filterId;
 
+        private Boolean useInternalTestProxy = false;
+        private Boolean ignoreSslErrors = false;
+
         public ServerDCBuilder(String jiraBaseUrl, String jiraUsername, String jiraPassword) {
             this.jiraBaseUrl = jiraBaseUrl;
             this.jiraUsername = jiraUsername;
@@ -73,6 +85,16 @@ public class XrayFeaturesExporter {
         public ServerDCBuilder(String jiraBaseUrl, String jiraPersonalAccessToken) {
             this.jiraBaseUrl = jiraBaseUrl;
             this.jiraPersonalAccessToken = jiraPersonalAccessToken;
+        }
+
+        public ServerDCBuilder withInternalTestProxy(Boolean useInternalTestProxy) {
+            this.useInternalTestProxy = useInternalTestProxy;
+            return this;
+        }
+
+        public ServerDCBuilder withIgnoreSslErrors(Boolean ignoreSslErrors) {
+            this.ignoreSslErrors = ignoreSslErrors;
+            return this;
         }
 
         public ServerDCBuilder withIssueKeys(String issueKeys) {
@@ -99,9 +121,22 @@ public class XrayFeaturesExporter {
         private String issueKeys;
         private String filterId;
 
+        private boolean ignoreSslErrors = false;
+        private boolean useInternalTestProxy = false;
+
         public CloudBuilder(String clientId, String clientSecret) {
             this.clientId = clientId;
             this.clientSecret = clientSecret;
+        }
+
+        public CloudBuilder withInternalTestProxy(Boolean useInternalTestProxy) {
+            this.useInternalTestProxy = useInternalTestProxy;
+            return this;
+        }
+
+        public CloudBuilder withIgnoreSslErrors(Boolean ignoreSslErrors) {
+            this.ignoreSslErrors = ignoreSslErrors;
+            return this;
         }
 
         public CloudBuilder withIssueKeys(String issueKeys) {
@@ -129,14 +164,14 @@ public class XrayFeaturesExporter {
     }
 
     public String submitStandardServerDC(String outputPath) throws Exception {
-        OkHttpClient client = new OkHttpClient();
+        OkHttpClient client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors);
+
         String credentials;
         if (jiraPersonalAccessToken!= null) {
             credentials = "Bearer " + jiraPersonalAccessToken;
         } else {
             credentials = Credentials.basic(jiraUsername, jiraPassword);
-        } 
-        System.out.println(credentials);
+        }
 
         String endpointUrl = jiraBaseUrl + "/rest/raven/2.0/export/test";
         Request request;
@@ -160,7 +195,6 @@ public class XrayFeaturesExporter {
                 unzipContentsToFolder(response.body().byteStream(), outputPath);
                 return ("ok");
             } else {
-                System.err.println("responseBody");
                 throw new IOException("Unexpected HTTP code " + response);
             }
         } catch (IOException e) {
@@ -170,7 +204,8 @@ public class XrayFeaturesExporter {
     }
 
     public String submitStandardCloud(String outputPath) throws Exception {
-        OkHttpClient client = new OkHttpClient();
+        OkHttpClient client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors);
+
         String authenticationPayload = "{ \"client_id\": \"" + clientId + "\", \"client_secret\": \"" + clientSecret
                 + "\" }";
         RequestBody body = RequestBody.create(authenticationPayload, MEDIA_TYPE_JSON);
@@ -190,10 +225,8 @@ public class XrayFeaturesExporter {
             throw e;
         }
         String credentials = "Bearer " + authToken;
-        System.out.println(credentials);
 
         String endpointUrl = xrayCloudApiBaseUrl + "/export/cucumber";
-
         HttpUrl url = HttpUrl.get(endpointUrl);
         HttpUrl.Builder builder = url.newBuilder();
 
@@ -213,7 +246,6 @@ public class XrayFeaturesExporter {
                 unzipContentsToFolder(response.body().byteStream(), outputPath);
                 return ("ok");
             } else {
-                System.err.println("responseBody");
                 throw new IOException("Unexpected HTTP code " + response);
             }
         } catch (IOException e) {
@@ -229,10 +261,6 @@ public class XrayFeaturesExporter {
         ZipInputStream zis = new ZipInputStream(new BufferedInputStream(zippedContents));
         ZipEntry zipEntry;
         while ((zipEntry = zis.getNextEntry()) != null) {
-
-            System.out.println("is_dir: " + zipEntry.isDirectory());
-            System.out.println("zipentry.name: " + zipEntry.getName());
-            System.out.println("zipentry.size: " + zipEntry.getSize());
             File newFile = newFile(destDir, zipEntry);
 
             if (zipEntry.isDirectory()) {
@@ -261,12 +289,6 @@ public class XrayFeaturesExporter {
 
     private static File newFile(File destinationDir, ZipEntry zipEntry) throws IOException {
         File destFile = new File(destinationDir, zipEntry.getName());
-
-        System.out.println("====================");
-        System.out.println("## " + zipEntry.getName() + " ##");
-        System.out.println("** " + destFile + " **");
-        System.out.println("====================2");
-
         String destDirPath = destinationDir.getCanonicalPath();
         String destFilePath = destFile.getCanonicalPath();
 
@@ -274,8 +296,6 @@ public class XrayFeaturesExporter {
             throw new IOException("Entry is outside of the target dir: " + zipEntry.getName());
         }
 
-        System.out.println(destFilePath);
-        System.out.println("====================3");
         return destFile;
     }
 

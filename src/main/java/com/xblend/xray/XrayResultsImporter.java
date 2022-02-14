@@ -46,7 +46,10 @@ public class XrayResultsImporter {
     private String testPlanKey;
     private String testExecKey;
     private String testEnvironment;
-    
+
+    private Boolean ignoreSslErrors = false;
+    private Boolean useInternalTestProxy = false;
+
     private XrayResultsImporter(ServerDCBuilder builder){
         this.jiraBaseUrl = builder.jiraBaseUrl;
         this.jiraUsername = builder.jiraUsername;
@@ -54,6 +57,8 @@ public class XrayResultsImporter {
         this.jiraPersonalAccessToken = builder.jiraPersonalAccessToken;
         this.projectKey = builder.projectKey;
 
+        this.ignoreSslErrors = builder.ignoreSslErrors;
+        this.useInternalTestProxy = builder.useInternalTestProxy;
     }
 
     private XrayResultsImporter(CloudBuilder builder){
@@ -65,6 +70,9 @@ public class XrayResultsImporter {
         this.testPlanKey = builder.testPlanKey;
         this.testExecKey = builder.testExecKey;
         this.testEnvironment = builder.testEnvironment;
+
+        this.ignoreSslErrors = builder.ignoreSslErrors;
+        this.useInternalTestProxy = builder.useInternalTestProxy;
     }
 
     public static class ServerDCBuilder {
@@ -81,6 +89,9 @@ public class XrayResultsImporter {
         private String testExecKey;
         private String testEnvironment;
 
+        private Boolean ignoreSslErrors = false;
+        private Boolean useInternalTestProxy = false;
+
         public ServerDCBuilder(String jiraBaseUrl, String jiraUsername, String jiraPassword) {
             this.jiraBaseUrl = jiraBaseUrl;
             this.jiraUsername = jiraUsername;
@@ -90,6 +101,16 @@ public class XrayResultsImporter {
         public ServerDCBuilder(String jiraBaseUrl, String jiraPersonalAccessToken) {
             this.jiraBaseUrl = jiraBaseUrl;
             this.jiraPersonalAccessToken = jiraPersonalAccessToken;
+        }
+
+        public ServerDCBuilder withIgnoreSslErrors(Boolean ignoreSslErrors) {
+            this.ignoreSslErrors = ignoreSslErrors;
+            return this;
+        }
+
+        public ServerDCBuilder withInternalTestProxy(Boolean useInternalTestProxy) {
+            this.useInternalTestProxy = useInternalTestProxy;
+            return this;
         }
 
         public ServerDCBuilder withProjectKey(String projectKey) {
@@ -140,9 +161,22 @@ public class XrayResultsImporter {
         private String testExecKey;
         private String testEnvironment;
 
+        private Boolean ignoreSslErrors = false;
+        private Boolean useInternalTestProxy = false;
+
         public CloudBuilder(String clientId, String clientSecret) {
             this.clientId = clientId;
             this.clientSecret = clientSecret;
+        }
+
+        public CloudBuilder withIgnoreSslErrors(Boolean ignoreSslErrors) {
+            this.ignoreSslErrors = ignoreSslErrors;
+            return this;
+        }
+
+        public CloudBuilder withInternalTestProxy(Boolean useInternalTestProxy) {
+            this.useInternalTestProxy = useInternalTestProxy;
+            return this;
         }
 
         public CloudBuilder withProjectKey(String projectKey) {
@@ -190,7 +224,8 @@ public class XrayResultsImporter {
     }
 
     public String submitMultipartServerDC(String format, String reportFile, JSONObject testExecInfo, JSONObject testInfo) throws Exception {        
-        OkHttpClient client = new OkHttpClient();
+        OkHttpClient client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors);
+
         String credentials;
         if (jiraPersonalAccessToken!= null) {
             credentials = "Bearer " + jiraPersonalAccessToken;
@@ -205,7 +240,7 @@ public class XrayResultsImporter {
 
         MediaType mediaType;
         String xmlBasedFormats[] = new String [] { JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT}; 
-        if (Arrays.asList(supportedFormats).contains(xmlBasedFormats)) {
+        if (Arrays.asList(xmlBasedFormats).contains(format)) {
             mediaType = MEDIA_TYPE_XML;
         } else {
             mediaType = MEDIA_TYPE_JSON;
@@ -222,8 +257,8 @@ public class XrayResultsImporter {
         HttpUrl.Builder builder = url.newBuilder();
         MultipartBody requestBody = null;
         String partName;
-        // for xray json and cucumber reports use "result" instead of "file" for the multipart entity
-        if (XRAY_FORMAT.equals(format) || CUCUMBER_FORMAT.equals(format)) {
+        // for xray json, cucumber and behave reports use "result" instead of "file" for the multipart entity
+        if (XRAY_FORMAT.equals(format) || CUCUMBER_FORMAT.equals(format) || BEHAVE_FORMAT.equals(format)) {
             partName = "result";
         } else {
             partName = "file";
@@ -249,7 +284,7 @@ public class XrayResultsImporter {
                 // System.out.println("Test Execution: "+((JSONObject)(responseObj.get("testExecIssue"))).get("key"));
                 return responseBody;
             } else {
-                System.err.println(responseBody);
+                //System.err.println(responseBody);
                 throw new IOException("Unexpected HTTP code " + response);
             }
         } catch (IOException e) {
@@ -259,7 +294,8 @@ public class XrayResultsImporter {
     }
 
     public String submitMultipartCloud(String format, String reportFile, JSONObject testExecInfo, JSONObject testInfo) throws Exception {  	
-		OkHttpClient client = new OkHttpClient();
+        OkHttpClient client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors);
+
 		String authenticationPayload = "{ \"client_id\": \"" + clientId +"\", \"client_secret\": \"" + clientSecret +"\" }";
 		RequestBody body = RequestBody.create(authenticationPayload, MEDIA_TYPE_JSON);
 		Request request = new Request.Builder().url(xrayCloudAuthenticateUrl).post(body).build();
@@ -286,7 +322,7 @@ public class XrayResultsImporter {
 
         MediaType mediaType;
         String xmlBasedFormats[] = new String [] { JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT}; 
-        if (Arrays.asList(supportedFormats).contains(xmlBasedFormats)) {
+        if (Arrays.asList(xmlBasedFormats).contains(format)) {
             mediaType = MEDIA_TYPE_XML;
         } else {
             mediaType = MEDIA_TYPE_JSON;
@@ -301,7 +337,6 @@ public class XrayResultsImporter {
 
         HttpUrl url = HttpUrl.get(endpointUrl);
         HttpUrl.Builder builder = url.newBuilder();
-        // System.out.println(testExecInfo.toString());
         MultipartBody requestBody = null;
         try {
             requestBody = new MultipartBody.Builder()
@@ -324,7 +359,7 @@ public class XrayResultsImporter {
                 // System.out.println("Test Execution: "+responseObj.get("key"));
                 return responseBody;
             } else {
-                System.err.println(responseBody);
+                //System.err.println(responseBody);
                 throw new IOException("Unexpected HTTP code " + response);
             }
         } catch (IOException e) {
@@ -335,7 +370,8 @@ public class XrayResultsImporter {
     }
 
     public String submitStandardServerDC(String format, String reportFile) throws Exception {        
-        OkHttpClient client = new OkHttpClient();
+        OkHttpClient client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors);
+
         String credentials;
         if (jiraPersonalAccessToken!= null) {
             credentials = "Bearer " + jiraPersonalAccessToken;
@@ -350,7 +386,7 @@ public class XrayResultsImporter {
 
         MediaType mediaType;
         String xmlBasedFormats[] = new String [] { JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT}; 
-        if (Arrays.asList(supportedFormats).contains(xmlBasedFormats)) {
+        if (Arrays.asList(xmlBasedFormats).contains(format)) {
             mediaType = MEDIA_TYPE_XML;
         } else {
             mediaType = MEDIA_TYPE_JSON;
@@ -413,17 +449,18 @@ public class XrayResultsImporter {
                 // System.out.println("Test Execution: "+((JSONObject)(responseObj.get("testExecIssue"))).get("key"));
                 return(responseBody);
             } else {
-                System.err.println(responseBody);
+                //System.err.println(responseBody);
                 throw new IOException("Unexpected HTTP code " + response);
             }
         } catch (IOException e) {
             e.printStackTrace();
-            throw(e);
+            throw e;
         }
     }
 
     public String submitStandardCloud(String format, String reportFile) throws Exception {
-        OkHttpClient client = new OkHttpClient();
+        OkHttpClient client = CommonUtils.getHttpClient(useInternalTestProxy, ignoreSslErrors);
+
         String authenticationPayload = "{ \"client_id\": \"" + clientId +"\", \"client_secret\": \"" + clientSecret +"\" }";
         RequestBody body = RequestBody.create(authenticationPayload, MEDIA_TYPE_JSON);
         Request request = new Request.Builder().url(xrayCloudAuthenticateUrl).post(body).build();
@@ -505,12 +542,12 @@ public class XrayResultsImporter {
                 // System.out.println("Test Execution: "+((JSONObject)(responseObj.get("testExecIssue"))).get("key"));
                 return(responseBody);
             } else {
-                System.err.println(responseBody);
+                //System.err.println(responseBody);
                 throw new IOException("Unexpected HTTP code " + response);
             }
         } catch (IOException e) {
             e.printStackTrace();
-            throw(e);
+            throw e;
         }
 
     }

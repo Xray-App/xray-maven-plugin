@@ -1,0 +1,11 @@
+{
+    "fields": {
+        "project": {
+            "key": "BOOK"
+        },
+        "summary": "Test Execution for some automated tests",
+        "issuetype": {
+            "name": "Test Execution"
+        }
+    }
+}

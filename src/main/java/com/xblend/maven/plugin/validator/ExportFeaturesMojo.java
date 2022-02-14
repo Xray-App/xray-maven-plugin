@@ -61,6 +61,12 @@ public class ExportFeaturesMojo extends AbstractMojo {
     @Parameter(property = "xray.abortOnError", required = false)
     private Boolean abortOnError;
 
+    @Parameter(property = "xray.useInternalTestProxy", required = false)
+    private Boolean useInternalTestProxy;
+
+    @Parameter(property = "xray.ignoreSslErrors", required = false)
+    private Boolean ignoreSslErrors;
+
     /**
      * Scope to filter the dependencies.
      */
@@ -84,19 +90,19 @@ public class ExportFeaturesMojo extends AbstractMojo {
             getLog().debug("filterId from config: " + filterId);
 
             if (cloud) {
-                xrayFeaturesExporter = new XrayFeaturesExporter.CloudBuilder(clientId, clientSecret)
+                xrayFeaturesExporter = new XrayFeaturesExporter.CloudBuilder(clientId, clientSecret).withInternalTestProxy(useInternalTestProxy).withIgnoreSslErrors(ignoreSslErrors)
                     .withIssueKeys(issueKeys)
                     .withFilterId(filterId)
                     .build();
                 response = xrayFeaturesExporter.submit(outputDir);
             } else {
                 if (jiraToken != null) {
-                    xrayFeaturesExporter = new XrayFeaturesExporter.ServerDCBuilder(jiraBaseUrl, jiraToken)
+                    xrayFeaturesExporter = new XrayFeaturesExporter.ServerDCBuilder(jiraBaseUrl, jiraToken).withInternalTestProxy(useInternalTestProxy).withIgnoreSslErrors(ignoreSslErrors)
                         .withIssueKeys(issueKeys)
                         .withFilterId(filterId)
                         .build();
                 } else {
-                    xrayFeaturesExporter = new XrayFeaturesExporter.ServerDCBuilder(jiraBaseUrl, jiraUsername, jiraPassword)
+                    xrayFeaturesExporter = new XrayFeaturesExporter.ServerDCBuilder(jiraBaseUrl, jiraUsername, jiraPassword).withInternalTestProxy(useInternalTestProxy).withIgnoreSslErrors(ignoreSslErrors)
                         .withIssueKeys(issueKeys)
                         .withFilterId(filterId)
                         .build();

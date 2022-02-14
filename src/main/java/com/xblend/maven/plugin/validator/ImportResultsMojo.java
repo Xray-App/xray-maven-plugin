@@ -14,6 +14,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.json.JSONObject;
+import static com.xblend.xray.CommonUtils.isTrue;
 
 /**
  * Counts the number of maven dependencies of a project.
@@ -81,6 +82,12 @@ public class ImportResultsMojo extends AbstractMojo {
     @Parameter(property = "xray.abortOnError", required = false)
     private Boolean abortOnError;
 
+    @Parameter(property = "xray.useInternalTestProxy", required = false)
+    private Boolean useInternalTestProxy;
+
+    @Parameter(property = "xray.ignoreSslErrors", required = false)
+    private Boolean ignoreSslErrors;
+
     /**
      * Scope to filter the dependencies.
      */
@@ -136,23 +143,25 @@ public class ImportResultsMojo extends AbstractMojo {
         // submit one or more report files
         for (int i = 0; i < reportFiles.length; i++) {
             String reportFile = reportFiles[i];
-            System.out.println(reportFile);
 
             try {
+                getLog().debug("cloud from config: " + cloud);
                 getLog().debug("clientId from config: " + clientId);
                 getLog().debug("clientSecret from config: " + clientSecret);
-                getLog().debug("cloud from config: " + cloud);
+                getLog().debug("jiraBaseUrl from config: " + jiraBaseUrl);
                 getLog().debug("testInfoJson from config: " + testInfoJson);
+                getLog().debug("useInternalTestProxy from config: " + useInternalTestProxy);
+
+                System.out.println("useInternalTestProxy from config: " + useInternalTestProxy);
 
                 if (cloud) {
 
                     // if testInfo and testExecInfo are not present, then use the standard endpoint
                     // all formats support params, except for cucumber
                     
-
-                    com.xblend.xray.XrayResultsImporter.CloudBuilder xrayImporterBuilder = new XrayResultsImporter.CloudBuilder(clientId, clientSecret);
+                    com.xblend.xray.XrayResultsImporter.CloudBuilder xrayImporterBuilder = new XrayResultsImporter.CloudBuilder(clientId, clientSecret).withInternalTestProxy(useInternalTestProxy).withIgnoreSslErrors(ignoreSslErrors);
                     if (testInfoJson==null  && testExecInfoJson==null) {       
-                        if ("xray".equals(reportFormat) || "cucumber".equals(reportFormat)) {
+                        if (XrayResultsImporter.XRAY_FORMAT.equals(reportFormat) || XrayResultsImporter.CUCUMBER_FORMAT.equals(reportFormat)) {
                             xrayImporter = xrayImporterBuilder.build();
                         } else {
                             xrayImporter = xrayImporterBuilder
@@ -184,13 +193,13 @@ public class ImportResultsMojo extends AbstractMojo {
 
                     com.xblend.xray.XrayResultsImporter.ServerDCBuilder xrayImporterBuilder;
                     if (jiraToken != null) {
-                        xrayImporterBuilder = new XrayResultsImporter.ServerDCBuilder(jiraBaseUrl, jiraToken);
+                        xrayImporterBuilder = new XrayResultsImporter.ServerDCBuilder(jiraBaseUrl, jiraToken).withInternalTestProxy(useInternalTestProxy).withIgnoreSslErrors(ignoreSslErrors);
                     } else {
-                        xrayImporterBuilder = new XrayResultsImporter.ServerDCBuilder(jiraBaseUrl, jiraUsername, jiraPassword);
+                        xrayImporterBuilder = new XrayResultsImporter.ServerDCBuilder(jiraBaseUrl, jiraUsername, jiraPassword).withInternalTestProxy(useInternalTestProxy).withIgnoreSslErrors(ignoreSslErrors);
                     }
 
                     if (testInfoJson==null  && testExecInfoJson==null) {       
-                        if ("xray".equals(reportFormat) || "cucumber".equals(reportFormat) || "behave".equals(reportFormat)) {
+                        if (XrayResultsImporter.XRAY_FORMAT.equals(reportFormat) || XrayResultsImporter.CUCUMBER_FORMAT.equals(reportFormat) || XrayResultsImporter.BEHAVE_FORMAT.equals(reportFormat)) {
                             xrayImporter = xrayImporterBuilder.build();
                         } else {
                             xrayImporter = xrayImporterBuilder
@@ -202,7 +211,8 @@ public class ImportResultsMojo extends AbstractMojo {
                                 .withTestEnvironment(testEnvironment)
                                 .build();  
                         }
-                        response = xrayImporter.submit(reportFormat, reportFile);   
+
+                        response = xrayImporter.submit(reportFormat, reportFile);
                     } else {
                         if (testInfoJson != null) {
                             testInfo = new JSONObject(new String(Files.readAllBytes(Paths.get(testInfoJson))));
@@ -222,7 +232,8 @@ public class ImportResultsMojo extends AbstractMojo {
                 getLog().info("response: " + response);
             } catch (Exception ex) {
                 getLog().error(ex.getMessage());
-                if (abortOnError)
+                ex.printStackTrace();
+                if (isTrue(abortOnError))
                     System.exit(1);
             }
 
