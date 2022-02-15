@@ -32,7 +32,7 @@
         <plugin>
             <groupId>com.xblend</groupId>
             <artifactId>xray-maven-plugin</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>0.1.0</version>
             <configuration>
                 <cloud>false</cloud>
                 <jiraBaseUrl>https://sandboxgetxray.app</jiraBaseUrl>

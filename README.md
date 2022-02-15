@@ -37,7 +37,7 @@ To start using this plugin, configure this maven repository in your `pom.xml`:
 
 ... or within the `<pluginRepositories>` section.
 
-In your `.m2/settings.xml`, configure the authentication for the maven repository.
+In your `.m2/settings.xml`, configure the authentication for the maven repository. You'll need a [GitHub Personal Access Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token).
 
 ```xml
  <servers>
@@ -234,6 +234,11 @@ For Xray specific questions, please contact [Xray's support team](https://jira.g
 ## Disclaimer
 
 This project is in early stage; the setting names and other are subject to change.
+
+## Acknowledgments
+
+- Thanks to [Eugen](https://twitter.com/baeldung), and other authors, along with the many tutorials provided at [baeldung.com](https://www.baeldung.com).
+- Thanks to Hugo Braz for all the valuable feedback and previous work done in the scope of the previous, proprietary Maven plugin for Xray.
 
 ## TO DOs
 

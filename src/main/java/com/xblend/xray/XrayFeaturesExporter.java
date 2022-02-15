@@ -254,7 +254,6 @@ public class XrayFeaturesExporter {
         }
     }
 
-    // https://github.com/eugenp/tutorials/blob/master/core-java-modules/core-java-io/src/main/java/com/baeldung/unzip/UnzipFile.java
     private void unzipContentsToFolder(InputStream zippedContents, String outputFolder) throws Exception {
         File destDir = new File(outputFolder);
         byte[] buffer = new byte[1024];
