@@ -247,6 +247,7 @@ This project is in early stage; the setting names and other are subject to chang
 - add code coverage information with jacoco, as I couldnt get it working (help neeeded and appreciated!)
 - add unit tests
 - option to remove temporary .zip file created whenever importing Gherkin/cucumber .feature files
+- ability to attach files/evidence to test runs (needs some thought)
 - add timeout configuration
 
 ## References
