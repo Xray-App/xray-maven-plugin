@@ -15,7 +15,9 @@ import com.soebes.itf.jupiter.extension.MavenTest;
 import com.soebes.itf.jupiter.extension.SystemProperty;
 import com.soebes.itf.jupiter.maven.MavenExecutionResult;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
@@ -24,13 +26,13 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 @MavenJupiterExtension
 public class XrayCloudIT {
 
-    private final String CLIENT_ID = "32A27E69C0AC4E539C14010000000000";
-    private final String CLIENT_SECRET = "d62f81eb9ed859e22e54356dd8a00e4a5f0d0c2b2b52340776f6c70000000000";
-    private final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZW5hbnQiOiI0MjZiYzA4Yy02N2VmLTNjMjYtYWU1YS03NjczYTB1ZjIwNjkiLCJ1c2VyS2V5IjoiYW5kcmUucm9kcmlndWVzIiwiaWF0IjixNTI1ODcxODkzLCJleHAiOjE1MjU5NTgyOTMsImF1ZCI6IhMyQTI3RTY5QjBBQzRFNTM5QzE0MDE2NDM3OTlFOEU3IiwiaXNzIjoiY29tLnhwYW5kaXQueHJheSIsInN1YiI6IjMyQTI3RTY5QjBBQzRFNTM5QzE0MDE2NDM3OTlFOEU3In0.8ah2IQ9rA_zotyh_6trFgfIvhn2awdFFrOHnN2F2H7m";
+    private static final String CLIENT_ID = "32A27E69C0AC4E539C14010000000000";
+    private static final String CLIENT_SECRET = "d62f81eb9ed859e22e54356dd8a00e4a5f0d0c2b2b52340776f6c70000000000";
+    private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZW5hbnQiOiI0MjZiYzA4Yy02N2VmLTNjMjYtYWU1YS03NjczYTB1ZjIwNjkiLCJ1c2VyS2V5IjoiYW5kcmUucm9kcmlndWVzIiwiaWF0IjixNTI1ODcxODkzLCJleHAiOjE1MjU5NTgyOTMsImF1ZCI6IhMyQTI3RTY5QjBBQzRFNTM5QzE0MDE2NDM3OTlFOEU3IiwiaXNzIjoiY29tLnhwYW5kaXQueHJheSIsInN1YiI6IjMyQTI3RTY5QjBBQzRFNTM5QzE0MDE2NDM3OTlFOEU3In0.8ah2IQ9rA_zotyh_6trFgfIvhn2awdFFrOHnN2F2H7m";
 
-    WireMockServer wm;
-    @BeforeEach
-    public void setup () {
+    static WireMockServer wm;
+    @BeforeAll
+    public static void setup () {
         wm = new WireMockServer(
             options()
             .port(18080)
@@ -39,12 +41,12 @@ public class XrayCloudIT {
         wm.start();
         setupStub();
     }
-    @AfterEach
-    public void teardown () {
+    @AfterAll
+    public static void teardown () {
         wm.stop();
     }
 
-    public void setupStub() {
+    private static void setupStub() {
         System.out.println("setting up stubs...");
 
         wm.stubFor(post(urlPathEqualTo("/api/v2/authenticate"))
@@ -121,7 +123,7 @@ public class XrayCloudIT {
     @SystemProperty(value = "xray.useInternalTestProxy", content = "true")
     void xray_standard(MavenExecutionResult result) throws IOException {
        String report = CommonUtils.readResourceFile("XrayCloudIT/xray_standard/xray.json");
-   
+
        wm.verify(
            postRequestedFor(urlPathEqualTo("/api/v2/import/execution"))
                .withHeader("Content-Type", containing("application/json"))
@@ -129,7 +131,7 @@ public class XrayCloudIT {
        );
        assertThat(result).isSuccessful();
     }
-   
+
     @MavenTest
     @MavenGoal("xray:import-results")
     @SystemProperty(value = "xray.cloud", content = "true")
@@ -142,7 +144,7 @@ public class XrayCloudIT {
     void xray_multipart(MavenExecutionResult result) throws IOException {
        String testExecInfo = CommonUtils.readResourceFile("XrayCloudIT/xray_multipart/testExecInfo.json");
        String report = CommonUtils.readResourceFile("XrayCloudIT/xray_multipart/xray.json");
-   
+
        wm.verify(
            postRequestedFor(urlPathEqualTo("/api/v2/import/execution/multipart"))
                .withHeader("Authorization", equalTo("Bearer " + TOKEN))
@@ -158,7 +160,7 @@ public class XrayCloudIT {
                        .withHeader("Content-Type", containing("application/json"))
                        .withBody(equalToJson(testExecInfo))
                    )
-   
+
        );
        assertThat(result).isSuccessful();
     }

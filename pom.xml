@@ -165,7 +165,7 @@
             <maven.home>${maven.home}</maven.home>
           </systemProperties>
 
-          <!-- 
+          <!--
                   <includes>
                     <include>**/*IT.java</include>
                   </includes>
@@ -183,6 +183,11 @@
       </plugin>
 
     </plugins>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources-its</directory>
+      </testResource>
+    </testResources>
   </build>
 
   <reporting>
