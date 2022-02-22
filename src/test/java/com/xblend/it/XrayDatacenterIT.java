@@ -15,7 +15,6 @@ import com.soebes.itf.jupiter.extension.MavenTest;
 import com.soebes.itf.jupiter.extension.SystemProperty;
 import com.soebes.itf.jupiter.maven.MavenExecutionResult;
 
-import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -26,7 +25,7 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import com.github.tomakehurst.wiremock.client.BasicCredentials;
 
 @MavenJupiterExtension
-public class XrayDatacenterIT extends AbstractMojoTestCase {
+public class XrayDatacenterIT {
 
     static WireMockServer wm;
     @BeforeAll
@@ -39,11 +38,6 @@ public class XrayDatacenterIT extends AbstractMojoTestCase {
     @AfterAll
     public static void teardown () {
         wm.stop();
-    }
-
-    @BeforeEach
-    public void beforeEachSetup() throws Exception {
-        super.setUp();
     }
 
     public static void setupStub() {
