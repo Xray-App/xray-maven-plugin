@@ -15,6 +15,7 @@ import com.soebes.itf.jupiter.extension.MavenTest;
 import com.soebes.itf.jupiter.extension.SystemProperty;
 import com.soebes.itf.jupiter.maven.MavenExecutionResult;
 
+import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -22,24 +23,15 @@ import org.junit.jupiter.api.BeforeEach;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
-import com.github.tomakehurst.wiremock.client.BasicCredentials; 
+import com.github.tomakehurst.wiremock.client.BasicCredentials;
 
 @MavenJupiterExtension
-// @WireMockTest(httpPort = 18080, httpsEnabled = false, proxyMode = false)
-public class XrayDatacenterIT {
-
-
-/*
-    @RegisterExtension
-    static WireMockExtension wm = WireMockExtension.newInstance()
-            .options(WireMockConfig().dynamicPort().dynamicHttpsPort())
-            .build();
-*/
+public class XrayDatacenterIT extends AbstractMojoTestCase {
 
     static WireMockServer wm;
     @BeforeAll
     public static void setup () {
-        wm = new WireMockServer(options().port(18080));//.enableBrowserProxying(true));
+        wm = new WireMockServer(options().port(18080));
         wm.start();
         setupStub();
     }
@@ -47,6 +39,11 @@ public class XrayDatacenterIT {
     @AfterAll
     public static void teardown () {
         wm.stop();
+    }
+
+    @BeforeEach
+    public void beforeEachSetup() throws Exception {
+        super.setUp();
     }
 
     public static void setupStub() {
@@ -113,7 +110,7 @@ public class XrayDatacenterIT {
     @SystemProperty(value = "xray.reportFile", content = "xray.json")
     void xray_standard(MavenExecutionResult result) throws IOException {
        String report = CommonUtils.readResourceFile("XrayDatacenterIT/xray_standard/xray.json");
-   
+
        wm.verify(
            postRequestedFor(urlPathEqualTo("/rest/raven/2.0/import/execution"))
                .withBasicAuth(new BasicCredentials("username", "password"))
@@ -122,7 +119,7 @@ public class XrayDatacenterIT {
        );
        assertThat(result).isSuccessful();
     }
-   
+
     @MavenTest
     @MavenGoal("xray:import-results")
     @SystemProperty(value = "xray.cloud", content = "false")
@@ -135,7 +132,7 @@ public class XrayDatacenterIT {
     void xray_multipart(MavenExecutionResult result) throws IOException {
        String testExecInfo = CommonUtils.readResourceFile("XrayDatacenterIT/testng_multipart/testExecInfo.json");
        String report = CommonUtils.readResourceFile("XrayDatacenterIT/xray_multipart/xray.json");
-   
+
        wm.verify(
            postRequestedFor(urlPathEqualTo("/rest/raven/2.0/import/execution/multipart"))
                .withBasicAuth(new BasicCredentials("username", "password"))
@@ -151,7 +148,7 @@ public class XrayDatacenterIT {
                        .withHeader("Content-Type", containing("application/json"))
                        .withBody(equalToJson(testExecInfo))
                    )
-   
+
        );
        assertThat(result).isSuccessful();
     }
