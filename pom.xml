@@ -113,6 +113,12 @@
       <version>${itf.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.maven.plugin-testing</groupId>
+      <artifactId>maven-plugin-testing-harness</artifactId>
+      <version>3.3.0</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <distributionManagement>
@@ -165,7 +171,7 @@
             <maven.home>${maven.home}</maven.home>
           </systemProperties>
 
-          <!-- 
+          <!--
                   <includes>
                     <include>**/*IT.java</include>
                   </includes>
@@ -183,6 +189,11 @@
       </plugin>
 
     </plugins>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources-its</directory>
+      </testResource>
+    </testResources>
   </build>
 
   <reporting>
