@@ -40,11 +40,6 @@ public class XrayDatacenterIT {
         wm.stop();
     }
 
-    @BeforeEach
-    public void beforeEachSetup() throws Exception {
-        super.setUp();
-    }
-
     public static void setupStub() {
         System.out.println("setting up stubs...");
 
