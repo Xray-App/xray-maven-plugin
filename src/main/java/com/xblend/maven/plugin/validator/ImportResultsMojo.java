@@ -88,6 +88,9 @@ public class ImportResultsMojo extends AbstractMojo {
     @Parameter(property = "xray.ignoreSslErrors", required = false)
     private Boolean ignoreSslErrors;
 
+    @Parameter(property = "xray.timeout", required = false, defaultValue = "50")
+    private Integer timeout;
+
     /**
      * Scope to filter the dependencies.
      */
@@ -156,7 +159,10 @@ public class ImportResultsMojo extends AbstractMojo {
                     // if testInfo and testExecInfo are not present, then use the standard endpoint
                     // all formats support params, except for cucumber
                     
-                    com.xblend.xray.XrayResultsImporter.CloudBuilder xrayImporterBuilder = new XrayResultsImporter.CloudBuilder(clientId, clientSecret).withInternalTestProxy(useInternalTestProxy).withIgnoreSslErrors(ignoreSslErrors);
+                    com.xblend.xray.XrayResultsImporter.CloudBuilder xrayImporterBuilder = new XrayResultsImporter.CloudBuilder(clientId, clientSecret)
+                        .withInternalTestProxy(useInternalTestProxy)
+                        .withIgnoreSslErrors(ignoreSslErrors)
+                        .withTimeout(timeout);
                     if (testInfoJson==null  && testExecInfoJson==null) {       
                         if (XrayResultsImporter.XRAY_FORMAT.equals(reportFormat) || XrayResultsImporter.CUCUMBER_FORMAT.equals(reportFormat)) {
                             xrayImporter = xrayImporterBuilder.build();
@@ -190,9 +196,15 @@ public class ImportResultsMojo extends AbstractMojo {
 
                     com.xblend.xray.XrayResultsImporter.ServerDCBuilder xrayImporterBuilder;
                     if (jiraToken != null) {
-                        xrayImporterBuilder = new XrayResultsImporter.ServerDCBuilder(jiraBaseUrl, jiraToken).withInternalTestProxy(useInternalTestProxy).withIgnoreSslErrors(ignoreSslErrors);
+                        xrayImporterBuilder = new XrayResultsImporter.ServerDCBuilder(jiraBaseUrl, jiraToken)
+                            .withInternalTestProxy(useInternalTestProxy)
+                            .withIgnoreSslErrors(ignoreSslErrors)
+                            .withTimeout(timeout);
                     } else {
-                        xrayImporterBuilder = new XrayResultsImporter.ServerDCBuilder(jiraBaseUrl, jiraUsername, jiraPassword).withInternalTestProxy(useInternalTestProxy).withIgnoreSslErrors(ignoreSslErrors);
+                        xrayImporterBuilder = new XrayResultsImporter.ServerDCBuilder(jiraBaseUrl, jiraUsername, jiraPassword)
+                            .withInternalTestProxy(useInternalTestProxy)
+                            .withIgnoreSslErrors(ignoreSslErrors)
+                            .withTimeout(timeout);
                     }
 
                     if (testInfoJson==null  && testExecInfoJson==null) {       

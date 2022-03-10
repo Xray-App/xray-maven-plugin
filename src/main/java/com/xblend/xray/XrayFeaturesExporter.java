@@ -36,8 +36,10 @@ public class XrayFeaturesExporter {
     private String issueKeys;
     private String filterId;
 
-    private boolean ignoreSslErrors = false;
-    private boolean useInternalTestProxy = false;
+    // TODO: review boolean vs Boolean
+    private Boolean ignoreSslErrors = false;
+    private Boolean useInternalTestProxy = false;
+    private Integer timeout = 50;
 
     private XrayFeaturesExporter(ServerDCBuilder builder) {
         this.jiraBaseUrl = builder.jiraBaseUrl;
@@ -50,6 +52,7 @@ public class XrayFeaturesExporter {
 
         this.ignoreSslErrors = builder.ignoreSslErrors;
         this.useInternalTestProxy = builder.useInternalTestProxy;
+        this.timeout = builder.timeout;
     }
 
     private XrayFeaturesExporter(CloudBuilder builder) {
@@ -61,6 +64,7 @@ public class XrayFeaturesExporter {
 
         this.ignoreSslErrors = builder.ignoreSslErrors;
         this.useInternalTestProxy = builder.useInternalTestProxy;
+        this.timeout = builder.timeout;
     }
 
     public static class ServerDCBuilder {
@@ -75,6 +79,7 @@ public class XrayFeaturesExporter {
 
         private Boolean useInternalTestProxy = false;
         private Boolean ignoreSslErrors = false;
+        private Integer timeout = 50;
 
         public ServerDCBuilder(String jiraBaseUrl, String jiraUsername, String jiraPassword) {
             this.jiraBaseUrl = jiraBaseUrl;
@@ -94,6 +99,11 @@ public class XrayFeaturesExporter {
 
         public ServerDCBuilder withIgnoreSslErrors(Boolean ignoreSslErrors) {
             this.ignoreSslErrors = ignoreSslErrors;
+            return this;
+        }
+
+        public ServerDCBuilder withTimeout(Integer timeout) {
+            this.timeout = timeout;
             return this;
         }
 
@@ -121,8 +131,10 @@ public class XrayFeaturesExporter {
         private String issueKeys;
         private String filterId;
 
-        private boolean ignoreSslErrors = false;
-        private boolean useInternalTestProxy = false;
+        // TODO: review boolean vs Boolean
+        private Boolean ignoreSslErrors = false;
+        private Boolean useInternalTestProxy = false;
+        private Integer timeout = 50;
 
         public CloudBuilder(String clientId, String clientSecret) {
             this.clientId = clientId;
@@ -136,6 +148,11 @@ public class XrayFeaturesExporter {
 
         public CloudBuilder withIgnoreSslErrors(Boolean ignoreSslErrors) {
             this.ignoreSslErrors = ignoreSslErrors;
+            return this;
+        }
+
+        public CloudBuilder withTimeout(Integer timeout) {
+            this.timeout = timeout;
             return this;
         }
 
@@ -164,7 +181,7 @@ public class XrayFeaturesExporter {
     }
 
     public String submitStandardServerDC(String outputPath) throws Exception {
-        OkHttpClient client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors);
+        OkHttpClient client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
 
         String credentials;
         if (jiraPersonalAccessToken!= null) {
@@ -204,7 +221,7 @@ public class XrayFeaturesExporter {
     }
 
     public String submitStandardCloud(String outputPath) throws Exception {
-        OkHttpClient client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors);
+        OkHttpClient client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
 
         String authenticationPayload = "{ \"client_id\": \"" + clientId + "\", \"client_secret\": \"" + clientSecret
                 + "\" }";

@@ -67,6 +67,9 @@ public class ExportFeaturesMojo extends AbstractMojo {
     @Parameter(property = "xray.ignoreSslErrors", required = false)
     private Boolean ignoreSslErrors;
 
+    @Parameter(property = "xray.timeout", required = false, defaultValue = "50")
+    private Integer timeout;
+
     /**
      * Scope to filter the dependencies.
      */
@@ -88,19 +91,28 @@ public class ExportFeaturesMojo extends AbstractMojo {
             getLog().debug("filterId from config: " + filterId);
 
             if (cloud) {
-                xrayFeaturesExporter = new XrayFeaturesExporter.CloudBuilder(clientId, clientSecret).withInternalTestProxy(useInternalTestProxy).withIgnoreSslErrors(ignoreSslErrors)
+                xrayFeaturesExporter = new XrayFeaturesExporter.CloudBuilder(clientId, clientSecret)
+                    .withInternalTestProxy(useInternalTestProxy)
+                    .withIgnoreSslErrors(ignoreSslErrors)
+                    .withTimeout(timeout)
                     .withIssueKeys(issueKeys)
                     .withFilterId(filterId)
                     .build();
                 response = xrayFeaturesExporter.submit(outputDir);
             } else {
                 if (jiraToken != null) {
-                    xrayFeaturesExporter = new XrayFeaturesExporter.ServerDCBuilder(jiraBaseUrl, jiraToken).withInternalTestProxy(useInternalTestProxy).withIgnoreSslErrors(ignoreSslErrors)
+                    xrayFeaturesExporter = new XrayFeaturesExporter.ServerDCBuilder(jiraBaseUrl, jiraToken)
+                        .withInternalTestProxy(useInternalTestProxy)
+                        .withIgnoreSslErrors(ignoreSslErrors)
+                        .withTimeout(timeout)
                         .withIssueKeys(issueKeys)
                         .withFilterId(filterId)
                         .build();
                 } else {
-                    xrayFeaturesExporter = new XrayFeaturesExporter.ServerDCBuilder(jiraBaseUrl, jiraUsername, jiraPassword).withInternalTestProxy(useInternalTestProxy).withIgnoreSslErrors(ignoreSslErrors)
+                    xrayFeaturesExporter = new XrayFeaturesExporter.ServerDCBuilder(jiraBaseUrl, jiraUsername, jiraPassword)
+                        .withInternalTestProxy(useInternalTestProxy)
+                        .withIgnoreSslErrors(ignoreSslErrors)
+                        .withTimeout(timeout)
                         .withIssueKeys(issueKeys)
                         .withFilterId(filterId)
                         .build();

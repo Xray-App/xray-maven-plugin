@@ -2,6 +2,7 @@ package com.xblend.xray;
 
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -15,7 +16,7 @@ public class CommonUtils {
         return (bool!=null && bool);
     }
 
-    public static OkHttpClient getHttpClient(Boolean useInternalTestProxy, Boolean ignoreSslErrors) throws Exception {
+    public static OkHttpClient getHttpClient(Boolean useInternalTestProxy, Boolean ignoreSslErrors, Integer timeout) throws Exception {
         OkHttpClient client;
         OkHttpClient.Builder newBuilder = new OkHttpClient.Builder();
 
@@ -47,9 +48,20 @@ public class CommonUtils {
             int port = 18080;
             Proxy proxy = new Proxy(Proxy.Type.HTTP,
             new InetSocketAddress(hostname, port));
-            client = newBuilder.proxy(proxy).build();
+            client = newBuilder
+                        .proxy(proxy)
+                        .connectTimeout(timeout, TimeUnit.SECONDS)
+                        .readTimeout(timeout, TimeUnit.SECONDS)
+                        .writeTimeout(timeout, TimeUnit.SECONDS)
+                        .callTimeout(timeout, TimeUnit.SECONDS)
+                        .build();
         } else {
-            client = newBuilder.build();
+            client = newBuilder
+                .connectTimeout(timeout, TimeUnit.SECONDS)
+                .readTimeout(timeout, TimeUnit.SECONDS)
+                .writeTimeout(timeout, TimeUnit.SECONDS)
+                .callTimeout(timeout, TimeUnit.SECONDS)
+                .build();
         }
         return client;
     }
