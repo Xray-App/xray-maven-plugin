@@ -32,7 +32,7 @@
         <plugin>
             <groupId>com.xblend</groupId>
             <artifactId>xray-maven-plugin</artifactId>
-            <version>0.1.0</version>
+            <version>0.2.0</version>
             <configuration>
                 <clientId>215FFD69FE4644728C72180000000000</clientId>
                 <clientSecret>1c00f8f22f56a8684d7c18cd6147ce2787d95e4da9f300000000000000000000</clientSecret>
