@@ -28,9 +28,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-[unreleased]: https://github.com/Xray-App/xray-maven-plugin/releases/compare/0.3.0...HEAD
-[1.1.0]: https://github.com/olivierlacan/keep-a-changelog/compare/v1.0.0...v1.1.0
-[1.0.0]: https://github.com/olivierlacan/keep-a-changelog/compare/v0.3.0...v1.0.0
-[0.3.0]: https://github.com/olivierlacan/keep-a-changelog/compare/v0.2.0...v0.3.0
+[unreleased]: https://github.com/Xray-App/xray-maven-plugin/compare/0.2.0...HEAD
 [0.2.0]: https://github.com/Xray-App/xray-maven-plugin/compare/0.1.0...0.2.0
 [0.1.0]: https://github.com/Xray-App/xray-maven-plugin/releases/tag/0.1.0
