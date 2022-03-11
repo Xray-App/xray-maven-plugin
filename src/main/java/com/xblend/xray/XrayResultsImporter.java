@@ -409,7 +409,7 @@ public class XrayResultsImporter {
 
         String endpointUrl;
         if (XRAY_FORMAT.equals(format)) {
-            endpointUrl = jiraBaseUrl + "/rest/raven/2.0/import/executionERROR";
+            endpointUrl = jiraBaseUrl + "/rest/raven/2.0/import/execution";
         } else {
             endpointUrl = jiraBaseUrl + "/rest/raven/2.0/import/execution/" + format;
         }

@@ -36,7 +36,6 @@ public class XrayFeaturesExporter {
     private String issueKeys;
     private String filterId;
 
-    // TODO: review boolean vs Boolean
     private Boolean ignoreSslErrors = false;
     private Boolean useInternalTestProxy = false;
     private Integer timeout = 50;
@@ -131,7 +130,6 @@ public class XrayFeaturesExporter {
         private String issueKeys;
         private String filterId;
 
-        // TODO: review boolean vs Boolean
         private Boolean ignoreSslErrors = false;
         private Boolean useInternalTestProxy = false;
         private Integer timeout = 50;

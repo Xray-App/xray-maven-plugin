@@ -45,7 +45,6 @@ public class XrayFeaturesImporter {
     private String projectId;
     private String source;
 
-    // TODO: review boolean vs Boolean
     private Boolean ignoreSslErrors = false;
     private Boolean useInternalTestProxy = false;
     private Integer timeout = 50;

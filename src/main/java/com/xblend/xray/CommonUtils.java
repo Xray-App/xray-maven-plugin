@@ -49,11 +49,11 @@ public class CommonUtils {
             Proxy proxy = new Proxy(Proxy.Type.HTTP,
             new InetSocketAddress(hostname, port));
             client = newBuilder
-                        .proxy(proxy)
                         .connectTimeout(timeout, TimeUnit.SECONDS)
                         .readTimeout(timeout, TimeUnit.SECONDS)
                         .writeTimeout(timeout, TimeUnit.SECONDS)
                         .callTimeout(timeout, TimeUnit.SECONDS)
+                        .proxy(proxy)
                         .build();
         } else {
             client = newBuilder

@@ -56,7 +56,7 @@ Add the following dependency to your pom.xml, where the `<configuration>` is opt
         <dependency>
             <groupId>com.xblend</groupId>
             <artifactId>xray-maven-plugin</artifactId>
-            <version>0.1.0</version>
+            <version>0.2.0</version>
             <scope>test</scope>
             <configuration>
                 <clientId>215FFD69FE46447280000000000</clientId>
