@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.xblend</groupId>
   <artifactId>xray-maven-plugin</artifactId>
-  <version>0.1.0</version>
+  <version>0.2.0</version>
   <name>xray-maven-plugin</name>
   <packaging>maven-plugin</packaging>
   <url>https://raw.githubusercontent.com/Xray-App/xray-maven-plugin</url>

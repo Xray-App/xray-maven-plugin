@@ -56,7 +56,7 @@ Add the following dependency to your pom.xml, where the `<configuration>` is opt
         <dependency>
             <groupId>com.xblend</groupId>
             <artifactId>xray-maven-plugin</artifactId>
-            <version>0.1.0</version>
+            <version>0.2.0</version>
             <scope>test</scope>
             <configuration>
                 <clientId>215FFD69FE46447280000000000</clientId>
@@ -88,6 +88,7 @@ For Xray server/datacenter users (i.e., using Xray on Jira server/datacenter):
 | `jiraPassword` | `xray.jiraPassword` | password of Jira user to use on API calls | somepass |
 | `jiraToken` | `xray.jiraToken` | Jira PAT (Personal Access Token) used instead of username/password |
 | `ignoreSslErrors` | `xray.ignoreSslErrors` | ignore SSL errors, e.g., expired certificate (default: false) |
+| `timeout` | `xray.timeout` | connection timeout in seconds (default: 50) |
 
 For Xray cloud users (i.e., using Xray on Jira cloud):
 
@@ -96,6 +97,7 @@ For Xray cloud users (i.e., using Xray on Jira cloud):
 | `cloud` | `xray.cloud` | set to true if using Xray cloud (default: false) | true |
 | `clientId` | `xray.clientId` | client id of the API key configured on Xray Cloud | xxxx... |
 | `clientSecret` | `xray.clientSecret` | client id of the API key configured on Xray Cloud | xxxx... |
+| `timeout` | `xray.timeout` | connection timeout in seconds (default: 50) | 50 |
 
 In order to obtain the API key (client id + client secret pair) please ask you Jira admin (see reference at bottom).
 There are also task specific configurations. More info ahead, on the respective task section.
@@ -248,7 +250,8 @@ This project is in early stage; the setting names and other are subject to chang
 - add unit tests
 - option to remove temporary .zip file created whenever importing Gherkin/cucumber .feature files
 - ability to attach files/evidence to test runs (needs some thought)
-- add timeout configuration
+
+## [Changelog](CHANGELOG.md)
 
 ## References
 

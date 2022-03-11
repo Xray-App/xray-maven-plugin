@@ -45,8 +45,9 @@ public class XrayFeaturesImporter {
     private String projectId;
     private String source;
 
-    private boolean ignoreSslErrors = false;
-    private boolean useInternalTestProxy = false;
+    private Boolean ignoreSslErrors = false;
+    private Boolean useInternalTestProxy = false;
+    private Integer timeout = 50;
 
     private XrayFeaturesImporter(ServerDCBuilder builder) {
         this.jiraBaseUrl = builder.jiraBaseUrl;
@@ -60,6 +61,7 @@ public class XrayFeaturesImporter {
 
         this.ignoreSslErrors = builder.ignoreSslErrors;
         this.useInternalTestProxy = builder.useInternalTestProxy;
+        this.timeout = builder.timeout;
     }
 
     private XrayFeaturesImporter(CloudBuilder builder) {
@@ -72,6 +74,7 @@ public class XrayFeaturesImporter {
 
         this.ignoreSslErrors = builder.ignoreSslErrors;
         this.useInternalTestProxy = builder.useInternalTestProxy;
+        this.timeout = builder.timeout;
     }
 
     public static class ServerDCBuilder {
@@ -87,6 +90,7 @@ public class XrayFeaturesImporter {
 
         private Boolean ignoreSslErrors = false;
         private Boolean useInternalTestProxy = false;
+        private Integer timeout = 50;
 
         public ServerDCBuilder(String jiraBaseUrl, String jiraUsername, String jiraPassword) {
             this.jiraBaseUrl = jiraBaseUrl;
@@ -106,6 +110,11 @@ public class XrayFeaturesImporter {
 
         public ServerDCBuilder withInternalTestProxy(Boolean useInternalTestProxy) {
             this.useInternalTestProxy = useInternalTestProxy;
+            return this;
+        }
+
+        public ServerDCBuilder withTimeout(Integer timeout) {
+            this.timeout = timeout;
             return this;
         }
 
@@ -131,6 +140,7 @@ public class XrayFeaturesImporter {
 
         private Boolean ignoreSslErrors = false;
         private Boolean useInternalTestProxy = false;
+        private Integer timeout = 50;
 
         public CloudBuilder(String clientId, String clientSecret) {
             this.clientId = clientId;
@@ -144,6 +154,11 @@ public class XrayFeaturesImporter {
 
         public CloudBuilder withInternalTestProxy(Boolean useInternalTestProxy) {
             this.useInternalTestProxy = useInternalTestProxy;
+            return this;
+        }
+
+        public CloudBuilder withTimeout(Integer timeout) {
+            this.timeout = timeout;
             return this;
         }
 
@@ -193,7 +208,7 @@ public class XrayFeaturesImporter {
     }
 
     public JSONArray importServerDC(String inputPath, String testInfo) throws Exception {
-        OkHttpClient client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors);
+        OkHttpClient client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
 
         File inputFile = new File(inputPath);
         String credentials;
@@ -261,7 +276,7 @@ public class XrayFeaturesImporter {
     }
 
     public JSONArray importCloud(String inputPath, String testInfo, String precondInfo) throws Exception {
-        OkHttpClient client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors);
+        OkHttpClient client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
         
         File inputFile = new File(inputPath);
         String authenticationPayload = "{ \"client_id\": \"" + clientId +"\", \"client_secret\": \"" + clientSecret +"\" }";

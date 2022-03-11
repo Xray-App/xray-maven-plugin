@@ -49,6 +49,7 @@ public class XrayResultsImporter {
 
     private Boolean ignoreSslErrors = false;
     private Boolean useInternalTestProxy = false;
+    private Integer timeout = 50;
 
     private XrayResultsImporter(ServerDCBuilder builder){
         this.jiraBaseUrl = builder.jiraBaseUrl;
@@ -59,6 +60,7 @@ public class XrayResultsImporter {
 
         this.ignoreSslErrors = builder.ignoreSslErrors;
         this.useInternalTestProxy = builder.useInternalTestProxy;
+        this.timeout = builder.timeout;
     }
 
     private XrayResultsImporter(CloudBuilder builder){
@@ -73,6 +75,7 @@ public class XrayResultsImporter {
 
         this.ignoreSslErrors = builder.ignoreSslErrors;
         this.useInternalTestProxy = builder.useInternalTestProxy;
+        this.timeout = builder.timeout;
     }
 
     public static class ServerDCBuilder {
@@ -91,6 +94,7 @@ public class XrayResultsImporter {
 
         private Boolean ignoreSslErrors = false;
         private Boolean useInternalTestProxy = false;
+        private Integer timeout = 50;
 
         public ServerDCBuilder(String jiraBaseUrl, String jiraUsername, String jiraPassword) {
             this.jiraBaseUrl = jiraBaseUrl;
@@ -110,6 +114,11 @@ public class XrayResultsImporter {
 
         public ServerDCBuilder withInternalTestProxy(Boolean useInternalTestProxy) {
             this.useInternalTestProxy = useInternalTestProxy;
+            return this;
+        }
+
+        public ServerDCBuilder withTimeout(Integer timeout) {
+            this.timeout = timeout;
             return this;
         }
 
@@ -163,6 +172,7 @@ public class XrayResultsImporter {
 
         private Boolean ignoreSslErrors = false;
         private Boolean useInternalTestProxy = false;
+        private Integer timeout = 50;
 
         public CloudBuilder(String clientId, String clientSecret) {
             this.clientId = clientId;
@@ -176,6 +186,11 @@ public class XrayResultsImporter {
 
         public CloudBuilder withInternalTestProxy(Boolean useInternalTestProxy) {
             this.useInternalTestProxy = useInternalTestProxy;
+            return this;
+        }
+
+        public CloudBuilder withTimeout(Integer timeout) {
+            this.timeout = timeout;
             return this;
         }
 
@@ -224,7 +239,7 @@ public class XrayResultsImporter {
     }
 
     public String submitMultipartServerDC(String format, String reportFile, JSONObject testExecInfo, JSONObject testInfo) throws Exception {        
-        OkHttpClient client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors);
+        OkHttpClient client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
 
         String credentials;
         if (jiraPersonalAccessToken!= null) {
@@ -294,7 +309,7 @@ public class XrayResultsImporter {
     }
 
     public String submitMultipartCloud(String format, String reportFile, JSONObject testExecInfo, JSONObject testInfo) throws Exception {  	
-        OkHttpClient client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors);
+        OkHttpClient client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
 
 		String authenticationPayload = "{ \"client_id\": \"" + clientId +"\", \"client_secret\": \"" + clientSecret +"\" }";
 		RequestBody body = RequestBody.create(authenticationPayload, MEDIA_TYPE_JSON);
@@ -370,7 +385,7 @@ public class XrayResultsImporter {
     }
 
     public String submitStandardServerDC(String format, String reportFile) throws Exception {        
-        OkHttpClient client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors);
+        OkHttpClient client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
 
         String credentials;
         if (jiraPersonalAccessToken!= null) {
@@ -459,7 +474,7 @@ public class XrayResultsImporter {
     }
 
     public String submitStandardCloud(String format, String reportFile) throws Exception {
-        OkHttpClient client = CommonUtils.getHttpClient(useInternalTestProxy, ignoreSslErrors);
+        OkHttpClient client = CommonUtils.getHttpClient(useInternalTestProxy, ignoreSslErrors, this.timeout);
 
         String authenticationPayload = "{ \"client_id\": \"" + clientId +"\", \"client_secret\": \"" + clientSecret +"\" }";
         RequestBody body = RequestBody.create(authenticationPayload, MEDIA_TYPE_JSON);

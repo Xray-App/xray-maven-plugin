@@ -80,6 +80,9 @@ public class ImportFeaturesMojo extends AbstractMojo {
     @Parameter(property = "xray.ignoreSslErrors", required = false)
     private Boolean ignoreSslErrors;
 
+    @Parameter(property = "xray.timeout", required = false, defaultValue = "50")
+    private Integer timeout;
+
     /**
      * Scope to filter the dependencies.
      */
@@ -104,7 +107,10 @@ public class ImportFeaturesMojo extends AbstractMojo {
             getLog().debug("inputFeatures from config: " + inputFeatures);
 
             if (cloud) {
-                xrayFeaturesImporter = new XrayFeaturesImporter.CloudBuilder(clientId, clientSecret).withInternalTestProxy(useInternalTestProxy).withIgnoreSslErrors(ignoreSslErrors)
+                xrayFeaturesImporter = new XrayFeaturesImporter.CloudBuilder(clientId, clientSecret)
+                    .withInternalTestProxy(useInternalTestProxy)
+                    .withIgnoreSslErrors(ignoreSslErrors)
+                    .withTimeout(timeout)
                     .withProjectKey(projectKey)
                     .withProjectId(projectId)
                     .withSource(source)
@@ -112,11 +118,17 @@ public class ImportFeaturesMojo extends AbstractMojo {
                 response = xrayFeaturesImporter.importFrom(inputFeatures);
             } else {
                 if (jiraToken != null) {
-                    xrayFeaturesImporter = new XrayFeaturesImporter.ServerDCBuilder(jiraBaseUrl, jiraToken).withInternalTestProxy(useInternalTestProxy).withIgnoreSslErrors(ignoreSslErrors)
+                    xrayFeaturesImporter = new XrayFeaturesImporter.ServerDCBuilder(jiraBaseUrl, jiraToken)
+                    .withInternalTestProxy(useInternalTestProxy)
+                    .withIgnoreSslErrors(ignoreSslErrors)
+                    .withTimeout(timeout)
                     .withProjectKey(projectKey)
                     .build();                    
                 } else {
-                    xrayFeaturesImporter = new XrayFeaturesImporter.ServerDCBuilder(jiraBaseUrl, jiraUsername, jiraPassword).withInternalTestProxy(useInternalTestProxy).withIgnoreSslErrors(ignoreSslErrors)
+                    xrayFeaturesImporter = new XrayFeaturesImporter.ServerDCBuilder(jiraBaseUrl, jiraUsername, jiraPassword)
+                    .withInternalTestProxy(useInternalTestProxy)
+                    .withIgnoreSslErrors(ignoreSslErrors)
+                    .withTimeout(timeout)
                     .withProjectKey(projectKey)
                     .build();
                 }
