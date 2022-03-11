@@ -257,9 +257,10 @@ public class TimeoutHandlingIT {
         assertThat(result).isFailure();
     }
 
-    // the following two tests should use the 50s threshold, however the wiremock proxy
+    // The following two tests should use the 50s threshold, however the wiremock proxy
     // mechanism used by the cloud tests, has a builtin timeout of 30s which AFAIK we
-    // can't configure. therefore, the tests were slightly adapted and should be changed
+    // can't configure. Therefore, the tests were slightly adapted and should be changed
+    // as soon as WM supports it, to make these tusts more accurate
 
     @MavenTest
     @MavenGoal("xray:import-results")
