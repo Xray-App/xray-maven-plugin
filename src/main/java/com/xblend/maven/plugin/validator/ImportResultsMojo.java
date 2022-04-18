@@ -164,7 +164,7 @@ public class ImportResultsMojo extends AbstractMojo {
                         .withIgnoreSslErrors(ignoreSslErrors)
                         .withTimeout(timeout);
                     if (testInfoJson==null  && testExecInfoJson==null) {       
-                        if (XrayResultsImporter.XRAY_FORMAT.equals(reportFormat) || XrayResultsImporter.CUCUMBER_FORMAT.equals(reportFormat)) {
+                        if (XrayResultsImporter.XRAY_FORMAT.equals(reportFormat) || XrayResultsImporter.CUCUMBER_FORMAT.equals(reportFormat) || XrayResultsImporter.BEHAVE_FORMAT.equals(reportFormat)) {
                             xrayImporter = xrayImporterBuilder.build();
                         } else {
                             xrayImporter = xrayImporterBuilder

@@ -153,7 +153,7 @@ Xray server/DC and Xray cloud support mostly the same formats, but not exactly f
 | robot | cloud and server/DC | |
 | testng | cloud and server/DC | |
 | cucumber | cloud and server/DC | in this specific case, it's not possible to use the parameters `projectKey`, `version`, `revision`, `testPlanKey`, `testExecKey`, `testEnvironment` (due to the way the underlying "standard" endpoint for Cucumber works)  |
-| behave | server/DC | in this specific case, it's not possible to use the parameters `projectKey`, `version`, `revision`, `testPlanKey`, `testExecKey`, `testEnvironment` (due to the way the underlying "standard" endpoint for Cucumber works). For Xray cloud, it's possible to convert it to a cucumber JSON report though and then import it as [shown on this tutorial](https://docs.getxray.app/display/XRAYCLOUD/Testing+using+Behave+in+Python) |
+| behave | cloud and server/DC | in this specific case, it's not possible to use the parameters `projectKey`, `version`, `revision`, `testPlanKey`, `testExecKey`, `testEnvironment` (due to the way the underlying "standard" endpoint for Cucumber works) |
 
 #### Technical info of how it works (internal)
 
