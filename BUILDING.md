@@ -28,3 +28,11 @@ mvn clean compile verify package deploy
 The `deploy` will upload the artifact to GH, in this case, but won't create any tags or other assets.
 
 Go to GH page of this project and create the release by hand, using the tag following semantic versioning.
+Tag can be created at the moment of the creation of the release (easier) or it can be created locally and push to GH.
+
+Example:
+
+```bash
+git tag -a "0.3.0" -m "v0.3.0" 
+git push origin --tags
+```
