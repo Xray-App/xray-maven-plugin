@@ -330,7 +330,7 @@ public class XrayResultsImporter {
 		}
         String credentials = "Bearer " + authToken;
 
-        String supportedFormats[] = new String [] { XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT }; 
+        String supportedFormats[] = new String [] { XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT, BEHAVE_FORMAT }; 
         if (!Arrays.asList(supportedFormats).contains(format)) {
             throw new Exception("unsupported report format: " + format);
         }
@@ -495,7 +495,7 @@ public class XrayResultsImporter {
         }
         String credentials = "Bearer " + authToken;
 
-        String supportedFormats[] = new String [] { XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT };
+        String supportedFormats[] = new String [] { XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT, BEHAVE_FORMAT };
         if (!Arrays.asList(supportedFormats).contains(format)) {
             throw new Exception("unsupported report format: " + format);
         }

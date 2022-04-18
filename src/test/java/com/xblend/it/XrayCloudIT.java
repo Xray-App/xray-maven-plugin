@@ -111,6 +111,14 @@ public class XrayCloudIT {
         wm.stubFor(post(urlPathEqualTo("/api/v2/import/execution/cucumber/multipart"))
             .withHost(equalTo("xray.cloud.getxray.app"))
             .willReturn(okJson("{ \"id\": \"10200\", \"key\": \"CALC-1\", \"self\": \"http://127.0.0.1/jira/rest/api/2/issue/10200\" }")));
+
+        // behave
+        wm.stubFor(post(urlPathEqualTo("/api/v2/import/execution/behave"))
+            .withHost(equalTo("xray.cloud.getxray.app"))
+            .willReturn(okJson("{ \"id\": \"10200\", \"key\": \"CALC-1\", \"self\": \"http://127.0.0.1/jira/rest/api/2/issue/10200\" }")));
+        wm.stubFor(post(urlPathEqualTo("/api/v2/import/execution/behave/multipart"))
+            .withHost(equalTo("xray.cloud.getxray.app"))
+            .willReturn(okJson("{ \"id\": \"10200\", \"key\": \"CALC-1\", \"self\": \"http://127.0.0.1/jira/rest/api/2/issue/10200\" }")));
     }
 
     @MavenTest
@@ -490,5 +498,57 @@ public class XrayCloudIT {
     );
     assertThat(result).isSuccessful();
  }
+
+ @MavenTest
+ @MavenGoal("xray:import-results")
+ @SystemProperty(value = "xray.cloud", content = "true")
+ @SystemProperty(value = "xray.clientId", content = CLIENT_ID)
+ @SystemProperty(value = "xray.clientSecret", content = CLIENT_SECRET)
+ @SystemProperty(value = "xray.reportFormat", content = "behave")
+ @SystemProperty(value = "xray.reportFile", content = "behave.json")
+ @SystemProperty(value = "xray.useInternalTestProxy", content = "true")
+ void behave_standard(MavenExecutionResult result) throws IOException {
+    String report = CommonUtils.readResourceFile("XrayCloudIT/behave_standard/behave.json");
+
+    wm.verify(
+        postRequestedFor(urlPathEqualTo("/api/v2/import/execution/behave"))
+            .withHeader("Content-Type", containing("application/json"))
+            .withRequestBody(equalToJson(report))
+    );
+    assertThat(result).isSuccessful();
+ }
+
+ @MavenTest
+ @MavenGoal("xray:import-results")
+ @SystemProperty(value = "xray.cloud", content = "true")
+ @SystemProperty(value = "xray.clientId", content = CLIENT_ID)
+ @SystemProperty(value = "xray.clientSecret", content = CLIENT_SECRET)
+ @SystemProperty(value = "xray.reportFormat", content = "behave")
+ @SystemProperty(value = "xray.reportFile", content = "behave.json")
+ @SystemProperty(value = "xray.testExecInfoJson", content = "testExecInfo.json")
+ @SystemProperty(value = "xray.useInternalTestProxy", content = "true")
+ void behave_multipart(MavenExecutionResult result) throws IOException {
+    String testExecInfo = CommonUtils.readResourceFile("XrayCloudIT/behave_multipart/testExecInfo.json");
+    String report = CommonUtils.readResourceFile("XrayCloudIT/behave_multipart/behave.json");
+
+    wm.verify(
+        postRequestedFor(urlPathEqualTo("/api/v2/import/execution/behave/multipart"))
+            .withHeader("Authorization", equalTo("Bearer " + TOKEN))
+            .withHeader("Content-Type", containing("multipart/form-data;"))
+            .withAnyRequestBodyPart(
+                aMultipart()
+                    .withName("results")
+                    .withHeader("Content-Type", containing("application/json"))
+                    .withBody(equalToJson(report)))
+            .withAnyRequestBodyPart(
+                aMultipart()
+                    .withName("info")
+                    .withHeader("Content-Type", containing("application/json"))
+                    .withBody(equalToJson(testExecInfo))
+                )
+
+    );
+    assertThat(result).isSuccessful();
+}
 
 }
