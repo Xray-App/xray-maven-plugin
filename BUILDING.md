@@ -6,7 +6,7 @@ Run maven as usual to get the dependencies and compile the code.
 
 ```bash
 mvn clean compile
-````<Xra>
+```
 
 ### Testing
 
