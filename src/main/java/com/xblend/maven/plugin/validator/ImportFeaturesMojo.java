@@ -71,6 +71,9 @@ public class ImportFeaturesMojo extends AbstractMojo {
     @Parameter(property = "xray.inputFeatures", required = false)
     private String inputFeatures;
 
+    @Parameter(property = "xray.updateRepository", required = false)
+    private Boolean updateRepository;
+
     @Parameter(property = "xray.abortOnError", required = false)
     private Boolean abortOnError;
 
@@ -97,6 +100,8 @@ public class ImportFeaturesMojo extends AbstractMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         XrayFeaturesImporter xrayFeaturesImporter;
+		JSONObject testInfo = null;
+        JSONObject precondInfo = null;
         JSONArray response = null;
 
 		try {
@@ -105,6 +110,14 @@ public class ImportFeaturesMojo extends AbstractMojo {
             getLog().debug("projectId from config: " + projectId);
             getLog().debug("source from config: " + source);
             getLog().debug("inputFeatures from config: " + inputFeatures);
+            getLog().debug("updateRepository from config: " + updateRepository);
+
+            if (testInfoJson != null) {
+                testInfo = new JSONObject(new String(Files.readAllBytes(Paths.get(testInfoJson))));
+            }
+            if (precondInfoJson != null) {
+                precondInfo = new JSONObject(new String(Files.readAllBytes(Paths.get(precondInfoJson))));
+            }
 
             if (cloud) {
                 xrayFeaturesImporter = new XrayFeaturesImporter.CloudBuilder(clientId, clientSecret)
@@ -115,7 +128,7 @@ public class ImportFeaturesMojo extends AbstractMojo {
                     .withProjectId(projectId)
                     .withSource(source)
                     .build();
-                response = xrayFeaturesImporter.importFrom(inputFeatures);
+                response = xrayFeaturesImporter.importFrom(inputFeatures, testInfo, precondInfo);
             } else {
                 if (jiraToken != null) {
                     xrayFeaturesImporter = new XrayFeaturesImporter.ServerDCBuilder(jiraBaseUrl, jiraToken)
@@ -123,6 +136,7 @@ public class ImportFeaturesMojo extends AbstractMojo {
                     .withIgnoreSslErrors(ignoreSslErrors)
                     .withTimeout(timeout)
                     .withProjectKey(projectKey)
+                    .withupdateRepository(updateRepository)
                     .build();                    
                 } else {
                     xrayFeaturesImporter = new XrayFeaturesImporter.ServerDCBuilder(jiraBaseUrl, jiraUsername, jiraPassword)
@@ -130,10 +144,11 @@ public class ImportFeaturesMojo extends AbstractMojo {
                     .withIgnoreSslErrors(ignoreSslErrors)
                     .withTimeout(timeout)
                     .withProjectKey(projectKey)
+                    .withupdateRepository(updateRepository)
                     .build();
                 }
 
-                response = xrayFeaturesImporter.importFrom(inputFeatures);
+                response = xrayFeaturesImporter.importFrom(inputFeatures, testInfo, precondInfo);
             }
 
             getLog().info("response: " + response);

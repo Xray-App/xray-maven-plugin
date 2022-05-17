@@ -11,6 +11,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.4.0] - 2022-05-17
+
+### Added
+
+- ability to organize the tests in Test Repository folders whenever importing tests from zipped Cucumber .feature files (Xray server/DC only)
+- tests for importing/exporting Cucumber test scenarios
+
+### Changed
+
+### Fixed
+
 ## [0.3.0] - 2022-04-18
 
 ### Added
@@ -39,7 +50,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-[unreleased]: https://github.com/Xray-App/xray-maven-plugin/compare/0.3.0...HEAD
-[0.3.0]: https://github.com/Xray-App/xray-maven-plugin/compare/0.3.0...0.3.0
+[unreleased]: https://github.com/Xray-App/xray-maven-plugin/compare/0.4.0...HEAD
+[0.4.0]: https://github.com/Xray-App/xray-maven-plugin/compare/0.3.0...0.4.0
+[0.3.0]: https://github.com/Xray-App/xray-maven-plugin/compare/0.2.0...0.3.0
 [0.2.0]: https://github.com/Xray-App/xray-maven-plugin/compare/0.1.0...0.2.0
 [0.1.0]: https://github.com/Xray-App/xray-maven-plugin/releases/tag/0.1.0

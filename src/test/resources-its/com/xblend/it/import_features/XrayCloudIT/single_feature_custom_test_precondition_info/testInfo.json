@@ -1,0 +1,9 @@
+{
+    "fields": {
+        "description": "Automated Test", 
+        "labels": [
+            "Testing",
+            "Automation"
+        ]
+    }
+}

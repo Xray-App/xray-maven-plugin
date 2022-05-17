@@ -56,7 +56,7 @@ Add the following dependency to your pom.xml, where the `<configuration>` is opt
         <dependency>
             <groupId>com.xblend</groupId>
             <artifactId>xray-maven-plugin</artifactId>
-            <version>0.3.0</version>
+            <version>0.4.0</version>
             <scope>test</scope>
             <configuration>
                 <clientId>215FFD69FE46447280000000000</clientId>
@@ -181,6 +181,7 @@ Note: how Xray relates the Scenarios/Background to the corresponding Test or Pre
 | `testInfoJson` | `xray.testInfoJson` | path to a JSON file containing attributes to apply on the Test issues that may be created, following Jira issue update syntax | optional | - |
 | `precondInfoJson` | `xray.precondInfoJson` | path to a JSON file containing attributes to apply on the Precondition issues that may be created, following Jira issue update syntax | optional | - |
 | `inputFeatures` | `xray.inputFeatures` | either a .feature file, a directory containing .feature files, or a zipped file containing .feature files| mandatory | features/ |
+| `updateRepository` | `xray.updateRepository` | create folder structure in Test Repository based on the folder structure in the .zip file containing the .feature files; default is false. Only supported on Xray server/DC. | optional | true |
 
 #### Technical info of how it works (internal)
 
