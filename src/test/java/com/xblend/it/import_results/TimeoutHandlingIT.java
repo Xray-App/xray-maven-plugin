@@ -1,4 +1,4 @@
-package com.xblend.it;
+package com.xblend.it.import_results;
 
 import static com.soebes.itf.extension.assertj.MavenITAssertions.assertThat;
 
@@ -14,6 +14,7 @@ import com.soebes.itf.jupiter.extension.MavenJupiterExtension;
 import com.soebes.itf.jupiter.extension.MavenTest;
 import com.soebes.itf.jupiter.extension.SystemProperty;
 import com.soebes.itf.jupiter.maven.MavenExecutionResult;
+import com.xblend.it.CommonUtils;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -149,7 +150,7 @@ public class TimeoutHandlingIT {
     @SystemProperty(value = "xray.projectKey", content = "DELAY1")
     @SystemProperty(value = "xray.timeout", content = "2")
     void below_configured_timeout(MavenExecutionResult result) throws IOException {
-        String report = CommonUtils.readResourceFile("TimeoutHandlingIT/below_configured_timeout/junit.xml");
+        String report = CommonUtils.readResourceFileForImportResults("TimeoutHandlingIT/below_configured_timeout/junit.xml");
 
         wm.verify(
            postRequestedFor(urlPathEqualTo("/rest/raven/2.0/import/execution/junit"))
@@ -189,7 +190,7 @@ public class TimeoutHandlingIT {
     @SystemProperty(value = "xray.reportFile", content = "junit.xml")
     @SystemProperty(value = "xray.projectKey", content = "DELAY49")
     void below_default_timeout(MavenExecutionResult result) throws IOException {
-        String report = CommonUtils.readResourceFile("TimeoutHandlingIT/below_default_timeout/junit.xml");
+        String report = CommonUtils.readResourceFileForImportResults("TimeoutHandlingIT/below_default_timeout/junit.xml");
 
         wm.verify(
             postRequestedFor(urlPathEqualTo("/rest/raven/2.0/import/execution/junit"))
@@ -232,7 +233,7 @@ public class TimeoutHandlingIT {
     @SystemProperty(value = "xray.timeout", content = "2")
     @SystemProperty(value = "xray.useInternalTestProxy", content = "true")
     void below_configured_timeout_cloud(MavenExecutionResult result) throws IOException {
-        String report = CommonUtils.readResourceFile("TimeoutHandlingIT/below_configured_timeout_cloud/junit.xml");
+        String report = CommonUtils.readResourceFileForImportResults("TimeoutHandlingIT/below_configured_timeout_cloud/junit.xml");
 
         wm.verify(
             postRequestedFor(urlPathEqualTo("/api/v2/import/execution/junit"))
@@ -272,7 +273,7 @@ public class TimeoutHandlingIT {
     @SystemProperty(value = "xray.projectKey", content = "DELAY3") // should be DELAY49
     @SystemProperty(value = "xray.useInternalTestProxy", content = "true")
     void below_default_timeout_cloud(MavenExecutionResult result) throws IOException {
-        String report = CommonUtils.readResourceFile("TimeoutHandlingIT/below_default_timeout_cloud/junit.xml");
+        String report = CommonUtils.readResourceFileForImportResults("TimeoutHandlingIT/below_default_timeout_cloud/junit.xml");
 
         wm.verify(
             postRequestedFor(urlPathEqualTo("/api/v2/import/execution/junit"))

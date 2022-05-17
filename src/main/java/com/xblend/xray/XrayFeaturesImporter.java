@@ -44,6 +44,7 @@ public class XrayFeaturesImporter {
     private String projectKey;
     private String projectId;
     private String source;
+    private Boolean updateRepository = false;
 
     private Boolean ignoreSslErrors = false;
     private Boolean useInternalTestProxy = false;
@@ -58,6 +59,7 @@ public class XrayFeaturesImporter {
         this.projectKey = builder.projectKey;
         this.projectId = builder.projectId;
         this.source = builder.source;
+        this.updateRepository = builder.updateRepository;
 
         this.ignoreSslErrors = builder.ignoreSslErrors;
         this.useInternalTestProxy = builder.useInternalTestProxy;
@@ -87,6 +89,7 @@ public class XrayFeaturesImporter {
         private String projectKey;
         private String projectId;   // unused
         private String source;      // unused
+        private Boolean updateRepository = false;
 
         private Boolean ignoreSslErrors = false;
         private Boolean useInternalTestProxy = false;
@@ -120,6 +123,11 @@ public class XrayFeaturesImporter {
 
         public ServerDCBuilder withProjectKey(String projectKey) {
             this.projectKey = projectKey;
+            return this;
+        }
+
+        public ServerDCBuilder withupdateRepository(Boolean updateRepository) {
+            this.updateRepository = updateRepository;
             return this;
         }
 
@@ -187,27 +195,27 @@ public class XrayFeaturesImporter {
         if (clientId != null) {
             return importCloud(inputPath, null, null);
         } else {
-            return importServerDC(inputPath, null);
+            return importServerDC(inputPath, null, null);
         }
     }
 
-    public JSONArray importFrom(String inputPath, String testInfo) throws Exception {
+    public JSONArray importFrom(String inputPath, JSONObject testInfo) throws Exception {
         if (clientId != null) {
             return importCloud(inputPath, testInfo, null);
         } else {
-            return importServerDC(inputPath, testInfo);
+            return importServerDC(inputPath, testInfo, null);
         }
     }
 
-    public JSONArray importFrom(String inputPath, String testInfo, String precondInfo) throws Exception {
+    public JSONArray importFrom(String inputPath, JSONObject testInfo, JSONObject precondInfo) throws Exception {
         if (clientId != null) {
             return importCloud(inputPath, testInfo, precondInfo);
         } else {
-            return importServerDC(inputPath, testInfo);
+            return importServerDC(inputPath, testInfo, precondInfo);
         }
     }
 
-    public JSONArray importServerDC(String inputPath, String testInfo) throws Exception {
+    public JSONArray importServerDC(String inputPath, JSONObject testInfo, JSONObject precondInfo) throws Exception {
         OkHttpClient client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
 
         File inputFile = new File(inputPath);
@@ -226,6 +234,9 @@ public class XrayFeaturesImporter {
 
         if (projectKey != null) {
             builder.addQueryParameter("projectKey", this.projectKey);
+        }
+        if (updateRepository != null) {
+            builder.addQueryParameter("updateRepository", this.updateRepository.toString());
         }
 
         MediaType mediaType;
@@ -250,7 +261,10 @@ public class XrayFeaturesImporter {
                     .setType(MultipartBody.FORM)
                     .addFormDataPart(partName, inputFile.getName(), RequestBody.create(inputFile, mediaType));
             if (testInfo != null) {
-                requestBodyBuilder = requestBodyBuilder.addFormDataPart("testInfo", "info.json", RequestBody.create(testInfo, MEDIA_TYPE_JSON));
+                requestBodyBuilder =  requestBodyBuilder.addFormDataPart("testInfo", "testinfo.json", RequestBody.create(testInfo.toString(), MEDIA_TYPE_JSON));
+            }
+            if (precondInfo != null) {
+                requestBodyBuilder = requestBodyBuilder.addFormDataPart("preCondInfo", "precondinfo.json", RequestBody.create(precondInfo.toString(), MEDIA_TYPE_JSON));
             }
             requestBody = requestBodyBuilder.build();
         } catch (Exception e1) {
@@ -275,7 +289,7 @@ public class XrayFeaturesImporter {
         }
     }
 
-    public JSONArray importCloud(String inputPath, String testInfo, String precondInfo) throws Exception {
+    public JSONArray importCloud(String inputPath, JSONObject testInfo, JSONObject precondInfo) throws Exception {
         OkHttpClient client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
         
         File inputFile = new File(inputPath);
@@ -335,10 +349,10 @@ public class XrayFeaturesImporter {
                     .setType(MultipartBody.FORM)
                     .addFormDataPart(partName, inputFile.getName(), RequestBody.create(inputFile, mediaType));
             if (testInfo != null) {
-                requestBodyBuilder = requestBodyBuilder.addFormDataPart("testInfo", "testinfo.json", RequestBody.create(testInfo, MEDIA_TYPE_JSON));
+                requestBodyBuilder = requestBodyBuilder.addFormDataPart("testInfo", "testinfo.json", RequestBody.create(testInfo.toString(), MEDIA_TYPE_JSON));
             }
             if (precondInfo != null) {
-                requestBodyBuilder = requestBodyBuilder.addFormDataPart("precondInfo", "precondinfo.json", RequestBody.create(precondInfo, MEDIA_TYPE_JSON));
+                requestBodyBuilder = requestBodyBuilder.addFormDataPart("precondInfo", "precondinfo.json", RequestBody.create(precondInfo.toString(), MEDIA_TYPE_JSON));
             }
             requestBody = requestBodyBuilder.build();
         } catch (Exception e1) {

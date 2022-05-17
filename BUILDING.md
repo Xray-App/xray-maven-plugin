@@ -6,7 +6,7 @@ Run maven as usual to get the dependencies and compile the code.
 
 ```bash
 mvn clean compile
-````
+````<Xra>
 
 ### Testing
 
@@ -16,6 +16,16 @@ Each of the ITF tests runs a full maven build. The tests use WireMock to perform
 ```bash
 mvn clean compile verify
 ```
+
+To run just some integration tests (e.g., the ones under th "com.xblend.it.export_features.XrayDatacenterIT" class),
+
+```bash
+ mvn "-Dit.test=com.xblend.it.export_features.XrayDatacenterIT.*" -DfailIfNoTests=false clean compile verify
+```
+
+More info [here](https://maven.apache.org/surefire/maven-failsafe-plugin/examples/single-test.html).
+
+To debug the maven integration tests and see the maven stdout/stderr, we need to look under the folder `target/maven-it`. As an example, let's say that we run the maven IT test named "single_feature_by_issueKeys" contained in the com.xblend.it.XrayDatacenterIT class. In this case, we could analyze the logs and the project directory used by the maven instance inside the folder `target/maven-it/com/xblend/it/export_features/XrayDatacenterIT/single_feature_by_issueKeys/`.
 
 ### Deploying/Releasing
 
@@ -33,6 +43,6 @@ Tag can be created at the moment of the creation of the release (easier) or it c
 Example:
 
 ```bash
-git tag -a "0.3.0" -m "v0.3.0" 
+git tag -a "0.5.0" -m "v0.5.0"
 git push origin --tags
 ```
