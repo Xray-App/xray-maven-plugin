@@ -12,7 +12,7 @@ import java.util.zip.ZipOutputStream;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import app.getxray.xray.it.CommonUtils;
+import app.getxray.xray.CommonUtils;
 import okhttp3.Credentials;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;

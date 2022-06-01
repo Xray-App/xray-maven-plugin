@@ -5,11 +5,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import org.json.JSONObject;
-
-import app.getxray.xray.it.CommonUtils;
-
 import java.util.Arrays;
-
 import okhttp3.Credentials;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
