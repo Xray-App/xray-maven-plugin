@@ -23,40 +23,13 @@ More info about these ahead.
 
 ## How to use
 
-To start using this plugin, configure this maven repository in your `pom.xml`:
-
-```xml
-        <repository>
-            <id>github</id>
-            <url>https://maven.pkg.github.com/Xray-App/*</url>
-            <snapshots>
-              <enabled>true</enabled>
-            </snapshots>
-        </repository>
-```
-
-... or within the `<pluginRepositories>` section.
-
-In your `.m2/settings.xml`, configure the authentication for the maven repository. You'll need a [GitHub Personal Access Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token).
-
-```xml
- <servers>
-    <server>
-      <id>github</id>
-      <username>GITHUB_USERNAME</username>
-      <password>GITHUB_PERSONAL_TOKEN</password>
-    </server>
-    ...
-</servers>
-```
-
 Add the following dependency to your pom.xml, where the `<configuration>` is optional and should be adapted to your use case.
 
 ```xml
         <dependency>
-            <groupId>com.xblend</groupId>
+            <groupId>app.getxray</groupId>
             <artifactId>xray-maven-plugin</artifactId>
-            <version>0.4.0</version>
+            <version>0.5.0</version>
             <scope>test</scope>
             <configuration>
                 <clientId>215FFD69FE46447280000000000</clientId>

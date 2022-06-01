@@ -11,6 +11,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.5.0] - 2022-06-01
+
+### Added
+
+- change groupid from com.xblend to app.getxray
+- upload to Maven Central, instead of using GitHub Paclages
+
+### Changed
+
+### Fixed
+
 ## [0.4.0] - 2022-05-17
 
 ### Added
@@ -50,7 +61,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-[unreleased]: https://github.com/Xray-App/xray-maven-plugin/compare/0.4.0...HEAD
+[unreleased]: https://github.com/Xray-App/xray-maven-plugin/compare/0.5.0...HEAD
+[0.5.0]: https://github.com/Xray-App/xray-maven-plugin/compare/0.4.0...0.5.0
 [0.4.0]: https://github.com/Xray-App/xray-maven-plugin/compare/0.3.0...0.4.0
 [0.3.0]: https://github.com/Xray-App/xray-maven-plugin/compare/0.2.0...0.3.0
 [0.2.0]: https://github.com/Xray-App/xray-maven-plugin/compare/0.1.0...0.2.0

@@ -5,10 +5,10 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>app.getxray</groupId>
-  <artifactId>xray-maven-plugin-cloud-examples</artifactId>
+  <artifactId>xray-maven-plugin-datacenter-examples</artifactId>
   <version>1.0-SNAPSHOT</version>
 
-  <name>cloud-examples</name>
+  <name>datacenter-examples</name>
   <url>https://github.com/Xray-App/xray-maven-plugin</url>
 
   <properties>
@@ -21,7 +21,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.11</version>
+      <version>4.13.1</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -32,13 +32,8 @@
         <plugin>
             <groupId>app.getxray</groupId>
             <artifactId>xray-maven-plugin</artifactId>
-            <version>0.2.0</version>
+            <version>@project.version@</version>
             <configuration>
-                <clientId>215FFD69FE4644728C72180000000000</clientId>
-                <clientSecret>1c00f8f22f56a8684d7c18cd6147ce2787d95e4da9f300000000000000000000</clientSecret>
-                <cloud>true</cloud>
-                <projectKey>BOOK</projectKey>
-                <version>1.0</version>
                 <abortOnError>true</abortOnError>
             </configuration>
         </plugin>
@@ -57,10 +52,12 @@
           <artifactId>maven-compiler-plugin</artifactId>
           <version>3.8.0</version>
         </plugin>
+        <!--
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
           <version>2.22.1</version>
         </plugin>
+      -->
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
           <version>3.0.2</version>

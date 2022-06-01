@@ -17,15 +17,15 @@ Each of the ITF tests runs a full maven build. The tests use WireMock to perform
 mvn clean compile verify
 ```
 
-To run just some integration tests (e.g., the ones under th "com.xblend.it.export_features.XrayDatacenterIT" class),
+To run just some integration tests (e.g., the ones under th "app.getxray.it.export_features.XrayDatacenterIT" class),
 
 ```bash
- mvn "-Dit.test=com.xblend.it.export_features.XrayDatacenterIT.*" -DfailIfNoTests=false clean compile verify
+ mvn "-Dit.test=app.getxray.it.export_features.XrayDatacenterIT.*" -DfailIfNoTests=false clean compile verify
 ```
 
 More info [here](https://maven.apache.org/surefire/maven-failsafe-plugin/examples/single-test.html).
 
-To debug the maven integration tests and see the maven stdout/stderr, we need to look under the folder `target/maven-it`. As an example, let's say that we run the maven IT test named "single_feature_by_issueKeys" contained in the com.xblend.it.XrayDatacenterIT class. In this case, we could analyze the logs and the project directory used by the maven instance inside the folder `target/maven-it/com/xblend/it/export_features/XrayDatacenterIT/single_feature_by_issueKeys/`.
+To debug the maven integration tests and see the maven stdout/stderr, we need to look under the folder `target/maven-it`. As an example, let's say that we run the maven IT test named "single_feature_by_issueKeys" contained in the app.getxray.it.XrayDatacenterIT class. In this case, we could analyze the logs and the project directory used by the maven instance inside the folder `target/maven-it/com/xblend/it/export_features/XrayDatacenterIT/single_feature_by_issueKeys/`.
 
 ### Deploying/Releasing
 
