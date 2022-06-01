@@ -1,6 +1,6 @@
 package app.getxray.maven.plugin.xray;
 
-import static app.getxray.xray.it.CommonUtils.isTrue;
+import static app.getxray.xray.CommonUtils.isTrue;
 
 import java.io.File;
 import java.nio.file.Files;
