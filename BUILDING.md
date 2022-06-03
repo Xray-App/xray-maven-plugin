@@ -32,6 +32,7 @@ To debug the maven integration tests and see the maven stdout/stderr, we need to
 Upon sucessful deployment, the package will be available on (Maven) [Central Repository](https://search.maven.org/).
 
 We need to configure our local Maven (e.g., in `~./m2/settings.xml`) with the credentials for Central Repository and the gpg configuration (for signing the files)
+Please make sure you have a gpg key beforehand (e.g., you may create one using `gpg --gen-key`).
 
 ```xml
   <profiles>
