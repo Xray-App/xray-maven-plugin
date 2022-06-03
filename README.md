@@ -23,6 +23,8 @@ More info about these ahead.
 
 ## How to use
 
+This plugin is available on (Maven) Central Repository, which is configured by default in your Maven instalation.
+
 Add the following dependency to your pom.xml, where the `<configuration>` is optional and should be adapted to your use case.
 
 ```xml
