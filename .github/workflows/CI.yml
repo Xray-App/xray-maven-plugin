@@ -24,4 +24,4 @@ jobs:
       with:
         java-version: ${{ matrix.java }}
     - name: Build with Maven
-      run: mvn -B clean compile verify package --file pom.xml
+      run: mvn -B -Dgpg.skip=true clean compile verify package --file pom.xml

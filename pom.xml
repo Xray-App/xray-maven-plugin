@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.xblend</groupId>
+  <groupId>app.getxray</groupId>
   <artifactId>xray-maven-plugin</artifactId>
-  <version>0.4.0</version>
-  <name>xray-maven-plugin</name>
+  <version>0.5.0-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
+  <name>xray-maven-plugin</name>
+  <description>Maven plugin for interacting with Xray (server/datacenter and cloud), used in CI/CD for assisting in test automation flows, such as reporting test results back to Xray and, by consequence, Jira.</description>
   <url>https://raw.githubusercontent.com/Xray-App/xray-maven-plugin</url>
 
   <licenses>
@@ -20,6 +21,27 @@
     <name>Xblend</name>
     <url>https://www.getxray.app</url>
   </organization>
+
+  <developers>
+    <developer>
+      <name>Sergio Freire</name>
+      <email>sergio.freire@getxray.app</email>
+      <organization>Xblend</organization>
+      <organizationUrl>https://www.getxray.app</organizationUrl>
+    </developer>
+    <developer>
+      <name>Cristiano Cunha</name>
+      <email>cristiano.cunha@getxray.app</email>
+      <organization>Xblend</organization>
+      <organizationUrl>https://www.getxray.app</organizationUrl>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:git://github.com/Xray-App/xray-maven-plugin.git</connection>
+    <developerConnection>scm:git:ssh://github.com/Xray-App/xray-maven-plugin.git</developerConnection>
+    <url>https://github.com/Xray-App/xray-maven-plugin/tree/main</url>
+  </scm>
 
   <properties>
     <maven.compiler.target>1.8</maven.compiler.target>
@@ -123,15 +145,34 @@
   </dependencies>
 
   <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
     <repository>
-      <id>github</id>
-      <name>GitHub Xray-App Apache Maven Packages</name>
-      <url>https://maven.pkg.github.com/Xray-App/xray-maven-plugin</url>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
   </distributionManagement>
 
   <build>
     <plugins>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>3.0.1</version>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-plugin-plugin</artifactId>

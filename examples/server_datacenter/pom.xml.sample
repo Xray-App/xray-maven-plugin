@@ -4,7 +4,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.xblend</groupId>
+  <groupId>app.getxray</groupId>
   <artifactId>xray-maven-plugin-cloud-examples</artifactId>
   <version>1.0-SNAPSHOT</version>
 
@@ -30,7 +30,7 @@
     <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
       <plugins>
         <plugin>
-            <groupId>com.xblend</groupId>
+            <groupId>app.getxray</groupId>
             <artifactId>xray-maven-plugin</artifactId>
             <version>0.2.0</version>
             <configuration>
