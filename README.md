@@ -141,7 +141,7 @@ One of the possible workflows for using Gherkin-based frameworks is to use git (
 In order to provide visibility of test results for these tests (i.e. gherkin Scenarios), these need to exist in Xray beforehand. Therefore, we need to import/synchronize them to Xray. Note that there is no direct integration; the integration is adhoc, i.e., the following task is run on a local copy of the respository where the .features are stored in.
 
 ```bash
- mvn clean compile test xray:import-features -Dxray.featuresPath=features/
+ mvn clean compile test xray:import-features -Dxray.inputFeatures=features/
 ```
 
 Note: how Xray relates the Scenarios/Background to the corresponding Test or Precondition issues is described in Xray technical documentation (e.g., [Xray cloud docs](https://docs.getxray.app/display/XRAYCLOUD/Importing+Cucumber+Tests+-+REST+v2)).
