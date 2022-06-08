@@ -222,13 +222,52 @@ public class XrayCloudIT {
                 aMultipart()
                     .withName("info")
                     .withHeader("Content-Type", containing("application/json"))
-                    .withBody(equalToJson(testExecInfo))
-                )
+                    .withBody(equalToJson(testExecInfo)))
 
     );
     assertThat(result).isSuccessful();
  }
 
+ @MavenTest
+ @MavenGoal("xray:import-results")
+ @SystemProperty(value = "xray.cloud", content = "true")
+ @SystemProperty(value = "xray.clientId", content = CLIENT_ID)
+ @SystemProperty(value = "xray.clientSecret", content = CLIENT_SECRET)
+ @SystemProperty(value = "xray.reportFormat", content = "junit")
+ @SystemProperty(value = "xray.reportFile", content = "junit.xml")
+ @SystemProperty(value = "xray.testExecInfoJson", content = "testExecInfo.json")
+ @SystemProperty(value = "xray.testInfoJson", content = "testInfo.json")
+ @SystemProperty(value = "xray.useInternalTestProxy", content = "true")
+ void junit_multipart_customize_test_issues(MavenExecutionResult result) throws IOException {
+    String testExecInfo = CommonUtils.readResourceFileForImportResults("XrayCloudIT/junit_multipart_customize_test_issues/testExecInfo.json");
+    String testInfo = CommonUtils.readResourceFileForImportResults("XrayCloudIT/junit_multipart_customize_test_issues/testInfo.json");
+    String report = CommonUtils.readResourceFileForImportResults("XrayCloudIT/junit_multipart_customize_test_issues/junit.xml");
+
+    wm.verify(
+        postRequestedFor(urlPathEqualTo("/api/v2/import/execution/junit/multipart"))
+            .withHeader("Authorization", equalTo("Bearer " + TOKEN))
+            .withHeader("Content-Type", containing("multipart/form-data;"))
+            .withAnyRequestBodyPart(
+                aMultipart()
+                    .withName("results")
+                    .withHeader("Content-Type", containing("application/xml"))
+                    .withBody(equalToXml(report)))
+            .withAnyRequestBodyPart(
+                aMultipart()
+                    .withName("info")
+                    .withHeader("Content-Type", containing("application/json"))
+                    .withBody(equalToJson(testExecInfo))
+                )
+            .withAnyRequestBodyPart(
+                aMultipart()
+                    .withName("testInfo")
+                    .withHeader("Content-Type", containing("application/json"))
+                    .withBody(equalToJson(testInfo))
+                )
+
+    );
+    assertThat(result).isSuccessful();
+ }
 
  @MavenTest
  @MavenGoal("xray:import-results")

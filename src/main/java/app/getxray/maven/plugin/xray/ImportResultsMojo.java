@@ -105,15 +105,21 @@ public class ImportResultsMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project}", required = true, readonly = true)
     MavenProject project;
 
+    private void abortWithError(String message) {
+        getLog().error(message);
+        System.err.println(message);
+        System.exit(1);
+    }
+
     public void execute() throws MojoExecutionException, MojoFailureException {
 		XrayResultsImporter xrayImporter;
-		JSONObject testExecInfo;
-		JSONObject testInfo;
+		JSONObject testExecInfo = null;
+		JSONObject testInfo = null;
 
         // 
         String[] reportFiles;
         File tempReportFile = new File(reportFile);
-        if (tempReportFile.isFile()){
+        if (tempReportFile.isFile()) {
             // common case: import a given report file
             reportFiles = new String[] { reportFile };
         } else if (tempReportFile.isDirectory()){
@@ -142,7 +148,10 @@ public class ImportResultsMojo extends AbstractMojo {
                 getLog().debug(reportFiles[i]);
             }
         }
-              
+        
+        if (reportFiles.length == 0) {
+            abortWithError("no test report file(s) found: " + reportFile);
+        }
         String response = null;
 
         // submit one or more report files
@@ -181,12 +190,20 @@ public class ImportResultsMojo extends AbstractMojo {
                         response = xrayImporter.submit(reportFormat, reportFile);
                     } else {
                         if (testInfoJson != null) {
-                            testInfo = new JSONObject(new String(Files.readAllBytes(Paths.get(testInfoJson))));
+                            if ((new File(testInfoJson)).isFile()) {
+                                testInfo = new JSONObject(new String(Files.readAllBytes(Paths.get(testInfoJson))));
+                            } else {
+                                abortWithError("file doesnt exist: " + testInfoJson);
+                            }
                         } else {
                             testInfo = new JSONObject();
                         }
                         if (testExecInfoJson != null) {
-                            testExecInfo = new JSONObject(new String(Files.readAllBytes(Paths.get(testExecInfoJson))));
+                            if ((new File(testExecInfoJson)).isFile()) {
+                                testExecInfo = new JSONObject(new String(Files.readAllBytes(Paths.get(testExecInfoJson))));
+                            } else {
+                                abortWithError("file doesnt exist: " + testExecInfoJson);
+                            }
                         } else {
                             testExecInfo = new JSONObject();
                         }
@@ -226,12 +243,20 @@ public class ImportResultsMojo extends AbstractMojo {
                         response = xrayImporter.submit(reportFormat, reportFile);
                     } else {
                         if (testInfoJson != null) {
-                            testInfo = new JSONObject(new String(Files.readAllBytes(Paths.get(testInfoJson))));
+                            if ((new File(testInfoJson)).isFile()) {
+                                testInfo = new JSONObject(new String(Files.readAllBytes(Paths.get(testInfoJson))));
+                            } else {
+                                abortWithError("file doesnt exist: " + testInfoJson);
+                            }
                         } else {
                             testInfo = new JSONObject();
                         }
                         if (testExecInfoJson != null) {
-                            testExecInfo = new JSONObject(new String(Files.readAllBytes(Paths.get(testExecInfoJson))));
+                            if ((new File(testExecInfoJson)).isFile()) {
+                                testExecInfo = new JSONObject(new String(Files.readAllBytes(Paths.get(testExecInfoJson))));
+                            } else {
+                                abortWithError("file doesnt exist: " + testExecInfoJson);
+                            }
                         } else {
                             testExecInfo = new JSONObject();
                         }

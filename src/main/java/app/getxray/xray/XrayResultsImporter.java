@@ -278,11 +278,14 @@ public class XrayResultsImporter {
             partName = "file";
         }
         try {
-            requestBody = new MultipartBody.Builder()
+            okhttp3.MultipartBody.Builder requestBodyBuilder = new MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
                     .addFormDataPart(partName, reportFile, RequestBody.create(new File(reportFile), mediaType))
-                    .addFormDataPart("info", "info.json", RequestBody.create(testExecInfo.toString(), MEDIA_TYPE_JSON))
-                    .build();
+                    .addFormDataPart("info", "info.json", RequestBody.create(testExecInfo.toString(), MEDIA_TYPE_JSON));
+            if (testInfo != null) {
+                requestBodyBuilder.addFormDataPart("testInfo", "testInfo.json", RequestBody.create(testInfo.toString(), MEDIA_TYPE_JSON));
+            }
+            requestBody = requestBodyBuilder.build();
         } catch (Exception e1) {
             e1.printStackTrace();
             throw e1;
@@ -353,11 +356,14 @@ public class XrayResultsImporter {
         HttpUrl.Builder builder = url.newBuilder();
         MultipartBody requestBody = null;
         try {
-            requestBody = new MultipartBody.Builder()
+            okhttp3.MultipartBody.Builder requestBodyBuilder = new MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
                     .addFormDataPart("results", reportFile, RequestBody.create(new File(reportFile), mediaType))
-                    .addFormDataPart("info", "info.json", RequestBody.create(testExecInfo.toString(), MEDIA_TYPE_JSON))
-                    .build();
+                    .addFormDataPart("info", "info.json", RequestBody.create(testExecInfo.toString(), MEDIA_TYPE_JSON));
+            if (testInfo != null) {
+                requestBodyBuilder.addFormDataPart("testInfo", "testInfo.json", RequestBody.create(testInfo.toString(), MEDIA_TYPE_JSON));
+            }
+            requestBody = requestBodyBuilder.build();
         } catch (Exception e1) {
             e1.printStackTrace();
             throw e1;

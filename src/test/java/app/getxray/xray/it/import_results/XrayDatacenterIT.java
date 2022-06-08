@@ -214,6 +214,45 @@ public class XrayDatacenterIT {
  @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:18080")
  @SystemProperty(value = "xray.jiraUsername", content = "username")
  @SystemProperty(value = "xray.jiraPassword", content = "password")
+ @SystemProperty(value = "xray.reportFormat", content = "junit")
+ @SystemProperty(value = "xray.reportFile", content = "junit.xml")
+ @SystemProperty(value = "xray.testExecInfoJson", content = "testExecInfo.json")
+ @SystemProperty(value = "xray.testInfoJson", content = "testInfo.json")
+ void junit_multipart_customize_test_issues(MavenExecutionResult result) throws IOException {
+    String testExecInfo = CommonUtils.readResourceFileForImportResults("XrayDatacenterIT/junit_multipart_customize_test_issues/testExecInfo.json");
+    String testInfo = CommonUtils.readResourceFileForImportResults("XrayDatacenterIT/junit_multipart_customize_test_issues/testInfo.json");
+    String report = CommonUtils.readResourceFileForImportResults("XrayDatacenterIT/junit_multipart/junit.xml");
+
+    wm.verify(
+        postRequestedFor(urlPathEqualTo("/rest/raven/2.0/import/execution/junit/multipart"))
+            .withBasicAuth(new BasicCredentials("username", "password"))
+            .withHeader("Content-Type", containing("multipart/form-data;"))
+            .withAnyRequestBodyPart(
+                aMultipart()
+                    .withName("file")
+                    .withHeader("Content-Type", containing("application/xml"))
+                    .withBody(equalToXml(report)))
+            .withAnyRequestBodyPart(
+                aMultipart()
+                    .withName("info")
+                    .withHeader("Content-Type", containing("application/json"))
+                    .withBody(equalToJson(testExecInfo)))
+            .withAnyRequestBodyPart(
+                aMultipart()
+                    .withName("testInfo")
+                    .withHeader("Content-Type", containing("application/json"))
+                    .withBody(equalToJson(testInfo)))
+
+    );
+    assertThat(result).isSuccessful();
+ }
+
+ @MavenTest
+ @MavenGoal("xray:import-results")
+ @SystemProperty(value = "xray.cloud", content = "false")
+ @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:18080")
+ @SystemProperty(value = "xray.jiraUsername", content = "username")
+ @SystemProperty(value = "xray.jiraPassword", content = "password")
  @SystemProperty(value = "xray.reportFormat", content = "testng")
  @SystemProperty(value = "xray.reportFile", content = "testng.xml")
  @SystemProperty(value = "xray.projectKey", content = "CALC")
