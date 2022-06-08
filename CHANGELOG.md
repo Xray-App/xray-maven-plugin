@@ -11,6 +11,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.6.0] - 2022-06-08
+
+### Added
+
+- better error logging (i.e., checking file existence)
+
+### Changed
+
+### Fixed
+
+- handling testInfoJson (which wasn't imlemented at all)
+
 ## [0.5.0] - 2022-06-03
 
 ### Added
@@ -62,7 +74,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-[unreleased]: https://github.com/Xray-App/xray-maven-plugin/compare/0.5.0...HEAD
+[unreleased]: https://github.com/Xray-App/xray-maven-plugin/compare/0.6.0...HEAD
+[0.6.0]: https://github.com/Xray-App/xray-maven-plugin/compare/0.5.0...0.6.0
 [0.5.0]: https://github.com/Xray-App/xray-maven-plugin/compare/0.4.0...0.5.0
 [0.4.0]: https://github.com/Xray-App/xray-maven-plugin/compare/0.3.0...0.4.0
 [0.3.0]: https://github.com/Xray-App/xray-maven-plugin/compare/0.2.0...0.3.0
