@@ -93,6 +93,9 @@ public class ImportResultsMojo extends AbstractMojo {
     @Parameter(property = "xray.timeout", required = false, defaultValue = "50")
     private Integer timeout;
 
+    @Parameter(property = "xray.verbose", required = false)
+    private Boolean verbose;
+
     /**
      * Scope to filter the dependencies.
      */
@@ -173,7 +176,9 @@ public class ImportResultsMojo extends AbstractMojo {
                     app.getxray.xray.XrayResultsImporter.CloudBuilder xrayImporterBuilder = new XrayResultsImporter.CloudBuilder(clientId, clientSecret)
                         .withInternalTestProxy(useInternalTestProxy)
                         .withIgnoreSslErrors(ignoreSslErrors)
-                        .withTimeout(timeout);
+                        .withTimeout(timeout)
+                        .withLogger(getLog())
+                        .withVerbose(verbose);
                     if (testInfoJson==null  && testExecInfoJson==null) {       
                         if (XrayResultsImporter.XRAY_FORMAT.equals(reportFormat) || XrayResultsImporter.CUCUMBER_FORMAT.equals(reportFormat) || XrayResultsImporter.BEHAVE_FORMAT.equals(reportFormat)) {
                             xrayImporter = xrayImporterBuilder.build();
@@ -218,12 +223,16 @@ public class ImportResultsMojo extends AbstractMojo {
                         xrayImporterBuilder = new XrayResultsImporter.ServerDCBuilder(jiraBaseUrl, jiraToken)
                             .withInternalTestProxy(useInternalTestProxy)
                             .withIgnoreSslErrors(ignoreSslErrors)
-                            .withTimeout(timeout);
+                            .withTimeout(timeout)
+                            .withLogger(getLog())
+                            .withVerbose(verbose);
                     } else {
                         xrayImporterBuilder = new XrayResultsImporter.ServerDCBuilder(jiraBaseUrl, jiraUsername, jiraPassword)
                             .withInternalTestProxy(useInternalTestProxy)
                             .withIgnoreSslErrors(ignoreSslErrors)
-                            .withTimeout(timeout);
+                            .withTimeout(timeout)
+                            .withLogger(getLog())
+                            .withVerbose(verbose);
                     }
 
                     if (testInfoJson==null  && testExecInfoJson==null) {       

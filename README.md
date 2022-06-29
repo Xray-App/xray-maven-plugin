@@ -64,6 +64,7 @@ For Xray server/datacenter users (i.e., using Xray on Jira server/datacenter):
 | `jiraToken` | `xray.jiraToken` | Jira PAT (Personal Access Token) used instead of username/password |
 | `ignoreSslErrors` | `xray.ignoreSslErrors` | ignore SSL errors, e.g., expired certificate (default: false) |
 | `timeout` | `xray.timeout` | connection timeout in seconds (default: 50) |
+| `verbose` | `xray.verbose` | set to true to enable verbose mode (default: false) | true |
 
 For Xray cloud users (i.e., using Xray on Jira cloud):
 
@@ -73,6 +74,7 @@ For Xray cloud users (i.e., using Xray on Jira cloud):
 | `clientId` | `xray.clientId` | client id of the API key configured on Xray Cloud | xxxx... |
 | `clientSecret` | `xray.clientSecret` | client id of the API key configured on Xray Cloud | xxxx... |
 | `timeout` | `xray.timeout` | connection timeout in seconds (default: 50) | 50 |
+| `verbose` | `xray.verbose` | set to true to enable verbose mode (default: false) | true |
 
 In order to obtain the API key (client id + client secret pair) please ask you Jira admin (see reference at bottom).
 There are also task specific configurations. More info ahead, on the respective task section.

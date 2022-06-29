@@ -1,5 +1,6 @@
 package app.getxray.xray;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.concurrent.TimeUnit;
@@ -9,8 +10,42 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+
+import org.apache.maven.plugin.logging.Log;
 
 public class CommonUtils {
+
+    public static void logRequest(Log logger, Request request) {
+        if (logger != null) {
+            logger.debug("REQUEST_URL: " + request.url().toString());
+            logger.debug("REQUEST_METHOD: " + request.method());
+            logger.debug("REQUEST_CONTENT_TYPE: " + request.header("Content-Type"));
+        }
+    }
+
+    public static void logResponse(Log logger, Response response) {
+        logResponse(logger, response, true);
+    }
+
+    public static void logResponse(Log logger, Response response, boolean logBody) {
+        if (logger != null) {
+            logger.debug("RESPONSE_CONTENT_TYPE:" + response.header("Content-Type"));
+            logger.debug("RESPONSE_HTTP_STATUS: " + response.code());
+            if (logBody) {
+                logger.debug("RESPONSE_BODY:");
+                logger.debug("=======================");
+                
+                try (ResponseBody responseBody = response.peekBody(1024 * 1024)) {
+                    logger.debug(responseBody.string());
+                } catch (IOException e) {
+                    //e.printStackTrace();
+                }
+            }
+        }
+    }
 
     public static boolean isTrue(Boolean bool) {
         return (bool!=null && bool);
