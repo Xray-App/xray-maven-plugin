@@ -75,9 +75,9 @@ Note that the `gpg:sign` goal should be called implicitly by the `package` goal.
 If we want to manually validate the signed artifact before calling the `deploy` goal, we can use gpg tool:
 
 ```bash
-$ gpg --verify target/xray-maven-plugin-0.5.0-SNAPSHOT.jar.asc
+$ gpg --verify target/xray-maven-plugin-0.7.0-SNAPSHOT.jar.asc
 
-gpg: assuming signed data in 'target/xray-maven-plugin-0.5.0-SNAPSHOT.jar'
+gpg: assuming signed data in 'target/xray-maven-plugin-0.7.0-SNAPSHOT.jar'
 gpg: Signature made Sex  3 Jun 11:58:00 2022 WEST
 gpg:                using EDDSA key A4FC49BB43A2C8B1BD6A34B395B6F2BD5378949F
 gpg: Good signature from "Sergio Freire <sergio@example.com>" [ultimate]
@@ -91,6 +91,6 @@ Tag can be created at the moment of the creation of the release (easier) or it c
 Example:
 
 ```bash
-git tag -a "0.5.0" -m "v0.5.0"
+git tag -a "0.7.0" -m "v0.7.0"
 git push origin --tags
 ```

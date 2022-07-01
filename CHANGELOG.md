@@ -9,9 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Fixed
+
+## [0.7.0] - 2022-07-01
+
+### Added
+
 - added "verbose" mode, to debug API requests/responses
 
 ### Fixed
+
+- importing of results to Xray DC/server were not passing some arguments (e.g., version, revision,  testPlanKey, ...)
 
 ## [0.6.0] - 2022-06-08
 
@@ -76,7 +84,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-[unreleased]: https://github.com/Xray-App/xray-maven-plugin/compare/0.6.0...HEAD
+[unreleased]: https://github.com/Xray-App/xray-maven-plugin/compare/0.7.0...HEAD
+[0.7.0]: https://github.com/Xray-App/xray-maven-plugin/compare/0.7.0...0.7.0
 [0.6.0]: https://github.com/Xray-App/xray-maven-plugin/compare/0.5.0...0.6.0
 [0.5.0]: https://github.com/Xray-App/xray-maven-plugin/compare/0.4.0...0.5.0
 [0.4.0]: https://github.com/Xray-App/xray-maven-plugin/compare/0.3.0...0.4.0

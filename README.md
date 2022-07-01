@@ -31,7 +31,7 @@ Add the following dependency to your pom.xml, where the `<configuration>` is opt
         <dependency>
             <groupId>app.getxray</groupId>
             <artifactId>xray-maven-plugin</artifactId>
-            <version>0.6.0</version>
+            <version>0.7.0</version>
             <scope>test</scope>
             <configuration>
                 <clientId>215FFD69FE46447280000000000</clientId>
