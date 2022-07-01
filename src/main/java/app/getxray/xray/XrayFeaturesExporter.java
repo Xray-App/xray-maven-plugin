@@ -17,6 +17,8 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import org.apache.maven.plugin.logging.Log;
+
 // https://docs.getxray.app/display/XRAYCLOUD/Exporting+Cucumber+Tests+-+REST+v2
 // https://docs.getxray.app/display/XRAY/Exporting+Cucumber+Tests+-+REST
 
@@ -40,6 +42,8 @@ public class XrayFeaturesExporter {
     private Boolean ignoreSslErrors = false;
     private Boolean useInternalTestProxy = false;
     private Integer timeout = 50;
+    private Boolean verbose = false;
+    private Log logger;
 
     private XrayFeaturesExporter(ServerDCBuilder builder) {
         this.jiraBaseUrl = builder.jiraBaseUrl;
@@ -53,6 +57,8 @@ public class XrayFeaturesExporter {
         this.ignoreSslErrors = builder.ignoreSslErrors;
         this.useInternalTestProxy = builder.useInternalTestProxy;
         this.timeout = builder.timeout;
+        this.verbose = builder.verbose;
+        this.logger = builder.logger;
     }
 
     private XrayFeaturesExporter(CloudBuilder builder) {
@@ -65,6 +71,8 @@ public class XrayFeaturesExporter {
         this.ignoreSslErrors = builder.ignoreSslErrors;
         this.useInternalTestProxy = builder.useInternalTestProxy;
         this.timeout = builder.timeout;
+        this.verbose = builder.verbose;
+        this.logger = builder.logger;
     }
 
     public static class ServerDCBuilder {
@@ -80,6 +88,8 @@ public class XrayFeaturesExporter {
         private Boolean useInternalTestProxy = false;
         private Boolean ignoreSslErrors = false;
         private Integer timeout = 50;
+        private Boolean verbose = false;
+        private Log logger;
 
         public ServerDCBuilder(String jiraBaseUrl, String jiraUsername, String jiraPassword) {
             this.jiraBaseUrl = jiraBaseUrl;
@@ -104,6 +114,16 @@ public class XrayFeaturesExporter {
 
         public ServerDCBuilder withTimeout(Integer timeout) {
             this.timeout = timeout;
+            return this;
+        }
+
+        public ServerDCBuilder withVerbose(Boolean verbose) {
+            this.verbose = verbose;
+            return this;
+        }
+    
+        public ServerDCBuilder withLogger(Log logger) {
+            this.logger = logger;
             return this;
         }
 
@@ -134,6 +154,8 @@ public class XrayFeaturesExporter {
         private Boolean ignoreSslErrors = false;
         private Boolean useInternalTestProxy = false;
         private Integer timeout = 50;
+        private Boolean verbose = false;
+        private Log logger;
 
         public CloudBuilder(String clientId, String clientSecret) {
             this.clientId = clientId;
@@ -155,6 +177,16 @@ public class XrayFeaturesExporter {
             return this;
         }
 
+        public CloudBuilder withVerbose(Boolean verbose) {
+            this.verbose = verbose;
+            return this;
+        }
+    
+        public CloudBuilder withLogger(Log logger) {
+            this.logger = logger;
+            return this;
+        }
+    
         public CloudBuilder withIssueKeys(String issueKeys) {
             this.issueKeys = issueKeys;
             return this;
@@ -204,9 +236,10 @@ public class XrayFeaturesExporter {
         }
 
         request = new Request.Builder().url(builder.build()).get().addHeader("Authorization", credentials).build();
+        CommonUtils.logRequest(logger, request);
         try {
             response = client.newCall(request).execute();
-            // String responseBody = response.body().string();
+            CommonUtils.logResponse(logger, response);
             if (response.isSuccessful()) {
                 unzipContentsToFolder(response.body().byteStream(), outputPath);
                 return ("ok");
@@ -226,10 +259,13 @@ public class XrayFeaturesExporter {
                 + "\" }";
         RequestBody body = RequestBody.create(authenticationPayload, MEDIA_TYPE_JSON);
         Request request = new Request.Builder().url(xrayCloudAuthenticateUrl).post(body).build();
+        CommonUtils.logRequest(logger, request);
+    
         Response response = null;
         String authToken = null;
         try {
             response = client.newCall(request).execute();
+            CommonUtils.logResponse(logger, response, false);
             String responseBody = response.body().string();
             if (response.isSuccessful()) {
                 authToken = responseBody.replace("\"", "");
@@ -255,9 +291,10 @@ public class XrayFeaturesExporter {
         }
 
         request = new Request.Builder().url(builder.build()).get().addHeader("Authorization", credentials).build();
+        CommonUtils.logRequest(logger, request);
         try {
             response = client.newCall(request).execute();
-            // String responseBody = response.body().string();
+            CommonUtils.logResponse(logger, response);
             if (response.isSuccessful()) {
                 unzipContentsToFolder(response.body().byteStream(), outputPath);
                 return ("ok");

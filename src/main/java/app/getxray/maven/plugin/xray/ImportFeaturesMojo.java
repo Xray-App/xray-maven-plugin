@@ -83,6 +83,9 @@ public class ImportFeaturesMojo extends AbstractMojo {
     @Parameter(property = "xray.timeout", required = false, defaultValue = "50")
     private Integer timeout;
 
+    @Parameter(property = "xray.verbose", required = false)
+    private Boolean verbose;
+
     /**
      * Scope to filter the dependencies.
      */
@@ -121,6 +124,8 @@ public class ImportFeaturesMojo extends AbstractMojo {
                     .withInternalTestProxy(useInternalTestProxy)
                     .withIgnoreSslErrors(ignoreSslErrors)
                     .withTimeout(timeout)
+                    .withLogger(getLog())
+                    .withVerbose(verbose)
                     .withProjectKey(projectKey)
                     .withProjectId(projectId)
                     .withSource(source)
@@ -132,6 +137,8 @@ public class ImportFeaturesMojo extends AbstractMojo {
                     .withInternalTestProxy(useInternalTestProxy)
                     .withIgnoreSslErrors(ignoreSslErrors)
                     .withTimeout(timeout)
+                    .withLogger(getLog())
+                    .withVerbose(verbose)
                     .withProjectKey(projectKey)
                     .withupdateRepository(updateRepository)
                     .build();                    
@@ -140,6 +147,8 @@ public class ImportFeaturesMojo extends AbstractMojo {
                     .withInternalTestProxy(useInternalTestProxy)
                     .withIgnoreSslErrors(ignoreSslErrors)
                     .withTimeout(timeout)
+                    .withLogger(getLog())
+                    .withVerbose(verbose)
                     .withProjectKey(projectKey)
                     .withupdateRepository(updateRepository)
                     .build();

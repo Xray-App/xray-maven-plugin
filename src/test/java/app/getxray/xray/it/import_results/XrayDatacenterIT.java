@@ -11,6 +11,7 @@ import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import com.soebes.itf.jupiter.extension.MavenGoal;
 import com.soebes.itf.jupiter.extension.MavenJupiterExtension;
+import com.soebes.itf.jupiter.extension.MavenOption;
 import com.soebes.itf.jupiter.extension.MavenTest;
 import com.soebes.itf.jupiter.extension.SystemProperty;
 import com.soebes.itf.jupiter.maven.MavenExecutionResult;
@@ -104,6 +105,42 @@ public class XrayDatacenterIT {
     @SystemProperty(value = "xray.jiraPassword", content = "password")
     @SystemProperty(value = "xray.reportFormat", content = "xray")
     @SystemProperty(value = "xray.reportFile", content = "xray.json")
+    @SystemProperty(value = "xray.verbose", content = "true")
+    @MavenOption("--debug")
+    void xray_standard_with_verbose_mode(MavenExecutionResult result) throws IOException {
+       /*
+        String report = CommonUtils.readResourceFileForImportResults("XrayDatacenterIT/xray_standard/xray.json");
+
+        wm.verify(
+           postRequestedFor(urlPathEqualTo("/rest/raven/2.0/import/execution"))
+               .withBasicAuth(new BasicCredentials("username", "password"))
+               .withHeader("Content-Type", containing("application/json"))
+               .withRequestBody(equalToJson(report))
+        );
+        */
+        assertThat(result).isSuccessful();
+        assertThat(result)
+            .out()
+            .debug()
+            .containsOnlyOnce("REQUEST_URL: http://127.0.0.1:18080/rest/raven/2.0/import/execution");
+        assertThat(result)
+            .out()
+            .debug()
+            .containsOnlyOnce("REQUEST_METHOD: POST");
+        assertThat(result)
+            .out()
+            .debug()
+            .containsOnlyOnce("REQUEST_CONTENT_TYPE: application/json; charset=utf-8");
+    }
+
+    @MavenTest
+    @MavenGoal("xray:import-results")
+    @SystemProperty(value = "xray.cloud", content = "false")
+    @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:18080")
+    @SystemProperty(value = "xray.jiraUsername", content = "username")
+    @SystemProperty(value = "xray.jiraPassword", content = "password")
+    @SystemProperty(value = "xray.reportFormat", content = "xray")
+    @SystemProperty(value = "xray.reportFile", content = "xray.json")
     void xray_standard(MavenExecutionResult result) throws IOException {
        String report = CommonUtils.readResourceFileForImportResults("XrayDatacenterIT/xray_standard/xray.json");
 
@@ -158,6 +195,11 @@ public class XrayDatacenterIT {
  @SystemProperty(value = "xray.reportFormat", content = "junit")
  @SystemProperty(value = "xray.reportFile", content = "junit.xml")
  @SystemProperty(value = "xray.projectKey", content = "CALC")
+ @SystemProperty(value = "xray.testExecKey", content = "CALC-2")
+ @SystemProperty(value = "xray.testPlanKey", content = "CALC-3")
+ @SystemProperty(value = "xray.version", content = "1.0")
+ @SystemProperty(value = "xray.revision", content = "123")
+ @SystemProperty(value = "xray.testEnvironment", content = "chrome")
  void junit_standard(MavenExecutionResult result) throws IOException {
     String report = CommonUtils.readResourceFileForImportResults("XrayDatacenterIT/junit_standard/junit.xml");
 
@@ -166,6 +208,11 @@ public class XrayDatacenterIT {
             .withBasicAuth(new BasicCredentials("username", "password"))
             .withHeader("Content-Type", containing("multipart/form-data;"))
             .withQueryParam("projectKey", equalTo("CALC"))
+            .withQueryParam("testExecKey", equalTo("CALC-2"))
+            .withQueryParam("testPlanKey", equalTo("CALC-3"))
+            .withQueryParam("fixVersion", equalTo("1.0"))
+            .withQueryParam("revision", equalTo("123"))
+            .withQueryParam("testEnvironments", equalTo("chrome"))
             .withAnyRequestBodyPart(
                 aMultipart()
                     .withName("file")

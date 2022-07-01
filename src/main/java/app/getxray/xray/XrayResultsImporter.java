@@ -15,6 +15,8 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import org.apache.maven.plugin.logging.Log;
+
 public class XrayResultsImporter {
     private final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json");
     private final MediaType MEDIA_TYPE_XML = MediaType.parse("application/xml");
@@ -49,6 +51,8 @@ public class XrayResultsImporter {
     private Boolean ignoreSslErrors = false;
     private Boolean useInternalTestProxy = false;
     private Integer timeout = 50;
+    private Boolean verbose = false;
+    private Log logger;
 
     private XrayResultsImporter(ServerDCBuilder builder){
         this.jiraBaseUrl = builder.jiraBaseUrl;
@@ -56,10 +60,17 @@ public class XrayResultsImporter {
         this.jiraPassword = builder.jiraPassword;
         this.jiraPersonalAccessToken = builder.jiraPersonalAccessToken;
         this.projectKey = builder.projectKey;
+        this.fixVersion = builder.fixVersion;
+        this.revision = builder.revision;
+        this.testPlanKey = builder.testPlanKey;
+        this.testExecKey = builder.testExecKey;
+        this.testEnvironment = builder.testEnvironment;
 
         this.ignoreSslErrors = builder.ignoreSslErrors;
         this.useInternalTestProxy = builder.useInternalTestProxy;
         this.timeout = builder.timeout;
+        this.verbose = builder.verbose;
+        this.logger = builder.logger;
     }
 
     private XrayResultsImporter(CloudBuilder builder){
@@ -75,6 +86,8 @@ public class XrayResultsImporter {
         this.ignoreSslErrors = builder.ignoreSslErrors;
         this.useInternalTestProxy = builder.useInternalTestProxy;
         this.timeout = builder.timeout;
+        this.verbose = builder.verbose;
+        this.logger = builder.logger;
     }
 
     public static class ServerDCBuilder {
@@ -94,6 +107,8 @@ public class XrayResultsImporter {
         private Boolean ignoreSslErrors = false;
         private Boolean useInternalTestProxy = false;
         private Integer timeout = 50;
+        private Boolean verbose = false;
+        private Log logger;
 
         public ServerDCBuilder(String jiraBaseUrl, String jiraUsername, String jiraPassword) {
             this.jiraBaseUrl = jiraBaseUrl;
@@ -121,6 +136,16 @@ public class XrayResultsImporter {
             return this;
         }
 
+        public ServerDCBuilder withVerbose(Boolean verbose) {
+            this.verbose = verbose;
+            return this;
+        }
+
+        public ServerDCBuilder withLogger(Log logger) {
+            this.logger = logger;
+            return this;
+        }
+    
         public ServerDCBuilder withProjectKey(String projectKey) {
             this.projectKey = projectKey;
             return this;
@@ -172,6 +197,8 @@ public class XrayResultsImporter {
         private Boolean ignoreSslErrors = false;
         private Boolean useInternalTestProxy = false;
         private Integer timeout = 50;
+        private Boolean verbose = false;
+        private Log logger;
 
         public CloudBuilder(String clientId, String clientSecret) {
             this.clientId = clientId;
@@ -190,6 +217,16 @@ public class XrayResultsImporter {
 
         public CloudBuilder withTimeout(Integer timeout) {
             this.timeout = timeout;
+            return this;
+        }
+
+        public CloudBuilder withVerbose(Boolean verbose) {
+            this.verbose = verbose;
+            return this;
+        }
+    
+        public CloudBuilder withLogger(Log logger) {
+            this.logger = logger;
             return this;
         }
 
@@ -292,9 +329,11 @@ public class XrayResultsImporter {
         }
 
         Request request = new Request.Builder().url(builder.build()).post(requestBody).addHeader("Authorization", credentials).build();
+        CommonUtils.logRequest(logger, request);
         Response response = null;
         try {
             response = client.newCall(request).execute();
+            CommonUtils.logResponse(logger, response);
             String responseBody = response.body().string();
             if (response.isSuccessful()){
                 JSONObject responseObj = new JSONObject(responseBody);
@@ -316,10 +355,13 @@ public class XrayResultsImporter {
 		String authenticationPayload = "{ \"client_id\": \"" + clientId +"\", \"client_secret\": \"" + clientSecret +"\" }";
 		RequestBody body = RequestBody.create(authenticationPayload, MEDIA_TYPE_JSON);
 		Request request = new Request.Builder().url(xrayCloudAuthenticateUrl).post(body).build();
+        CommonUtils.logRequest(logger, request);
+
 		Response response = null;
 		String authToken = null;
 		try {
 			response = client.newCall(request).execute();
+            CommonUtils.logResponse(logger, response, false);
 			String responseBody = response.body().string();
 			if (response.isSuccessful()){
 				authToken = responseBody.replace("\"", "");	
@@ -370,9 +412,11 @@ public class XrayResultsImporter {
         }
 
         request = new Request.Builder().url(builder.build()).post(requestBody).addHeader("Authorization", credentials).build();
+        CommonUtils.logRequest(logger, request);
         response = null;
         try {
             response = client.newCall(request).execute();
+            CommonUtils.logResponse(logger, response);
             String responseBody = response.body().string();
             if (response.isSuccessful()){
                 JSONObject responseObj = new JSONObject(responseBody);
@@ -451,10 +495,11 @@ public class XrayResultsImporter {
                     builder.addQueryParameter("testExecKey", this.testExecKey);
                 }
                 if (testEnvironment != null) {
-                    builder.addQueryParameter("testEnvironment", this.testEnvironment);
+                    builder.addQueryParameter("testEnvironments", this.testEnvironment);
                 }
                 request = new Request.Builder().url(builder.build()).post(requestBody).addHeader("Authorization", credentials).build();
             }
+            CommonUtils.logRequest(logger, request);
         } catch (Exception e1) {
             e1.printStackTrace();
             throw e1;
@@ -463,6 +508,7 @@ public class XrayResultsImporter {
         Response response = null;
         try {
             response = client.newCall(request).execute();
+            CommonUtils.logResponse(logger, response);
             String responseBody = response.body().string();
             if (response.isSuccessful()){
                 JSONObject responseObj = new JSONObject(responseBody);
@@ -484,10 +530,13 @@ public class XrayResultsImporter {
         String authenticationPayload = "{ \"client_id\": \"" + clientId +"\", \"client_secret\": \"" + clientSecret +"\" }";
         RequestBody body = RequestBody.create(authenticationPayload, MEDIA_TYPE_JSON);
         Request request = new Request.Builder().url(xrayCloudAuthenticateUrl).post(body).build();
+        CommonUtils.logRequest(logger, request);
+
         Response response = null;
         String authToken = null;
         try {
             response = client.newCall(request).execute();
+            CommonUtils.logResponse(logger, response, false);
             String responseBody = response.body().string();
             if (response.isSuccessful()){
                 authToken = responseBody.replace("\"", "");	
@@ -550,12 +599,14 @@ public class XrayResultsImporter {
             builder.addQueryParameter("testExecKey", this.testExecKey);
         }
         if (testEnvironment != null) {
-            builder.addQueryParameter("testEnvironment", this.testEnvironment);
+            builder.addQueryParameter("testEnvironments", this.testEnvironment);
         }
 
         request = new Request.Builder().url(builder.build()).post(requestBody).addHeader("Authorization", credentials).build();
+        CommonUtils.logRequest(logger, request);
         try {
             response = client.newCall(request).execute();
+            CommonUtils.logResponse(logger, response);
             String responseBody = response.body().string();            
             if (response.isSuccessful()){
                 JSONObject responseObj = new JSONObject(responseBody);
