@@ -11,6 +11,7 @@ import javax.net.ssl.X509TrustManager;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
@@ -22,7 +23,12 @@ public class CommonUtils {
         if (logger != null) {
             logger.debug("REQUEST_URL: " + request.url().toString());
             logger.debug("REQUEST_METHOD: " + request.method());
-            logger.debug("REQUEST_CONTENT_TYPE: " + request.header("Content-Type"));
+
+            Request copy = request.newBuilder().build();
+            RequestBody body = copy.body();
+            if (body != null) {
+                logger.debug("REQUEST_CONTENT_TYPE: " + body.contentType().toString());
+            }
         }
     }
 

@@ -60,6 +60,11 @@ public class XrayResultsImporter {
         this.jiraPassword = builder.jiraPassword;
         this.jiraPersonalAccessToken = builder.jiraPersonalAccessToken;
         this.projectKey = builder.projectKey;
+        this.fixVersion = builder.fixVersion;
+        this.revision = builder.revision;
+        this.testPlanKey = builder.testPlanKey;
+        this.testExecKey = builder.testExecKey;
+        this.testEnvironment = builder.testEnvironment;
 
         this.ignoreSslErrors = builder.ignoreSslErrors;
         this.useInternalTestProxy = builder.useInternalTestProxy;
@@ -490,7 +495,7 @@ public class XrayResultsImporter {
                     builder.addQueryParameter("testExecKey", this.testExecKey);
                 }
                 if (testEnvironment != null) {
-                    builder.addQueryParameter("testEnvironment", this.testEnvironment);
+                    builder.addQueryParameter("testEnvironments", this.testEnvironment);
                 }
                 request = new Request.Builder().url(builder.build()).post(requestBody).addHeader("Authorization", credentials).build();
             }
@@ -594,7 +599,7 @@ public class XrayResultsImporter {
             builder.addQueryParameter("testExecKey", this.testExecKey);
         }
         if (testEnvironment != null) {
-            builder.addQueryParameter("testEnvironment", this.testEnvironment);
+            builder.addQueryParameter("testEnvironments", this.testEnvironment);
         }
 
         request = new Request.Builder().url(builder.build()).post(requestBody).addHeader("Authorization", credentials).build();
