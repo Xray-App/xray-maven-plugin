@@ -89,13 +89,19 @@ In order to import test results, we need to use the `xray:import-results` task.
  mvn clean compile test xray:import-results
 ```
 
+Note that in the previous example the `test` task may fail aborting maven and thus not importing the test results to Xray. To overcome this, we can pass an argument to instruct Surefire to ignore the test failures; this can also be done at `pom.xml` level.
+
+```bash
+ mvn clean compile test xray:import-results -Dmaven.test.failure.ignore=true 
+```
+
 The `pom.xml` needs to be configured properly (see available configurations).
 As an alternative to hardcode the configurations, it's also possible to pass them right from the command line as mentioned earlier, or even have some on the pom.xml and another specificed through command line parameters.
 
 ```bash
  mvn clean compile test xray:import-results -Dxray.reportFormat=junit -Dxray.reportFile=results/junit.xml
 ```
-
+ 
 #### Configurations for importing test results
 
 There are two ways of importing results.
