@@ -28,7 +28,7 @@ This plugin is available on (Maven) Central Repository, which is configured by d
 Add the following dependency to your pom.xml, where the `<configuration>` is optional and should be adapted to your use case.
 
 ```xml
-        <dependency>
+        <plugin>
             <groupId>app.getxray</groupId>
             <artifactId>xray-maven-plugin</artifactId>
             <version>0.7.0</version>
@@ -42,7 +42,7 @@ Add the following dependency to your pom.xml, where the `<configuration>` is opt
                 <reportFormat>junit</reportFormat>
                 <reportFile>target/junit.xml</reportFile>
             </configuration>
-        </dependency>
+        </plugin>
 ```
 
 Configuration parameters (e.g., "reportFormat") can also be specified from the command line using `-D` (e.g., "-Dxray.reportFormat=junit"). In this case, the parameters have the `xray.` prefix.
