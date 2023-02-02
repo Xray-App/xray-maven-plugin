@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.7.1] - 2023-02-02
+
+### Fixed
+
+- handling of multipart requests for null test/testExec info JSON (#54)
+
 ## [0.7.0] - 2022-07-01
 
 ### Added
@@ -84,7 +90,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-[unreleased]: https://github.com/Xray-App/xray-maven-plugin/compare/0.7.0...HEAD
+[unreleased]: https://github.com/Xray-App/xray-maven-plugin/compare/0.7.1...HEAD
+[0.7.1]: https://github.com/Xray-App/xray-maven-plugin/compare/0.7.1...0.7.0
 [0.7.0]: https://github.com/Xray-App/xray-maven-plugin/compare/0.7.0...0.7.0
 [0.6.0]: https://github.com/Xray-App/xray-maven-plugin/compare/0.5.0...0.6.0
 [0.5.0]: https://github.com/Xray-App/xray-maven-plugin/compare/0.4.0...0.5.0

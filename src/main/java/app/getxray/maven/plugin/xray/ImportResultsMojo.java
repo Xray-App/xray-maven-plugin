@@ -179,7 +179,7 @@ public class ImportResultsMojo extends AbstractMojo {
                         .withTimeout(timeout)
                         .withLogger(getLog())
                         .withVerbose(verbose);
-                    if (testInfoJson==null  && testExecInfoJson==null) {       
+                    if (testInfoJson==null  && testExecInfoJson==null) {
                         if (XrayResultsImporter.XRAY_FORMAT.equals(reportFormat) || XrayResultsImporter.CUCUMBER_FORMAT.equals(reportFormat) || XrayResultsImporter.BEHAVE_FORMAT.equals(reportFormat)) {
                             xrayImporter = xrayImporterBuilder.build();
                         } else {
@@ -200,8 +200,6 @@ public class ImportResultsMojo extends AbstractMojo {
                             } else {
                                 abortWithError("file doesnt exist: " + testInfoJson);
                             }
-                        } else {
-                            testInfo = new JSONObject();
                         }
                         if (testExecInfoJson != null) {
                             if ((new File(testExecInfoJson)).isFile()) {
@@ -209,8 +207,6 @@ public class ImportResultsMojo extends AbstractMojo {
                             } else {
                                 abortWithError("file doesnt exist: " + testExecInfoJson);
                             }
-                        } else {
-                            testExecInfo = new JSONObject();
                         }
                         response = xrayImporterBuilder.build().submitMultipartCloud(reportFormat, reportFile, testExecInfo, testInfo);                  
                     }
@@ -257,8 +253,6 @@ public class ImportResultsMojo extends AbstractMojo {
                             } else {
                                 abortWithError("file doesnt exist: " + testInfoJson);
                             }
-                        } else {
-                            testInfo = new JSONObject();
                         }
                         if (testExecInfoJson != null) {
                             if ((new File(testExecInfoJson)).isFile()) {
@@ -266,8 +260,6 @@ public class ImportResultsMojo extends AbstractMojo {
                             } else {
                                 abortWithError("file doesnt exist: " + testExecInfoJson);
                             }
-                        } else {
-                            testExecInfo = new JSONObject();
                         }
                         response = xrayImporterBuilder.build().submitMultipartServerDC(reportFormat, reportFile, testExecInfo, testInfo);                  
                     }
