@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.7.2] - 2023-03-04
+
+### Fixed
+
+- add default values for command-line parameters (#58)
+
 ## [0.7.1] - 2023-02-02
 
 ### Fixed
@@ -90,7 +96,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-[unreleased]: https://github.com/Xray-App/xray-maven-plugin/compare/0.7.1...HEAD
+[unreleased]: https://github.com/Xray-App/xray-maven-plugin/compare/0.7.2...HEAD
+[0.7.2]: https://github.com/Xray-App/xray-maven-plugin/compare/0.7.2...0.7.1
 [0.7.1]: https://github.com/Xray-App/xray-maven-plugin/compare/0.7.1...0.7.0
 [0.7.0]: https://github.com/Xray-App/xray-maven-plugin/compare/0.7.0...0.7.0
 [0.6.0]: https://github.com/Xray-App/xray-maven-plugin/compare/0.5.0...0.6.0
