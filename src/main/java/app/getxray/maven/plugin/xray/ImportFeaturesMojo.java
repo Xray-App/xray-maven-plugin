@@ -45,7 +45,7 @@ public class ImportFeaturesMojo extends AbstractMojo {
     @Parameter(property = "xray.clientSecret", required = false)
     private String clientSecret;
     
-    @Parameter(property = "xray.cloud", required = true)
+    @Parameter(property = "xray.cloud", required = true, defaultValue = "false")
     private Boolean cloud;
 
 
@@ -68,22 +68,22 @@ public class ImportFeaturesMojo extends AbstractMojo {
     @Parameter(property = "xray.inputFeatures", required = false)
     private String inputFeatures;
 
-    @Parameter(property = "xray.updateRepository", required = false)
+    @Parameter(property = "xray.updateRepository", required = false, defaultValue = "false")
     private Boolean updateRepository;
 
-    @Parameter(property = "xray.abortOnError", required = false)
+    @Parameter(property = "xray.abortOnError", required = false, defaultValue = "true")
     private Boolean abortOnError;
 
-    @Parameter(property = "xray.useInternalTestProxy", required = false)
+    @Parameter(property = "xray.useInternalTestProxy", required = false, defaultValue = "false")
     private Boolean useInternalTestProxy;
 
-    @Parameter(property = "xray.ignoreSslErrors", required = false)
+    @Parameter(property = "xray.ignoreSslErrors", required = false, defaultValue = "false")
     private Boolean ignoreSslErrors;
 
     @Parameter(property = "xray.timeout", required = false, defaultValue = "50")
     private Integer timeout;
 
-    @Parameter(property = "xray.verbose", required = false)
+    @Parameter(property = "xray.verbose", required = false, defaultValue = "false")
     private Boolean verbose;
 
     /**
