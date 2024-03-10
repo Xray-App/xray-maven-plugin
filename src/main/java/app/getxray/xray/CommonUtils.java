@@ -44,7 +44,7 @@ public class CommonUtils {
                 logger.debug("RESPONSE_BODY:");
                 logger.debug("=======================");
                 
-                try (ResponseBody responseBody = response.peekBody(1024 * 1024)) {
+                try (ResponseBody responseBody = response.peekBody(1024L * 1024L)) {
                     logger.debug(responseBody.string());
                 } catch (IOException e) {
                     //e.printStackTrace();
@@ -78,7 +78,7 @@ public class CommonUtils {
                     }
                 }
             };
-            SSLContext sslContext = SSLContext.getInstance("SSL");
+            SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
             sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
             newBuilder.sslSocketFactory(sslContext.getSocketFactory(), (X509TrustManager) trustAllCerts[0]);
             newBuilder.hostnameVerifier((host, session) -> true);
