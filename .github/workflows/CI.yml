@@ -36,7 +36,4 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # Generate a token on Sonarcloud.io, add it to the secrets of this repo with the name SONAR_TOKEN (Settings > Secrets > Actions > add new repository secret)
-      run: mvn sonar:sonar \
-        -Dsonar.host.url=https://sonarcloud.io \
-        -Dsonar.projectKey=Xray-App_xray-maven-plugin
-        -Dsonar.organization=xray-app
+      run: mvn sonar:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.projectKey=Xray-App_xray-maven-plugin -Dsonar.organization=xray-app
