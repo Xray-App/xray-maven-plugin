@@ -33,15 +33,10 @@ jobs:
       run: mvn -B -Dgpg.skip=true clean compile verify package --file pom.xml
     - name: Analyze with SonarCloud
       if: matrix.java == '17'
-      
-      uses: SonarSource/sonarcloud-github-action@v2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # Generate a token on Sonarcloud.io, add it to the secrets of this repo with the name SONAR_TOKEN (Settings > Secrets > Actions > add new repository secret)
-      with:
-        # Additional arguments for the sonarcloud scanner
-        args:
-          # Unique keys of your project and organization. You can find them in SonarCloud > Information (bottom-left menu)
-          # mandatory
-          -Dsonar.projectKey=Xray-App_xray-maven-plugin
-          -Dsonar.organization=xray-app
+      run: mvn sonar:sonar \
+        -Dsonar.host.url=https://sonarcloud.io \
+        -Dsonar.projectKey=Xray-App_xray-maven-plugin
+        -Dsonar.organization=xray-app
