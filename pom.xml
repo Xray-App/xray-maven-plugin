@@ -51,11 +51,17 @@
     <maven-project.version>2.2.1</maven-project.version>
     <maven-plugin-plugin.version>3.6.4</maven-plugin-plugin.version>
     <maven-site-plugin.version>3.12.0</maven-site-plugin.version>
+    <maven-failsafe-plugin.version>3.2.5</maven-failsafe-plugin.version>
+    <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
+    <maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-    <!-- <maven.version>3.8.4</maven.version> -->
-    <itf.version>0.11.0</itf.version>
-    <junit.version>5.8.2</junit.version>
+    <itf.version>0.13.1</itf.version>
+    <junit.version>5.10.2</junit.version>
+    <jacoco.version>0.8.11</jacoco.version>
+    <unit.coverage.file>${project.build.directory}/jacoco-output/jacoco-unit-tests.exec</unit.coverage.file>
+    <it.coverage.file>${project.build.directory}/jacoco-output/jacoco-it-tests.exec</it.coverage.file>
+    <merged.coverage.file>${project.build.directory}/jacoco-output/merged.exec</merged.coverage.file>
+    <jacoco.maven.opts>-javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile=${it.coverage.file},append=true</jacoco.maven.opts>
   </properties>
 
   <dependencies>
@@ -95,16 +101,6 @@
       <artifactId>plexus-utils</artifactId>
       <version>3.4.1</version>
     </dependency>
-
-    <!-- Test Dependencies -->
-    <!--
-          <dependency>
-            <groupId>org.apache.maven.plugin-testing</groupId>
-            <artifactId>maven-plugin-testing-harness</artifactId>
-            <version>3.3.0</version>
-            <scope>test</scope>
-        </dependency>
-        -->
 
     <dependency>
       <groupId>com.github.tomakehurst</groupId>
@@ -160,10 +156,115 @@
   <build>
     <plugins>
 
+
+
+        <!-- Jacoco runner to inspect code coverage -->
+        <plugin>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>${jacoco.version}</version>
+
+
+          <executions>
+            <execution>
+              <id>before-unit-test-execution</id>
+              <goals>
+                <goal>prepare-agent</goal>
+              </goals>
+              <configuration>
+                <destFile>${unit.coverage.file}</destFile>
+                <propertyName>surefire.jacoco.args</propertyName>
+              </configuration>
+            </execution>
+            <execution>
+              <id>after-unit-test-execution</id>
+              <phase>test</phase>
+              <goals>
+                <goal>report</goal>
+              </goals>
+              <configuration>
+                <dataFile>${unit.coverage.file}</dataFile>
+                <outputDirectory>${project.reporting.outputDirectory}/jacoco-unit-test-coverage-report</outputDirectory>
+              </configuration>
+            </execution>
+
+            <execution>
+              <id>before-integration-test-execution</id>
+              <phase>pre-integration-test</phase>
+              <goals>
+                <goal>prepare-agent-integration</goal>
+              </goals>
+              <configuration>
+                <destFile>${it.coverage.file}</destFile>
+                <propertyName>failsafe.jacoco.args</propertyName>
+                <classDumpDir>${project.build.directory}/jacoco-dump</classDumpDir>
+                <append>true</append>
+              </configuration>
+            </execution>
+            <execution>
+              <id>after-integration-test-execution</id>
+              <phase>post-integration-test</phase>
+              <goals>
+                <goal>report</goal>
+              </goals>
+              <configuration>
+                <dataFile>${it.coverage.file}</dataFile>
+                <outputDirectory>${project.reporting.outputDirectory}/jacoco-it-coverage-report</outputDirectory>
+              </configuration>
+            </execution>
+
+            <execution>
+              <id>merge-unit-and-integration</id>
+                <phase>post-integration-test</phase>
+                  <goals>
+                    <goal>merge</goal>
+                  </goals>
+                  <configuration>
+                  <fileSets>
+                    <fileSet>
+                      <directory>${project.build.directory}/jacoco-output/</directory>
+                      <includes>
+                        <include>*.exec</include>
+                      </includes>
+                    </fileSet>
+                  </fileSets>
+                  <destFile>merged.coverage.file</destFile>
+                </configuration>
+              </execution>
+              <execution>
+                <id>create-merged-report</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>report</goal>
+                </goals>
+                <configuration>
+                  <dataFile>merged.coverage.file</dataFile>
+                  <outputDirectory>${project.reporting.outputDirectory}/jacoco-merged-test-coverage-report</outputDirectory>
+                </configuration>
+              </execution>
+
+          </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${maven-surefire-plugin.version}</version>
+        <configuration>
+          <argLine>${surefire.jacoco.args}</argLine>
+          <includes>
+            <include>**/*Test.java</include>
+          </includes>
+          <excludes>
+            <exclude>**/*IT.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-gpg-plugin</artifactId>
-        <version>3.0.1</version>
+        <version>${maven-gpg-plugin.version}</version>
         <executions>
           <execution>
             <id>sign-artifacts</id>
@@ -205,7 +306,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
-        <version>2.22.2</version>
+        <version>${maven-failsafe-plugin.version}</version>
         <configuration>
           <!--
             check if the following ones are actually needed or not to run the integration tests
@@ -215,12 +316,18 @@
             <maven.home>${maven.home}</maven.home>
           </systemProperties>
 
-          <!--
-                  <includes>
-                    <include>**/*IT.java</include>
-                  </includes>
-          -->
+          <argLine>${failsafe.jacoco.args}</argLine>
+          <includes>
+            <include>**/*IT.java</include>
+          </includes>
+          <excludes>
+            <exclude>**/*Test.java</exclude>
+          </excludes>
 
+          <!-- based on https://github.com/khmarbaise/maven-it-extension/discussions/328 , to be able to track coverage of IT tests -->
+          <environmentVariables>
+            <MAVEN_OPTS>${jacoco.maven.opts}</MAVEN_OPTS>
+          </environmentVariables>
         </configuration>
         <executions>
           <execution>
