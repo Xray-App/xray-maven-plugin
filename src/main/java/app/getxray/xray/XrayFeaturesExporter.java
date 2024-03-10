@@ -326,13 +326,13 @@ public class XrayFeaturesExporter {
                     throw new IOException("Failed to create directory " + parent);
                 }
 
-                // write file content
-                FileOutputStream fos = new FileOutputStream(newFile);
-                int len;
-                while ((len = zis.read(buffer)) > 0) {
-                    fos.write(buffer, 0, len);
+                try (
+                FileOutputStream fos = new FileOutputStream(newFile)) {
+                    int len;
+                    while ((len = zis.read(buffer)) > 0) {
+                        fos.write(buffer, 0, len);
+                    }
                 }
-                fos.close();
             }
         }
         zis.closeEntry();
