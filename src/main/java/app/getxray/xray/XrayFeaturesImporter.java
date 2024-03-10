@@ -29,6 +29,7 @@ import org.apache.maven.plugin.logging.Log;
 // https://docs.getxray.app/display/XRAY/Importing+Cucumber+Tests+-+REST
 
 public class XrayFeaturesImporter {
+    private static final String FEATURE_EXTENSION = ".feature";
     private final MediaType MEDIA_TYPE_ZIP = MediaType.parse("application/zip");
     private final MediaType MEDIA_TYPE_FOR_FEATURE_FILES = MediaType.parse("text/plain");
     private final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json");
@@ -275,7 +276,7 @@ public class XrayFeaturesImporter {
         MediaType mediaType;
         if (inputPath.toLowerCase().endsWith(".zip")) {
             mediaType = MEDIA_TYPE_ZIP;
-        } else if (inputPath.toLowerCase().endsWith(".feature")) {
+        } else if (inputPath.toLowerCase().endsWith(FEATURE_EXTENSION)) {
             mediaType = MEDIA_TYPE_FOR_FEATURE_FILES;
         } else {
             // it may be a directory; check it, and if so zip it before sending it
@@ -368,7 +369,7 @@ public class XrayFeaturesImporter {
         MediaType mediaType;
         if (inputPath.toLowerCase().endsWith(".zip")) {
             mediaType = MEDIA_TYPE_ZIP;
-        } else if (inputPath.toLowerCase().endsWith(".feature")) {
+        } else if (inputPath.toLowerCase().endsWith(FEATURE_EXTENSION)) {
             mediaType = MEDIA_TYPE_FOR_FEATURE_FILES;
         } else {
             // it may be a directory; check it, and if so zip it before sending it
@@ -447,7 +448,7 @@ public class XrayFeaturesImporter {
             for (File childFile : children) {
 
                 // zip only .feature files and subdirs
-                if (!(childFile.isDirectory() || childFile.getName().toLowerCase().endsWith(".feature")))
+                if (!(childFile.isDirectory() || childFile.getName().toLowerCase().endsWith(FEATURE_EXTENSION)))
                     continue;
 
                 if (createDir) {
