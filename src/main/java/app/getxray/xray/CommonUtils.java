@@ -54,7 +54,7 @@ public class CommonUtils {
     }
 
     public static boolean isTrue(Boolean bool) {
-        return (bool!=null && bool);
+        return Boolean.TRUE.equals(bool);
     }
 
     public static OkHttpClient getHttpClient(Boolean useInternalTestProxy, Boolean ignoreSslErrors, Integer timeout) throws Exception {
