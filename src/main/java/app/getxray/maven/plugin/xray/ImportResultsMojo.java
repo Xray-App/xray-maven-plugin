@@ -269,7 +269,6 @@ public class ImportResultsMojo extends AbstractMojo {
                 getLog().info("response: " + response);
             } catch (Exception ex) {
                 getLog().error(ex.getMessage());
-                ex.printStackTrace();
                 if (isTrue(abortOnError))
                     System.exit(1);
             }
