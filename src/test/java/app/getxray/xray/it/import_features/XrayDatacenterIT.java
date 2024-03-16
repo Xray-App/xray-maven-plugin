@@ -30,9 +30,11 @@ import com.github.tomakehurst.wiremock.client.BasicCredentials;
 public class XrayDatacenterIT {
 
     static WireMockServer wm;
+    static final int PORT_NUMBER = 18081;
+
     @BeforeAll
     public static void setup () {
-        wm = new WireMockServer(options().port(18080));
+        wm = new WireMockServer(options().port(PORT_NUMBER));
         wm.start();
         setupStub();
     }
@@ -55,7 +57,7 @@ public class XrayDatacenterIT {
     @MavenTest
     @MavenGoal("xray:import-features")
     @SystemProperty(value = "xray.cloud", content = "false")
-    @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:18080")
+    @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:"+PORT_NUMBER)
     @SystemProperty(value = "xray.jiraUsername", content = "username")
     @SystemProperty(value = "xray.jiraPassword", content = "password")
     @SystemProperty(value = "xray.projectKey", content = "CALC")
@@ -81,7 +83,7 @@ public class XrayDatacenterIT {
     @MavenTest
     @MavenGoal("xray:import-features")
     @SystemProperty(value = "xray.cloud", content = "false")
-    @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:18080")
+    @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:"+PORT_NUMBER)
     @SystemProperty(value = "xray.jiraUsername", content = "username")
     @SystemProperty(value = "xray.jiraPassword", content = "password")
     @SystemProperty(value = "xray.projectKey", content = "CALC")
@@ -124,7 +126,7 @@ public class XrayDatacenterIT {
     @MavenTest
     @MavenGoal("xray:import-features")
     @SystemProperty(value = "xray.cloud", content = "false")
-    @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:18080")
+    @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:"+PORT_NUMBER)
     @SystemProperty(value = "xray.jiraUsername", content = "username")
     @SystemProperty(value = "xray.jiraPassword", content = "password")
     @SystemProperty(value = "xray.projectKey", content = "CALC")
@@ -150,7 +152,7 @@ public class XrayDatacenterIT {
     @MavenTest
     @MavenGoal("xray:import-features")
     @SystemProperty(value = "xray.cloud", content = "false")
-    @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:18080")
+    @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:"+PORT_NUMBER)
     @SystemProperty(value = "xray.jiraUsername", content = "username")
     @SystemProperty(value = "xray.jiraPassword", content = "password")
     @SystemProperty(value = "xray.projectKey", content = "CALC")

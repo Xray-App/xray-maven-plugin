@@ -26,14 +26,17 @@ import app.getxray.xray.it.CommonUtils;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import com.github.tomakehurst.wiremock.client.BasicCredentials;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 @MavenJupiterExtension
 public class XrayDatacenterIT {
 
     static WireMockServer wm;
+    static final int PORT_NUMBER = 18087;
+
     @BeforeAll
     public static void setup () {
-        wm = new WireMockServer(options().port(18080));
+        wm = new WireMockServer(options().port(PORT_NUMBER));
         wm.start();
         setupStub();
     }
@@ -100,7 +103,7 @@ public class XrayDatacenterIT {
     @MavenTest
     @MavenGoal("xray:import-results")
     @SystemProperty(value = "xray.cloud", content = "false")
-    @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:18080")
+    @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:"+PORT_NUMBER)
     @SystemProperty(value = "xray.jiraUsername", content = "username")
     @SystemProperty(value = "xray.jiraPassword", content = "password")
     @SystemProperty(value = "xray.reportFormat", content = "xray")
@@ -122,7 +125,7 @@ public class XrayDatacenterIT {
         assertThat(result)
             .out()
             .debug()
-            .containsOnlyOnce("REQUEST_URL: http://127.0.0.1:18080/rest/raven/2.0/import/execution");
+            .containsOnlyOnce("REQUEST_URL: http://127.0.0.1:" + PORT_NUMBER + "/rest/raven/2.0/import/execution");
         assertThat(result)
             .out()
             .debug()
@@ -136,7 +139,7 @@ public class XrayDatacenterIT {
     @MavenTest
     @MavenGoal("xray:import-results")
     @SystemProperty(value = "xray.cloud", content = "false")
-    @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:18080")
+    @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:"+PORT_NUMBER)
     @SystemProperty(value = "xray.jiraUsername", content = "username")
     @SystemProperty(value = "xray.jiraPassword", content = "password")
     @SystemProperty(value = "xray.reportFormat", content = "xray")
@@ -156,7 +159,7 @@ public class XrayDatacenterIT {
     @MavenTest
     @MavenGoal("xray:import-results")
     @SystemProperty(value = "xray.cloud", content = "false")
-    @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:18080")
+    @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:"+PORT_NUMBER)
     @SystemProperty(value = "xray.jiraUsername", content = "username")
     @SystemProperty(value = "xray.jiraPassword", content = "password")
     @SystemProperty(value = "xray.reportFormat", content = "xray")
@@ -189,7 +192,7 @@ public class XrayDatacenterIT {
  @MavenTest
  @MavenGoal("xray:import-results")
  @SystemProperty(value = "xray.cloud", content = "false")
- @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:18080")
+ @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:"+PORT_NUMBER)
  @SystemProperty(value = "xray.jiraUsername", content = "username")
  @SystemProperty(value = "xray.jiraPassword", content = "password")
  @SystemProperty(value = "xray.reportFormat", content = "junit")
@@ -225,7 +228,7 @@ public class XrayDatacenterIT {
  @MavenTest
  @MavenGoal("xray:import-results")
  @SystemProperty(value = "xray.cloud", content = "false")
- @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:18080")
+ @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:"+PORT_NUMBER)
  @SystemProperty(value = "xray.jiraUsername", content = "username")
  @SystemProperty(value = "xray.jiraPassword", content = "password")
  @SystemProperty(value = "xray.reportFormat", content = "junit")
@@ -258,7 +261,7 @@ public class XrayDatacenterIT {
  @MavenTest
  @MavenGoal("xray:import-results")
  @SystemProperty(value = "xray.cloud", content = "false")
- @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:18080")
+ @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:"+PORT_NUMBER)
  @SystemProperty(value = "xray.jiraUsername", content = "username")
  @SystemProperty(value = "xray.jiraPassword", content = "password")
  @SystemProperty(value = "xray.reportFormat", content = "junit")
@@ -297,7 +300,7 @@ public class XrayDatacenterIT {
  @MavenTest
  @MavenGoal("xray:import-results")
  @SystemProperty(value = "xray.cloud", content = "false")
- @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:18080")
+ @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:"+PORT_NUMBER)
  @SystemProperty(value = "xray.jiraUsername", content = "username")
  @SystemProperty(value = "xray.jiraPassword", content = "password")
  @SystemProperty(value = "xray.reportFormat", content = "testng")
@@ -323,7 +326,7 @@ public class XrayDatacenterIT {
  @MavenTest
  @MavenGoal("xray:import-results")
  @SystemProperty(value = "xray.cloud", content = "false")
- @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:18080")
+ @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:"+PORT_NUMBER)
  @SystemProperty(value = "xray.jiraUsername", content = "username")
  @SystemProperty(value = "xray.jiraPassword", content = "password")
  @SystemProperty(value = "xray.reportFormat", content = "testng")
@@ -357,7 +360,7 @@ public class XrayDatacenterIT {
  @MavenTest
  @MavenGoal("xray:import-results")
  @SystemProperty(value = "xray.cloud", content = "false")
- @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:18080")
+ @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:"+PORT_NUMBER)
  @SystemProperty(value = "xray.jiraUsername", content = "username")
  @SystemProperty(value = "xray.jiraPassword", content = "password")
  @SystemProperty(value = "xray.reportFormat", content = "nunit")
@@ -383,7 +386,7 @@ public class XrayDatacenterIT {
  @MavenTest
  @MavenGoal("xray:import-results")
  @SystemProperty(value = "xray.cloud", content = "false")
- @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:18080")
+ @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:"+PORT_NUMBER)
  @SystemProperty(value = "xray.jiraUsername", content = "username")
  @SystemProperty(value = "xray.jiraPassword", content = "password")
  @SystemProperty(value = "xray.reportFormat", content = "nunit")
@@ -416,7 +419,7 @@ public class XrayDatacenterIT {
  @MavenTest
  @MavenGoal("xray:import-results")
  @SystemProperty(value = "xray.cloud", content = "false")
- @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:18080")
+ @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:"+PORT_NUMBER)
  @SystemProperty(value = "xray.jiraUsername", content = "username")
  @SystemProperty(value = "xray.jiraPassword", content = "password")
  @SystemProperty(value = "xray.reportFormat", content = "xunit")
@@ -442,7 +445,7 @@ public class XrayDatacenterIT {
  @MavenTest
  @MavenGoal("xray:import-results")
  @SystemProperty(value = "xray.cloud", content = "false")
- @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:18080")
+ @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:"+PORT_NUMBER)
  @SystemProperty(value = "xray.jiraUsername", content = "username")
  @SystemProperty(value = "xray.jiraPassword", content = "password")
  @SystemProperty(value = "xray.reportFormat", content = "xunit")
@@ -475,7 +478,7 @@ public class XrayDatacenterIT {
  @MavenTest
  @MavenGoal("xray:import-results")
  @SystemProperty(value = "xray.cloud", content = "false")
- @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:18080")
+ @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:"+PORT_NUMBER)
  @SystemProperty(value = "xray.jiraUsername", content = "username")
  @SystemProperty(value = "xray.jiraPassword", content = "password")
  @SystemProperty(value = "xray.reportFormat", content = "robot")
@@ -501,7 +504,7 @@ public class XrayDatacenterIT {
  @MavenTest
  @MavenGoal("xray:import-results")
  @SystemProperty(value = "xray.cloud", content = "false")
- @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:18080")
+ @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:"+PORT_NUMBER)
  @SystemProperty(value = "xray.jiraUsername", content = "username")
  @SystemProperty(value = "xray.jiraPassword", content = "password")
  @SystemProperty(value = "xray.reportFormat", content = "robot")
@@ -534,7 +537,7 @@ public class XrayDatacenterIT {
  @MavenTest
  @MavenGoal("xray:import-results")
  @SystemProperty(value = "xray.cloud", content = "false")
- @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:18080")
+ @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:"+PORT_NUMBER)
  @SystemProperty(value = "xray.jiraUsername", content = "username")
  @SystemProperty(value = "xray.jiraPassword", content = "password")
  @SystemProperty(value = "xray.reportFormat", content = "cucumber")
@@ -554,7 +557,7 @@ public class XrayDatacenterIT {
  @MavenTest
  @MavenGoal("xray:import-results")
  @SystemProperty(value = "xray.cloud", content = "false")
- @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:18080")
+ @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:"+PORT_NUMBER)
  @SystemProperty(value = "xray.jiraUsername", content = "username")
  @SystemProperty(value = "xray.jiraPassword", content = "password")
  @SystemProperty(value = "xray.reportFormat", content = "cucumber")
@@ -587,7 +590,7 @@ public class XrayDatacenterIT {
  @MavenTest
  @MavenGoal("xray:import-results")
  @SystemProperty(value = "xray.cloud", content = "false")
- @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:18080")
+ @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:"+PORT_NUMBER)
  @SystemProperty(value = "xray.jiraUsername", content = "username")
  @SystemProperty(value = "xray.jiraPassword", content = "password")
  @SystemProperty(value = "xray.reportFormat", content = "behave")
@@ -607,7 +610,7 @@ public class XrayDatacenterIT {
  @MavenTest
  @MavenGoal("xray:import-results")
  @SystemProperty(value = "xray.cloud", content = "false")
- @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:18080")
+ @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:"+PORT_NUMBER)
  @SystemProperty(value = "xray.jiraUsername", content = "username")
  @SystemProperty(value = "xray.jiraPassword", content = "password")
  @SystemProperty(value = "xray.reportFormat", content = "behave")

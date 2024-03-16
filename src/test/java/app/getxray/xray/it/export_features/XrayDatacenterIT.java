@@ -29,10 +29,12 @@ import com.github.tomakehurst.wiremock.client.BasicCredentials;
 @MavenJupiterExtension
 public class XrayDatacenterIT {
 
+    static final int PORT_NUMBER = 18084;
+
     static WireMockServer wm;
     @BeforeAll
     public static void setup () {
-        wm = new WireMockServer(options().port(18080));
+        wm = new WireMockServer(options().port(PORT_NUMBER));
         wm.start();
         setupStub();
     }
@@ -67,7 +69,7 @@ public class XrayDatacenterIT {
     @MavenTest
     @MavenGoal("xray:export-features")
     @SystemProperty(value = "xray.cloud", content = "false")
-    @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:18080")
+    @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:"+PORT_NUMBER)
     @SystemProperty(value = "xray.jiraUsername", content = "username")
     @SystemProperty(value = "xray.jiraPassword", content = "password")
     @SystemProperty(value = "xray.issueKeys", content = "CALC-1")
@@ -88,7 +90,7 @@ public class XrayDatacenterIT {
     @MavenTest
     @MavenGoal("xray:export-features")
     @SystemProperty(value = "xray.cloud", content = "false")
-    @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:18080")
+    @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:"+PORT_NUMBER)
     @SystemProperty(value = "xray.jiraUsername", content = "username")
     @SystemProperty(value = "xray.jiraPassword", content = "password")
     @SystemProperty(value = "xray.filterId", content = "12345")
