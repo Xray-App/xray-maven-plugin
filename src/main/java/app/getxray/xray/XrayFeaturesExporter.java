@@ -223,12 +223,7 @@ public class XrayFeaturesExporter {
     }
 
     public String submitStandardServerDC(String outputPath) throws IOException, XrayFeaturesExporterException {
-        OkHttpClient client;
-        try {
-            client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
-        } catch (KeyManagementException | NoSuchAlgorithmException e) {
-            throw new XrayFeaturesExporterException(e.getMessage());
-        }
+        OkHttpClient client = createHttpClient();
 
         String credentials;
         if (jiraPersonalAccessToken!= null) {
@@ -252,10 +247,11 @@ public class XrayFeaturesExporter {
         }
 
         request = new Request.Builder().url(builder.build()).get().addHeader(AUTHORIZATION_HEADER, credentials).build();
-        CommonUtils.logRequest(logger, request);
+
+            CommonUtils.logRequest(logger, request, this.verbose);
         try {
             response = client.newCall(request).execute();
-            CommonUtils.logResponse(logger, response);
+            CommonUtils.logResponse(logger, response, this.verbose);
             if (response.isSuccessful()) {
                 unzipContentsToFolder(response.body().byteStream(), outputPath);
                 return ("ok");
@@ -268,35 +264,33 @@ public class XrayFeaturesExporter {
         }
     }
 
-    public String submitStandardCloud(String outputPath) throws IOException, XrayFeaturesExporterException {
-        OkHttpClient client;
+    private OkHttpClient createHttpClient() throws XrayFeaturesExporterException {
         try {
-            client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
+            return CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
         } catch (KeyManagementException | NoSuchAlgorithmException e) {
             throw new XrayFeaturesExporterException(e.getMessage());
         }
+    }
 
-        String authenticationPayload = "{ \"client_id\": \"" + clientId + "\", \"client_secret\": \"" + clientSecret
-                + "\" }";
+    private String authenticate(OkHttpClient client) throws IOException {
+        String authenticationPayload = "{ \"client_id\": \"" + clientId +"\", \"client_secret\": \"" + clientSecret +"\" }";
         RequestBody body = RequestBody.create(authenticationPayload, MEDIA_TYPE_JSON);
         Request request = new Request.Builder().url(XRAY_CLOUD_AUTHENTICATE_URL).post(body).build();
-        CommonUtils.logRequest(logger, request);
-    
-        Response response = null;
-        String authToken = null;
-        try {
-            response = client.newCall(request).execute();
+        CommonUtils.logRequest(logger, request, this.verbose);
+        try (Response response = client.newCall(request).execute()) {
             CommonUtils.logResponse(logger, response, false);
             String responseBody = response.body().string();
             if (response.isSuccessful()) {
-                authToken = responseBody.replace("\"", "");
+                return responseBody.replace("\"", "");
             } else {
                 throw new IOException("failed to authenticate " + response);
             }
-        } catch (IOException e) {
-            logger.error(e);
-            throw e;
         }
+    }
+
+    public String submitStandardCloud(String outputPath) throws IOException, XrayFeaturesExporterException {
+        OkHttpClient client = createHttpClient();
+        String authToken = authenticate(client);
         String credentials = BEARER_HEADER_PREFIX + authToken;
 
         String endpointUrl = XRAY_CLOUD_API_BASE_URL + "/export/cucumber";
@@ -310,11 +304,11 @@ public class XrayFeaturesExporter {
             builder.addQueryParameter("filter", this.filterId);
         }
 
-        request = new Request.Builder().url(builder.build()).get().addHeader(AUTHORIZATION_HEADER, credentials).build();
-        CommonUtils.logRequest(logger, request);
+        Request request = new Request.Builder().url(builder.build()).get().addHeader(AUTHORIZATION_HEADER, credentials).build();
+        CommonUtils.logRequest(logger, request, this.verbose);
         try {
-            response = client.newCall(request).execute();
-            CommonUtils.logResponse(logger, response);
+            Response response = client.newCall(request).execute();
+            CommonUtils.logResponse(logger, response, this.verbose);
             if (response.isSuccessful()) {
                 unzipContentsToFolder(response.body().byteStream(), outputPath);
                 return ("ok");

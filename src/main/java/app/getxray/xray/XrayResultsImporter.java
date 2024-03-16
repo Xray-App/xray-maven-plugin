@@ -292,12 +292,7 @@ public class XrayResultsImporter {
     }
 
     public String submitMultipartServerDC(String format, String reportFile, JSONObject testExecInfo, JSONObject testInfo) throws IOException, XrayResultsImporterException {        
-        OkHttpClient client;
-        try {
-            client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
-        } catch (KeyManagementException | NoSuchAlgorithmException e) {
-            throw new XrayResultsImporterException(e.getMessage());
-        }
+        OkHttpClient client = createHttpClient();
 
         String credentials;
         if (jiraPersonalAccessToken!= null) {
@@ -351,11 +346,11 @@ public class XrayResultsImporter {
         }
 
         Request request = new Request.Builder().url(builder.build()).post(requestBody).addHeader(AUTHORIZATION_HEADER, credentials).build();
-        CommonUtils.logRequest(logger, request);
+        CommonUtils.logRequest(logger, request, this.verbose);
         Response response = null;
         try {
             response = client.newCall(request).execute();
-            CommonUtils.logResponse(logger, response);
+            CommonUtils.logResponse(logger, response, this.verbose);
             String responseBody = response.body().string();
             if (response.isSuccessful()){
                 return responseBody;
@@ -369,17 +364,12 @@ public class XrayResultsImporter {
     }
 
     public String submitMultipartCloud(String format, String reportFile, JSONObject testExecInfo, JSONObject testInfo) throws IOException, XrayResultsImporterException {  	
-        OkHttpClient client;
-        try {
-            client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
-        } catch (KeyManagementException | NoSuchAlgorithmException e) {
-            throw new XrayResultsImporterException(e.getMessage());
-        }
+        OkHttpClient client = createHttpClient();
 
 		String authenticationPayload = "{ \"client_id\": \"" + clientId +"\", \"client_secret\": \"" + clientSecret +"\" }";
 		RequestBody body = RequestBody.create(authenticationPayload, MEDIA_TYPE_JSON);
 		Request request = new Request.Builder().url(XRAY_CLOUD_AUTHENTICATE_URL).post(body).build();
-        CommonUtils.logRequest(logger, request);
+        CommonUtils.logRequest(logger, request, this.verbose);
 
 		Response response = null;
 		String authToken = null;
@@ -436,11 +426,11 @@ public class XrayResultsImporter {
         }
 
         request = new Request.Builder().url(builder.build()).post(requestBody).addHeader(AUTHORIZATION_HEADER, credentials).build();
-        CommonUtils.logRequest(logger, request);
+        CommonUtils.logRequest(logger, request, this.verbose);
         response = null;
         try {
             response = client.newCall(request).execute();
-            CommonUtils.logResponse(logger, response);
+            CommonUtils.logResponse(logger, response, this.verbose);
             String responseBody = response.body().string();
             if (response.isSuccessful()){
                 return responseBody;
@@ -455,12 +445,7 @@ public class XrayResultsImporter {
     }
 
     public String submitStandardServerDC(String format, String reportFile) throws IOException, XrayResultsImporterException {        
-        OkHttpClient client;
-        try {
-            client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
-        } catch (KeyManagementException | NoSuchAlgorithmException e) {
-            throw new XrayResultsImporterException(e.getMessage());
-        }
+        OkHttpClient client = createHttpClient();
         String credentials;
         if (jiraPersonalAccessToken!= null) {
             credentials = BEARER_HEADER_PREFIX + jiraPersonalAccessToken;
@@ -521,7 +506,7 @@ public class XrayResultsImporter {
                 }
                 request = new Request.Builder().url(builder.build()).post(requestBody).addHeader(AUTHORIZATION_HEADER, credentials).build();
             }
-            CommonUtils.logRequest(logger, request);
+            CommonUtils.logRequest(logger, request, this.verbose);
         } catch (Exception e1) {
             logger.error(e1);
             throw e1;
@@ -530,7 +515,7 @@ public class XrayResultsImporter {
         Response response = null;
         try {
             response = client.newCall(request).execute();
-            CommonUtils.logResponse(logger, response);
+            CommonUtils.logResponse(logger, response, this.verbose);
             String responseBody = response.body().string();
             if (response.isSuccessful()){
                 return(responseBody);
@@ -543,34 +528,34 @@ public class XrayResultsImporter {
         }
     }
 
-    public String submitStandardCloud(String format, String reportFile) throws IOException, XrayResultsImporterException {
-        OkHttpClient client;
+
+    private OkHttpClient createHttpClient() throws XrayResultsImporterException {
         try {
-            client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
+            return CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
         } catch (KeyManagementException | NoSuchAlgorithmException e) {
             throw new XrayResultsImporterException(e.getMessage());
         }
+    }
 
+    private String authenticate(OkHttpClient client) throws IOException {
         String authenticationPayload = "{ \"client_id\": \"" + clientId +"\", \"client_secret\": \"" + clientSecret +"\" }";
         RequestBody body = RequestBody.create(authenticationPayload, MEDIA_TYPE_JSON);
         Request request = new Request.Builder().url(XRAY_CLOUD_AUTHENTICATE_URL).post(body).build();
-        CommonUtils.logRequest(logger, request);
-
-        Response response = null;
-        String authToken = null;
-        try {
-            response = client.newCall(request).execute();
+        CommonUtils.logRequest(logger, request, this.verbose);
+        try (Response response = client.newCall(request).execute()) {
             CommonUtils.logResponse(logger, response, false);
             String responseBody = response.body().string();
-            if (response.isSuccessful()){
-                authToken = responseBody.replace("\"", "");	
+            if (response.isSuccessful()) {
+                return responseBody.replace("\"", "");
             } else {
                 throw new IOException("failed to authenticate " + response);
             }
-        } catch (IOException e) {
-            logger.error("failed to authenticate", e);
-            throw e;
         }
+    }
+    
+    public String submitStandardCloud(String format, String reportFile) throws IOException, XrayResultsImporterException {
+        OkHttpClient client = createHttpClient();
+        String authToken = authenticate(client);
         String credentials = BEARER_HEADER_PREFIX + authToken;
 
         String[] supportedFormats = new String [] { XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT, BEHAVE_FORMAT };
@@ -585,7 +570,6 @@ public class XrayResultsImporter {
         } else {
             mediaType = MEDIA_TYPE_JSON;
         }
-    
 
         String endpointUrl;
         if (XRAY_FORMAT.equals(format)) {
@@ -622,11 +606,11 @@ public class XrayResultsImporter {
             }
         }
 
-        request = new Request.Builder().url(builder.build()).post(requestBody).addHeader(AUTHORIZATION_HEADER, credentials).build();
-        CommonUtils.logRequest(logger, request);
+        Request request = new Request.Builder().url(builder.build()).post(requestBody).addHeader(AUTHORIZATION_HEADER, credentials).build();
+        CommonUtils.logRequest(logger, request, this.verbose);
         try {
-            response = client.newCall(request).execute();
-            CommonUtils.logResponse(logger, response);
+            Response response = client.newCall(request).execute();
+            CommonUtils.logResponse(logger, response, this.verbose);
             String responseBody = response.body().string();            
             if (response.isSuccessful()){
                 return(responseBody);

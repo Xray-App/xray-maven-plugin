@@ -25,8 +25,8 @@ public class CommonUtils {
         throw new IllegalStateException("Utility class");
       }
 
-    public static void logRequest(Log logger, Request request) {
-        if (logger != null) {
+    public static void logRequest(Log logger, Request request, Boolean logRequest) {
+        if ((logger != null) && (isTrue(logRequest))) {
             logger.debug("REQUEST_URL: " + request.url().toString());
             logger.debug("REQUEST_METHOD: " + request.method());
 
@@ -38,22 +38,23 @@ public class CommonUtils {
         }
     }
 
-    public static void logResponse(Log logger, Response response) {
-        logResponse(logger, response, true);
+    public static void logResponse(Log logger, Response response, Boolean logResponse) {
+        if ((logger != null) && (isTrue(logResponse)))
+            logResponse(logger, response, true);
     }
 
-    public static void logResponse(Log logger, Response response, boolean logBody) {
+    public static void logResponse(Log logger, Response response, boolean logResponse) {
         if (logger != null) {
             logger.debug("RESPONSE_CONTENT_TYPE:" + response.header("Content-Type"));
             logger.debug("RESPONSE_HTTP_STATUS: " + response.code());
-            if (logBody) {
+            if (logResponse) {
                 logger.debug("RESPONSE_BODY:");
                 logger.debug("=======================");
                 
                 try (ResponseBody responseBody = response.peekBody(1024L * 1024L)) {
                     logger.debug(responseBody.string());
                 } catch (IOException e) {
-                    //e.printStackTrace();
+                    logger.error(e);
                 }
             }
         }

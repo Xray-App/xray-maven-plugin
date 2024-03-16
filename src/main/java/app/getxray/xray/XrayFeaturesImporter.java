@@ -260,12 +260,7 @@ public class XrayFeaturesImporter {
     }
 
     public JSONArray importServerDC(String inputPath, JSONObject testInfo, JSONObject precondInfo) throws XrayFeaturesImporterException, IOException {
-        OkHttpClient client;
-        try {
-            client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
-        } catch (KeyManagementException | NoSuchAlgorithmException e) {
-            throw new XrayFeaturesImporterException(e.getMessage());
-        }
+        OkHttpClient client = createHttpClient();
 
         File inputFile = new File(inputPath);
         String credentials;
@@ -321,10 +316,10 @@ public class XrayFeaturesImporter {
         }
 
         Request request = new Request.Builder().url(builder.build()).post(requestBody).addHeader(AUTHORIZATION_HEADER, credentials).build();
-        CommonUtils.logRequest(logger, request);
+        CommonUtils.logRequest(logger, request, this.verbose);
         try {
             response = client.newCall(request).execute();
-            CommonUtils.logResponse(logger, response);
+            CommonUtils.logResponse(logger, response, this.verbose);
             String responseBody = response.body().string();
             if (response.isSuccessful()){
                 return new JSONArray(responseBody);
@@ -337,37 +332,36 @@ public class XrayFeaturesImporter {
         }
     }
 
-    public JSONArray importCloud(String inputPath, JSONObject testInfo, JSONObject precondInfo) throws XrayFeaturesImporterException, IOException {
-        
-        OkHttpClient client;
+    private OkHttpClient createHttpClient() throws XrayFeaturesImporterException {
         try {
-            client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
+            return CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
         } catch (KeyManagementException | NoSuchAlgorithmException e) {
             throw new XrayFeaturesImporterException(e.getMessage());
         }
-        
-        File inputFile = new File(inputPath);
+    }
+
+    private String authenticate(OkHttpClient client) throws IOException {
         String authenticationPayload = "{ \"client_id\": \"" + clientId +"\", \"client_secret\": \"" + clientSecret +"\" }";
         RequestBody body = RequestBody.create(authenticationPayload, MEDIA_TYPE_JSON);
         Request request = new Request.Builder().url(XRAY_CLOUD_AUTHENTICATE_URL).post(body).build();
-        CommonUtils.logRequest(logger, request);
-    
-        Response response = null;
-        String authToken = null;
-        try {
-            response = client.newCall(request).execute();
-            CommonUtils.logResponse(logger, response, false);
+        CommonUtils.logRequest(logger, request, this.verbose);
+        try (Response response = client.newCall(request).execute()) {
+            CommonUtils.logResponse(logger, response, this.verbose);
             String responseBody = response.body().string();
-            if (response.isSuccessful()){
-                authToken = responseBody.replace("\"", "");	
+            if (response.isSuccessful()) {
+                return responseBody.replace("\"", "");
             } else {
                 throw new IOException("failed to authenticate " + response);
             }
-        } catch (IOException e) {
-            logger.error(e);
-            throw new XrayFeaturesImporterException(e.getMessage());
         }
+    }
+
+    public JSONArray importCloud(String inputPath, JSONObject testInfo, JSONObject precondInfo) throws XrayFeaturesImporterException, IOException {
+        OkHttpClient client = createHttpClient();
+        String authToken = authenticate(client);
         String credentials = BEARER_HEADER_PREFIX + authToken;
+        
+        File inputFile = new File(inputPath);
 
         String endpointUrl =  XRAY_CLOUD_API_BASE_URL + "/import/feature";
         HttpUrl url = HttpUrl.get(endpointUrl);
@@ -418,11 +412,11 @@ public class XrayFeaturesImporter {
             throw new XrayFeaturesImporterException(e1.getMessage());
         }
 
-        request = new Request.Builder().url(builder.build()).post(requestBody).addHeader(AUTHORIZATION_HEADER, credentials).build();
-        CommonUtils.logRequest(logger, request);
+        Request request = new Request.Builder().url(builder.build()).post(requestBody).addHeader(AUTHORIZATION_HEADER, credentials).build();
+        CommonUtils.logRequest(logger, request, this.verbose);
         try {
-            response = client.newCall(request).execute();
-            CommonUtils.logResponse(logger, response);
+            Response response = client.newCall(request).execute();
+            CommonUtils.logResponse(logger, response, this.verbose);
             String responseBody = response.body().string();
             if (response.isSuccessful()){
                 JSONArray responseObj = new JSONArray();
@@ -464,7 +458,6 @@ public class XrayFeaturesImporter {
 
             File[] children = fileToZip.listFiles();
             for (File childFile : children) {
-
                 // zip only .feature files and subdirs
                 if (!(childFile.isDirectory() || childFile.getName().toLowerCase().endsWith(FEATURE_EXTENSION)))
                     continue;
