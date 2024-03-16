@@ -30,7 +30,7 @@ import com.github.tomakehurst.wiremock.client.BasicCredentials;
 public class XrayDatacenterIT {
 
     static WireMockServer wm;
-    static final int PORT_NUMBER = 18081;
+    static final int PORT_NUMBER = 18080;
 
     @BeforeAll
     public static void setup () {

@@ -32,7 +32,7 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule;
 public class XrayDatacenterIT {
 
     static WireMockServer wm;
-    static final int PORT_NUMBER = 18087;
+    static final int PORT_NUMBER = 18080;
 
     @BeforeAll
     public static void setup () {

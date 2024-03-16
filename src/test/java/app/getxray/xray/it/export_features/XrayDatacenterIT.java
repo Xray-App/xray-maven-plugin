@@ -29,7 +29,7 @@ import com.github.tomakehurst.wiremock.client.BasicCredentials;
 @MavenJupiterExtension
 public class XrayDatacenterIT {
 
-    static final int PORT_NUMBER = 18084;
+    static final int PORT_NUMBER = 18080;
 
     static WireMockServer wm;
     @BeforeAll
