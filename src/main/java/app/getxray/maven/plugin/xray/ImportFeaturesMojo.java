@@ -2,7 +2,6 @@ package app.getxray.maven.plugin.xray;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -13,6 +12,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import app.getxray.xray.XrayFeaturesImporter;
 
 /**

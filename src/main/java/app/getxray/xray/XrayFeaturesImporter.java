@@ -1,29 +1,27 @@
 package app.getxray.xray;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.maven.plugin.logging.Log;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import app.getxray.xray.CommonUtils;
 import okhttp3.Credentials;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
+import okhttp3.MultipartBody.Builder;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.MultipartBody.Builder;
-
-import org.apache.maven.plugin.logging.Log;
 
 // https://docs.getxray.app/display/XRAYCLOUD/Importing+Cucumber+Tests+-+REST+v2
 // https://docs.getxray.app/display/XRAY/Importing+Cucumber+Tests+-+REST
