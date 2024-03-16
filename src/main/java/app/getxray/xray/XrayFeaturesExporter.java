@@ -22,10 +22,14 @@ import okhttp3.Response;
 // https://docs.getxray.app/display/XRAY/Exporting+Cucumber+Tests+-+REST
 
 public class XrayFeaturesExporter {
-    private final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json");
+    private static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json");
 
-    private final String xrayCloudApiBaseUrl = "https://xray.cloud.getxray.app/api/v2";
-    private final String xrayCloudAuthenticateUrl = xrayCloudApiBaseUrl + "/authenticate";
+    private static final String XRAY_CLOUD_API_BASE_URL = "https://xray.cloud.getxray.app/api/v2";
+	private static final String XRAY_CLOUD_AUTHENTICATE_URL = XRAY_CLOUD_API_BASE_URL + "/authenticate";
+
+    private static final String AUTHORIZATION_HEADER = "Authorization";
+
+    private static final String BEARER_HEADER_PREFIX = "Bearer ";
 
     private String jiraBaseUrl;
     private String jiraUsername;
@@ -215,7 +219,7 @@ public class XrayFeaturesExporter {
 
         String credentials;
         if (jiraPersonalAccessToken!= null) {
-            credentials = "Bearer " + jiraPersonalAccessToken;
+            credentials = BEARER_HEADER_PREFIX + jiraPersonalAccessToken;
         } else {
             credentials = Credentials.basic(jiraUsername, jiraPassword);
         }
@@ -234,7 +238,7 @@ public class XrayFeaturesExporter {
             builder.addQueryParameter("filter", this.filterId);
         }
 
-        request = new Request.Builder().url(builder.build()).get().addHeader("Authorization", credentials).build();
+        request = new Request.Builder().url(builder.build()).get().addHeader(AUTHORIZATION_HEADER, credentials).build();
         CommonUtils.logRequest(logger, request);
         try {
             response = client.newCall(request).execute();
@@ -257,7 +261,7 @@ public class XrayFeaturesExporter {
         String authenticationPayload = "{ \"client_id\": \"" + clientId + "\", \"client_secret\": \"" + clientSecret
                 + "\" }";
         RequestBody body = RequestBody.create(authenticationPayload, MEDIA_TYPE_JSON);
-        Request request = new Request.Builder().url(xrayCloudAuthenticateUrl).post(body).build();
+        Request request = new Request.Builder().url(XRAY_CLOUD_AUTHENTICATE_URL).post(body).build();
         CommonUtils.logRequest(logger, request);
     
         Response response = null;
@@ -275,13 +279,12 @@ public class XrayFeaturesExporter {
             logger.error(e);
             throw e;
         }
-        String credentials = "Bearer " + authToken;
+        String credentials = BEARER_HEADER_PREFIX + authToken;
 
-        String endpointUrl = xrayCloudApiBaseUrl + "/export/cucumber";
+        String endpointUrl = XRAY_CLOUD_API_BASE_URL + "/export/cucumber";
         HttpUrl url = HttpUrl.get(endpointUrl);
         HttpUrl.Builder builder = url.newBuilder();
 
-        // builder.addQueryParameter("fz", "false");
         if (issueKeys != null) {
             builder.addQueryParameter("keys", this.issueKeys);
         }
@@ -289,7 +292,7 @@ public class XrayFeaturesExporter {
             builder.addQueryParameter("filter", this.filterId);
         }
 
-        request = new Request.Builder().url(builder.build()).get().addHeader("Authorization", credentials).build();
+        request = new Request.Builder().url(builder.build()).get().addHeader(AUTHORIZATION_HEADER, credentials).build();
         CommonUtils.logRequest(logger, request);
         try {
             response = client.newCall(request).execute();
@@ -306,7 +309,7 @@ public class XrayFeaturesExporter {
         }
     }
 
-    private void unzipContentsToFolder(InputStream zippedContents, String outputFolder) throws Exception {
+    private void unzipContentsToFolder(InputStream zippedContents, String outputFolder) throws IOException {
         File destDir = new File(outputFolder);
         byte[] buffer = new byte[1024];
         ZipInputStream zis = new ZipInputStream(new BufferedInputStream(zippedContents));

@@ -19,6 +19,10 @@ import org.apache.maven.plugin.logging.Log;
 
 public class CommonUtils {
 
+    private CommonUtils() {
+        throw new IllegalStateException("Utility class");
+      }
+
     public static void logRequest(Log logger, Request request) {
         if (logger != null) {
             logger.debug("REQUEST_URL: " + request.url().toString());

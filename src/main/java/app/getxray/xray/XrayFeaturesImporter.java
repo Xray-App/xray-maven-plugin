@@ -28,12 +28,14 @@ import okhttp3.Response;
 
 public class XrayFeaturesImporter {
     private static final String FEATURE_EXTENSION = ".feature";
-    private final MediaType MEDIA_TYPE_ZIP = MediaType.parse("application/zip");
-    private final MediaType MEDIA_TYPE_FOR_FEATURE_FILES = MediaType.parse("text/plain");
-    private final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json");
+    private static final MediaType MEDIA_TYPE_ZIP = MediaType.parse("application/zip");
+    private static final MediaType MEDIA_TYPE_FOR_FEATURE_FILES = MediaType.parse("text/plain");
+    private static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json");
 
-    private final String xrayCloudApiBaseUrl = "https://xray.cloud.getxray.app/api/v2";
-    private final String xrayCloudAuthenticateUrl = xrayCloudApiBaseUrl + "/authenticate";
+    private static final String XRAY_CLOUD_API_BASE_URL = "https://xray.cloud.getxray.app/api/v2";
+	private static final String XRAY_CLOUD_AUTHENTICATE_URL = XRAY_CLOUD_API_BASE_URL + "/authenticate";
+    private static final String AUTHORIZATION_HEADER = "Authorization";
+    private static final String BEARER_HEADER_PREFIX = "Bearer ";
 
     private String jiraBaseUrl;
     private String jiraUsername;
@@ -253,7 +255,7 @@ public class XrayFeaturesImporter {
         File inputFile = new File(inputPath);
         String credentials;
         if (jiraPersonalAccessToken!= null) {
-            credentials = "Bearer " + jiraPersonalAccessToken;
+            credentials = BEARER_HEADER_PREFIX + jiraPersonalAccessToken;
         } else {
             credentials = Credentials.basic(jiraUsername, jiraPassword);
         }
@@ -281,7 +283,6 @@ public class XrayFeaturesImporter {
             mediaType = MEDIA_TYPE_ZIP;
             if (inputFile.isDirectory()) {
                 Path tempZip = Files.createTempFile("dummy", ".zip");
-                //System.out.println(tempZip.toFile().getAbsolutePath());
                 zipDirectory(inputPath, tempZip.toFile().getAbsolutePath());
                 inputFile = tempZip.toFile();
             }
@@ -304,17 +305,15 @@ public class XrayFeaturesImporter {
             throw e1;
         }
 
-        Request request = new Request.Builder().url(builder.build()).post(requestBody).addHeader("Authorization", credentials).build();
+        Request request = new Request.Builder().url(builder.build()).post(requestBody).addHeader(AUTHORIZATION_HEADER, credentials).build();
         CommonUtils.logRequest(logger, request);
         try {
             response = client.newCall(request).execute();
             CommonUtils.logResponse(logger, response);
             String responseBody = response.body().string();
             if (response.isSuccessful()){
-                JSONArray responseObj = new JSONArray(responseBody);
-                return responseObj;
+                return new JSONArray(responseBody);
             } else {
-                //System.err.println(responseBody);
                 throw new IOException("Unexpected HTTP code " + response);
             }
         } catch (IOException e) {
@@ -329,7 +328,7 @@ public class XrayFeaturesImporter {
         File inputFile = new File(inputPath);
         String authenticationPayload = "{ \"client_id\": \"" + clientId +"\", \"client_secret\": \"" + clientSecret +"\" }";
         RequestBody body = RequestBody.create(authenticationPayload, MEDIA_TYPE_JSON);
-        Request request = new Request.Builder().url(xrayCloudAuthenticateUrl).post(body).build();
+        Request request = new Request.Builder().url(XRAY_CLOUD_AUTHENTICATE_URL).post(body).build();
         CommonUtils.logRequest(logger, request);
     
         Response response = null;
@@ -347,9 +346,9 @@ public class XrayFeaturesImporter {
             logger.error(e);
             throw e;
         }
-        String credentials = "Bearer " + authToken;
+        String credentials = BEARER_HEADER_PREFIX + authToken;
 
-        String endpointUrl =  xrayCloudApiBaseUrl + "/import/feature";
+        String endpointUrl =  XRAY_CLOUD_API_BASE_URL + "/import/feature";
         HttpUrl url = HttpUrl.get(endpointUrl);
         HttpUrl.Builder builder = url.newBuilder();
         MultipartBody requestBody = null;
@@ -374,7 +373,6 @@ public class XrayFeaturesImporter {
             mediaType = MEDIA_TYPE_ZIP;
             if (inputFile.isDirectory()) {
                 Path tempZip = Files.createTempFile("dummy", ".zip");
-                //System.out.println(tempZip.toFile().getAbsolutePath());
                 zipDirectory(inputPath, tempZip.toFile().getAbsolutePath());
                 inputFile = tempZip.toFile();
             }
@@ -397,7 +395,7 @@ public class XrayFeaturesImporter {
             throw e1;
         }
 
-        request = new Request.Builder().url(builder.build()).post(requestBody).addHeader("Authorization", credentials).build();
+        request = new Request.Builder().url(builder.build()).post(requestBody).addHeader(AUTHORIZATION_HEADER, credentials).build();
         CommonUtils.logRequest(logger, request);
         try {
             response = client.newCall(request).execute();
@@ -408,7 +406,6 @@ public class XrayFeaturesImporter {
                 responseObj.put(new JSONObject(responseBody));
                 return responseObj;
             } else {
-                // System.err.println(responseBody);
                 throw new IOException("Unexpected HTTP code " + response);
             }
         } catch (IOException e) {

@@ -18,11 +18,11 @@ import okhttp3.Response;
 import org.apache.maven.plugin.logging.Log;
 
 public class XrayResultsImporter {
-    private final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json");
-    private final MediaType MEDIA_TYPE_XML = MediaType.parse("application/xml");
+    private static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json");
+    private static final MediaType MEDIA_TYPE_XML = MediaType.parse("application/xml");
 
-    private final String xrayCloudApiBaseUrl = "https://xray.cloud.getxray.app/api/v2";
-	private final String xrayCloudAuthenticateUrl = xrayCloudApiBaseUrl + "/authenticate";
+    private static final String XRAY_CLOUD_API_BASE_URL = "https://xray.cloud.getxray.app/api/v2";
+	private static final String XRAY_CLOUD_AUTHENTICATE_URL = XRAY_CLOUD_API_BASE_URL + "/authenticate";
 
     public static final String XRAY_FORMAT = "xray";
     public static final String JUNIT_FORMAT = "junit";
@@ -32,6 +32,10 @@ public class XrayResultsImporter {
     public static final String NUNIT_FORMAT = "nunit";
     public static final String CUCUMBER_FORMAT = "cucumber";
     public static final String BEHAVE_FORMAT = "behave";
+    private static final String UNSUPPORTED_REPORT_FORMAT = "unsupported report format: ";
+    private static final String UNEXPECTED_HTTP_CODE = "Unexpected HTTP code ";
+    private static final String BEARER_HEADER_PREFIX = "Bearer ";
+    private static final String AUTHORIZATION_HEADER = "Authorization";
 
     private String jiraBaseUrl;
     private String jiraUsername;
@@ -279,18 +283,18 @@ public class XrayResultsImporter {
 
         String credentials;
         if (jiraPersonalAccessToken!= null) {
-            credentials = "Bearer " + jiraPersonalAccessToken;
+            credentials = BEARER_HEADER_PREFIX + jiraPersonalAccessToken;
         } else {
             credentials = Credentials.basic(jiraUsername, jiraPassword);
         } 
 
-        String supportedFormats[] = new String [] { XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT, BEHAVE_FORMAT }; 
+        String[] supportedFormats = new String [] { XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT, BEHAVE_FORMAT }; 
         if (!Arrays.asList(supportedFormats).contains(format)) {
-            throw new Exception("unsupported report format: " + format);
+            throw new IllegalArgumentException(UNSUPPORTED_REPORT_FORMAT + format);
         }
 
         MediaType mediaType;
-        String xmlBasedFormats[] = new String [] { JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT}; 
+        String[] xmlBasedFormats = new String [] { JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT}; 
         if (Arrays.asList(xmlBasedFormats).contains(format)) {
             mediaType = MEDIA_TYPE_XML;
         } else {
@@ -328,7 +332,7 @@ public class XrayResultsImporter {
             throw e1;
         }
 
-        Request request = new Request.Builder().url(builder.build()).post(requestBody).addHeader("Authorization", credentials).build();
+        Request request = new Request.Builder().url(builder.build()).post(requestBody).addHeader(AUTHORIZATION_HEADER, credentials).build();
         CommonUtils.logRequest(logger, request);
         Response response = null;
         try {
@@ -341,7 +345,7 @@ public class XrayResultsImporter {
                 return responseBody;
             } else {
                 //System.err.println(responseBody);
-                throw new IOException("Unexpected HTTP code " + response);
+                throw new IOException(UNEXPECTED_HTTP_CODE + response);
             }
         } catch (IOException e) {
             logger.error(e);
@@ -354,7 +358,7 @@ public class XrayResultsImporter {
 
 		String authenticationPayload = "{ \"client_id\": \"" + clientId +"\", \"client_secret\": \"" + clientSecret +"\" }";
 		RequestBody body = RequestBody.create(authenticationPayload, MEDIA_TYPE_JSON);
-		Request request = new Request.Builder().url(xrayCloudAuthenticateUrl).post(body).build();
+		Request request = new Request.Builder().url(XRAY_CLOUD_AUTHENTICATE_URL).post(body).build();
         CommonUtils.logRequest(logger, request);
 
 		Response response = null;
@@ -372,15 +376,15 @@ public class XrayResultsImporter {
             logger.error(e);
             throw e;
 		}
-        String credentials = "Bearer " + authToken;
+        String credentials = BEARER_HEADER_PREFIX + authToken;
 
-        String supportedFormats[] = new String [] { XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT, BEHAVE_FORMAT }; 
+        String[] supportedFormats = new String [] { XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT, BEHAVE_FORMAT }; 
         if (!Arrays.asList(supportedFormats).contains(format)) {
-            throw new Exception("unsupported report format: " + format);
+            throw new IllegalArgumentException(UNSUPPORTED_REPORT_FORMAT + format);
         }
 
         MediaType mediaType;
-        String xmlBasedFormats[] = new String [] { JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT}; 
+        String[] xmlBasedFormats = new String [] { JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT}; 
         if (Arrays.asList(xmlBasedFormats).contains(format)) {
             mediaType = MEDIA_TYPE_XML;
         } else {
@@ -389,9 +393,9 @@ public class XrayResultsImporter {
 
         String endpointUrl;
         if ("xray".equals(format)) {
-            endpointUrl =  xrayCloudApiBaseUrl + "/import/execution/multipart";
+            endpointUrl =  XRAY_CLOUD_API_BASE_URL + "/import/execution/multipart";
         } else {
-            endpointUrl =  xrayCloudApiBaseUrl + "/import/execution/" + format + "/multipart";
+            endpointUrl =  XRAY_CLOUD_API_BASE_URL + "/import/execution/" + format + "/multipart";
         }
 
         HttpUrl url = HttpUrl.get(endpointUrl);
@@ -411,7 +415,7 @@ public class XrayResultsImporter {
             throw e1;
         }
 
-        request = new Request.Builder().url(builder.build()).post(requestBody).addHeader("Authorization", credentials).build();
+        request = new Request.Builder().url(builder.build()).post(requestBody).addHeader(AUTHORIZATION_HEADER, credentials).build();
         CommonUtils.logRequest(logger, request);
         response = null;
         try {
@@ -424,7 +428,7 @@ public class XrayResultsImporter {
                 return responseBody;
             } else {
                 //System.err.println(responseBody);
-                throw new IOException("Unexpected HTTP code " + response);
+                throw new IOException(UNEXPECTED_HTTP_CODE + response);
             }
         } catch (IOException e) {
             logger.error(e);
@@ -438,18 +442,18 @@ public class XrayResultsImporter {
 
         String credentials;
         if (jiraPersonalAccessToken!= null) {
-            credentials = "Bearer " + jiraPersonalAccessToken;
+            credentials = BEARER_HEADER_PREFIX + jiraPersonalAccessToken;
         } else {
             credentials = Credentials.basic(jiraUsername, jiraPassword);
         } 
        
-        String supportedFormats[] = new String [] { XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT, BEHAVE_FORMAT }; 
+        String[] supportedFormats = new String [] { XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT, BEHAVE_FORMAT }; 
         if (!Arrays.asList(supportedFormats).contains(format)) {
-            throw new Exception("unsupported report format: " + format);
+            throw new IllegalArgumentException(UNSUPPORTED_REPORT_FORMAT + format);
         }
 
         MediaType mediaType;
-        String xmlBasedFormats[] = new String [] { JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT}; 
+        String[] xmlBasedFormats = new String [] { JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT}; 
         if (Arrays.asList(xmlBasedFormats).contains(format)) {
             mediaType = MEDIA_TYPE_XML;
         } else {
@@ -471,7 +475,7 @@ public class XrayResultsImporter {
             if (XRAY_FORMAT.equals(format) || CUCUMBER_FORMAT.equals(format) || BEHAVE_FORMAT.equals(format) ) {
                 String reportContent = new String ( Files.readAllBytes( Paths.get(reportFile) ) );
                 RequestBody requestBody = RequestBody.create(reportContent, mediaType);
-                request = new Request.Builder().url(builder.build()).post(requestBody).addHeader("Authorization", credentials).build();
+                request = new Request.Builder().url(builder.build()).post(requestBody).addHeader(AUTHORIZATION_HEADER, credentials).build();
             } else {
                 MultipartBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
@@ -497,7 +501,7 @@ public class XrayResultsImporter {
                 if (testEnvironment != null) {
                     builder.addQueryParameter("testEnvironments", this.testEnvironment);
                 }
-                request = new Request.Builder().url(builder.build()).post(requestBody).addHeader("Authorization", credentials).build();
+                request = new Request.Builder().url(builder.build()).post(requestBody).addHeader(AUTHORIZATION_HEADER, credentials).build();
             }
             CommonUtils.logRequest(logger, request);
         } catch (Exception e1) {
@@ -515,8 +519,7 @@ public class XrayResultsImporter {
                 // System.out.println("Test Execution: "+((JSONObject)(responseObj.get("testExecIssue"))).get("key"));
                 return(responseBody);
             } else {
-                //System.err.println(responseBody);
-                throw new IOException("Unexpected HTTP code " + response);
+                throw new IOException(UNEXPECTED_HTTP_CODE + response);
             }
         } catch (IOException e) {
             logger.error(e);
@@ -529,7 +532,7 @@ public class XrayResultsImporter {
 
         String authenticationPayload = "{ \"client_id\": \"" + clientId +"\", \"client_secret\": \"" + clientSecret +"\" }";
         RequestBody body = RequestBody.create(authenticationPayload, MEDIA_TYPE_JSON);
-        Request request = new Request.Builder().url(xrayCloudAuthenticateUrl).post(body).build();
+        Request request = new Request.Builder().url(XRAY_CLOUD_AUTHENTICATE_URL).post(body).build();
         CommonUtils.logRequest(logger, request);
 
         Response response = null;
@@ -547,15 +550,15 @@ public class XrayResultsImporter {
             logger.error("failed to authenticate", e);
             throw e;
         }
-        String credentials = "Bearer " + authToken;
+        String credentials = BEARER_HEADER_PREFIX + authToken;
 
-        String supportedFormats[] = new String [] { XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT, BEHAVE_FORMAT };
+        String[] supportedFormats = new String [] { XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT, BEHAVE_FORMAT };
         if (!Arrays.asList(supportedFormats).contains(format)) {
-            throw new Exception("unsupported report format: " + format);
+            throw new IllegalArgumentException(UNSUPPORTED_REPORT_FORMAT + format);
         }
 
         MediaType mediaType;
-        String xmlBasedFormats[] = new String [] { JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT}; 
+        String[] xmlBasedFormats = new String [] { JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT}; 
         if (Arrays.asList(xmlBasedFormats).contains(format)) {
             mediaType = MEDIA_TYPE_XML;
         } else {
@@ -565,9 +568,9 @@ public class XrayResultsImporter {
 
         String endpointUrl;
         if (XRAY_FORMAT.equals(format)) {
-            endpointUrl = xrayCloudApiBaseUrl + "/import/execution";
+            endpointUrl = XRAY_CLOUD_API_BASE_URL + "/import/execution";
         } else {
-            endpointUrl = xrayCloudApiBaseUrl + "/import/execution/" + format;
+            endpointUrl = XRAY_CLOUD_API_BASE_URL + "/import/execution/" + format;
         }
         RequestBody requestBody = null;
         try {
@@ -602,7 +605,7 @@ public class XrayResultsImporter {
             builder.addQueryParameter("testEnvironments", this.testEnvironment);
         }
 
-        request = new Request.Builder().url(builder.build()).post(requestBody).addHeader("Authorization", credentials).build();
+        request = new Request.Builder().url(builder.build()).post(requestBody).addHeader(AUTHORIZATION_HEADER, credentials).build();
         CommonUtils.logRequest(logger, request);
         try {
             response = client.newCall(request).execute();
@@ -613,8 +616,7 @@ public class XrayResultsImporter {
                 // System.out.println("Test Execution: "+((JSONObject)(responseObj.get("testExecIssue"))).get("key"));
                 return(responseBody);
             } else {
-                //System.err.println(responseBody);
-                throw new IOException("Unexpected HTTP code " + response);
+                throw new IOException(UNEXPECTED_HTTP_CODE + response);
             }
         } catch (IOException e) {
             logger.error(e);
