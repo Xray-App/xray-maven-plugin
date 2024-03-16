@@ -246,7 +246,6 @@ public class XrayFeaturesExporter {
                 throw new IOException("Unexpected HTTP code " + response);
             }
         } catch (IOException e) {
-            e.printStackTrace();
             throw (e);
         }
     }
@@ -272,7 +271,6 @@ public class XrayFeaturesExporter {
                 throw new IOException("failed to authenticate " + response);
             }
         } catch (IOException e) {
-            e.printStackTrace();
             throw e;
         }
         String credentials = "Bearer " + authToken;
@@ -301,7 +299,6 @@ public class XrayFeaturesExporter {
                 throw new IOException("Unexpected HTTP code " + response);
             }
         } catch (IOException e) {
-            e.printStackTrace();
             throw (e);
         }
     }
