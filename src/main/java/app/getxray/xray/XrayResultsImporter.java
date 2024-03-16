@@ -340,11 +340,8 @@ public class XrayResultsImporter {
             CommonUtils.logResponse(logger, response);
             String responseBody = response.body().string();
             if (response.isSuccessful()){
-                JSONObject responseObj = new JSONObject(responseBody);
-                // System.out.println("Test Execution: "+((JSONObject)(responseObj.get("testExecIssue"))).get("key"));
                 return responseBody;
             } else {
-                //System.err.println(responseBody);
                 throw new IOException(UNEXPECTED_HTTP_CODE + response);
             }
         } catch (IOException e) {
@@ -423,8 +420,6 @@ public class XrayResultsImporter {
             CommonUtils.logResponse(logger, response);
             String responseBody = response.body().string();
             if (response.isSuccessful()){
-                JSONObject responseObj = new JSONObject(responseBody);
-                // System.out.println("Test Execution: "+responseObj.get("key"));
                 return responseBody;
             } else {
                 //System.err.println(responseBody);
@@ -515,8 +510,6 @@ public class XrayResultsImporter {
             CommonUtils.logResponse(logger, response);
             String responseBody = response.body().string();
             if (response.isSuccessful()){
-                JSONObject responseObj = new JSONObject(responseBody);
-                // System.out.println("Test Execution: "+((JSONObject)(responseObj.get("testExecIssue"))).get("key"));
                 return(responseBody);
             } else {
                 throw new IOException(UNEXPECTED_HTTP_CODE + response);
@@ -612,8 +605,6 @@ public class XrayResultsImporter {
             CommonUtils.logResponse(logger, response);
             String responseBody = response.body().string();            
             if (response.isSuccessful()){
-                JSONObject responseObj = new JSONObject(responseBody);
-                // System.out.println("Test Execution: "+((JSONObject)(responseObj.get("testExecIssue"))).get("key"));
                 return(responseBody);
             } else {
                 throw new IOException(UNEXPECTED_HTTP_CODE + response);

@@ -294,7 +294,7 @@ public class XrayFeaturesImporter {
                     .setType(MultipartBody.FORM)
                     .addFormDataPart(partName, inputFile.getName(), RequestBody.create(inputFile, mediaType));
             if (testInfo != null) {
-                requestBodyBuilder =  requestBodyBuilder.addFormDataPart("testInfo", "testinfo.json", RequestBody.create(testInfo.toString(), MEDIA_TYPE_JSON));
+                requestBodyBuilder = requestBodyBuilder.addFormDataPart("testInfo", "testinfo.json", RequestBody.create(testInfo.toString(), MEDIA_TYPE_JSON));
             }
             if (precondInfo != null) {
                 requestBodyBuilder = requestBodyBuilder.addFormDataPart("preCondInfo", "precondinfo.json", RequestBody.create(precondInfo.toString(), MEDIA_TYPE_JSON));
@@ -372,9 +372,9 @@ public class XrayFeaturesImporter {
             // it may be a directory; check it, and if so zip it before sending it
             mediaType = MEDIA_TYPE_ZIP;
             if (inputFile.isDirectory()) {
-                Path tempZip = Files.createTempFile("dummy", ".zip");
-                zipDirectory(inputPath, tempZip.toFile().getAbsolutePath());
-                inputFile = tempZip.toFile();
+                File tempZip = Files.createTempFile("dummy", ".zip").toFile();
+                zipDirectory(inputPath, tempZip.getAbsolutePath());
+                inputFile = tempZip;
             }
         }
 
