@@ -324,6 +324,7 @@ public class XrayResultsImporter {
             }
             requestBody = requestBodyBuilder.build();
         } catch (Exception e1) {
+            logger.error(e1);
             throw e1;
         }
 
@@ -343,6 +344,7 @@ public class XrayResultsImporter {
                 throw new IOException("Unexpected HTTP code " + response);
             }
         } catch (IOException e) {
+            logger.error(e);
             throw e;
         }
     }
@@ -367,6 +369,7 @@ public class XrayResultsImporter {
 				throw new IOException("failed to authenticate " + response);
 			}
 		} catch (IOException e) {
+            logger.error(e);
             throw e;
 		}
         String credentials = "Bearer " + authToken;
@@ -404,6 +407,7 @@ public class XrayResultsImporter {
             }
             requestBody = requestBodyBuilder.build();
         } catch (Exception e1) {
+            logger.error(e1);
             throw e1;
         }
 
@@ -423,6 +427,7 @@ public class XrayResultsImporter {
                 throw new IOException("Unexpected HTTP code " + response);
             }
         } catch (IOException e) {
+            logger.error(e);
             throw e;
         }
 
@@ -496,6 +501,7 @@ public class XrayResultsImporter {
             }
             CommonUtils.logRequest(logger, request);
         } catch (Exception e1) {
+            logger.error(e1);
             throw e1;
         }
 
@@ -513,6 +519,7 @@ public class XrayResultsImporter {
                 throw new IOException("Unexpected HTTP code " + response);
             }
         } catch (IOException e) {
+            logger.error(e);
             throw e;
         }
     }
@@ -537,6 +544,7 @@ public class XrayResultsImporter {
                 throw new IOException("failed to authenticate " + response);
             }
         } catch (IOException e) {
+            logger.error("failed to authenticate", e);
             throw e;
         }
         String credentials = "Bearer " + authToken;
@@ -566,6 +574,7 @@ public class XrayResultsImporter {
             String reportContent = new String ( Files.readAllBytes( Paths.get(reportFile) ) );
             requestBody = RequestBody.create(reportContent, mediaType);
         } catch (Exception e1) {
+            logger.error(e1);
             throw e1;
         }
 
@@ -608,6 +617,7 @@ public class XrayResultsImporter {
                 throw new IOException("Unexpected HTTP code " + response);
             }
         } catch (IOException e) {
+            logger.error(e);
             throw e;
         }
 

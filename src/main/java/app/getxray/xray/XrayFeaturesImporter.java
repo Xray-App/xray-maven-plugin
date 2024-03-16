@@ -300,6 +300,7 @@ public class XrayFeaturesImporter {
             }
             requestBody = requestBodyBuilder.build();
         } catch (Exception e1) {
+            logger.error(e1);
             throw e1;
         }
 
@@ -317,6 +318,7 @@ public class XrayFeaturesImporter {
                 throw new IOException("Unexpected HTTP code " + response);
             }
         } catch (IOException e) {
+            logger.error(e);
             throw e;
         }
     }
@@ -342,6 +344,7 @@ public class XrayFeaturesImporter {
                 throw new IOException("failed to authenticate " + response);
             }
         } catch (IOException e) {
+            logger.error(e);
             throw e;
         }
         String credentials = "Bearer " + authToken;
@@ -390,6 +393,7 @@ public class XrayFeaturesImporter {
             }
             requestBody = requestBodyBuilder.build();
         } catch (Exception e1) {
+            logger.error(e1);
             throw e1;
         }
 
@@ -408,6 +412,7 @@ public class XrayFeaturesImporter {
                 throw new IOException("Unexpected HTTP code " + response);
             }
         } catch (IOException e) {
+            logger.error(e);
             throw e;
         }
     }
