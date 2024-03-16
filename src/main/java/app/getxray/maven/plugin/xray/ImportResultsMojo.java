@@ -159,16 +159,16 @@ public class ImportResultsMojo extends AbstractMojo {
 
         // submit one or more report files
         for (int i = 0; i < reportFiles.length; i++) {
-            String reportFile = reportFiles[i];
+            String currentReportFile = reportFiles[i];
 
             try {
                 getLog().debug("cloud from config: " + cloud);
                 getLog().debug("jiraBaseUrl from config: " + jiraBaseUrl);
-                getLog().debug("reportFile: " + reportFile);
+                getLog().debug("reportFile: " + currentReportFile);
                 getLog().debug("testInfoJson from config: " + testInfoJson);
                 getLog().debug("useInternalTestProxy from config: " + useInternalTestProxy);
 
-                if (cloud) {
+                if (Boolean.TRUE.equals(cloud)) {
 
                     // if testInfo and testExecInfo are not present, then use the standard endpoint
                     // all formats support params, except for cucumber
@@ -192,7 +192,7 @@ public class ImportResultsMojo extends AbstractMojo {
                                 .withTestEnvironment(testEnvironment)
                                 .build();                     
                         }
-                        response = xrayImporter.submit(reportFormat, reportFile);
+                        response = xrayImporter.submit(reportFormat, currentReportFile);
                     } else {
                         if (testInfoJson != null) {
                             if ((new File(testInfoJson)).isFile()) {
@@ -208,7 +208,7 @@ public class ImportResultsMojo extends AbstractMojo {
                                 abortWithError(MISSING_FILE + testExecInfoJson);
                             }
                         }
-                        response = xrayImporterBuilder.build().submitMultipartCloud(reportFormat, reportFile, testExecInfo, testInfo);                  
+                        response = xrayImporterBuilder.build().submitMultipartCloud(reportFormat, currentReportFile, testExecInfo, testInfo);                  
                     }
 
                 } else {
@@ -245,7 +245,7 @@ public class ImportResultsMojo extends AbstractMojo {
                                 .build();  
                         }
 
-                        response = xrayImporter.submit(reportFormat, reportFile);
+                        response = xrayImporter.submit(reportFormat, currentReportFile);
                     } else {
                         if (testInfoJson != null) {
                             if ((new File(testInfoJson)).isFile()) {
@@ -261,7 +261,7 @@ public class ImportResultsMojo extends AbstractMojo {
                                 abortWithError(MISSING_FILE + testExecInfoJson);
                             }
                         }
-                        response = xrayImporterBuilder.build().submitMultipartServerDC(reportFormat, reportFile, testExecInfo, testInfo);                  
+                        response = xrayImporterBuilder.build().submitMultipartServerDC(reportFormat, currentReportFile, testExecInfo, testInfo);                  
                     }
 
                 }

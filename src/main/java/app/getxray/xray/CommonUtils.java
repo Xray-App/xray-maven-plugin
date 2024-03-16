@@ -3,6 +3,8 @@ package app.getxray.xray;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
@@ -61,7 +63,7 @@ public class CommonUtils {
         return Boolean.TRUE.equals(bool);
     }
 
-    public static OkHttpClient getHttpClient(Boolean useInternalTestProxy, Boolean ignoreSslErrors, Integer timeout) throws Exception {
+    public static OkHttpClient getHttpClient(Boolean useInternalTestProxy, Boolean ignoreSslErrors, Integer timeout) throws KeyManagementException,  NoSuchAlgorithmException {
         OkHttpClient client;
         OkHttpClient.Builder newBuilder = new OkHttpClient.Builder();
 
@@ -70,12 +72,15 @@ public class CommonUtils {
                 new X509TrustManager() {
                     @Override
                     public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {
+                        // we want to ignore the server certificate on purpose, as self-signed certificates are used by some users
                     }
             
                     @Override
                     public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {
+                        // we want to ignore the server certificate on purpose, as self-signed certificates are used by some users
                     }
-            
+
+                    
                     @Override
                     public java.security.cert.X509Certificate[] getAcceptedIssuers() {
                         return new java.security.cert.X509Certificate[]{};

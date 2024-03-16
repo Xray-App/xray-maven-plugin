@@ -1,5 +1,7 @@
 package app.getxray.maven.plugin.xray;
 
+import static app.getxray.xray.CommonUtils.isTrue;
+
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -119,7 +121,7 @@ public class ImportFeaturesMojo extends AbstractMojo {
                 precondInfo = new JSONObject(new String(Files.readAllBytes(Paths.get(precondInfoJson))));
             }
 
-            if (cloud) {
+            if (isTrue(cloud)) {
                 xrayFeaturesImporter = new XrayFeaturesImporter.CloudBuilder(clientId, clientSecret)
                     .withInternalTestProxy(useInternalTestProxy)
                     .withIgnoreSslErrors(ignoreSslErrors)
@@ -160,7 +162,7 @@ public class ImportFeaturesMojo extends AbstractMojo {
             getLog().info("response: " + response);
         } catch (Exception ex) {
             getLog().error(ex.getMessage());
-            if (abortOnError)
+            if (isTrue(abortOnError))
                 System.exit(1);
         }
 

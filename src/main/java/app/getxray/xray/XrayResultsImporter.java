@@ -4,8 +4,14 @@ import java.io.IOException;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+
 import org.json.JSONObject;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
 import okhttp3.Credentials;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
@@ -16,6 +22,13 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import org.apache.maven.plugin.logging.Log;
+
+// define a custom exception for import errors
+class XrayResultsImporterException extends Exception {
+    public XrayResultsImporterException(String message) {
+        super(message);
+    }
+}
 
 public class XrayResultsImporter {
     private static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json");
@@ -270,7 +283,7 @@ public class XrayResultsImporter {
     
     }    
 
-    public String submit(String format, String reportFile) throws Exception {
+    public String submit(String format, String reportFile) throws IOException, XrayResultsImporterException {
         if (clientId != null) {
             return submitStandardCloud(format, reportFile);
         } else {
@@ -278,8 +291,13 @@ public class XrayResultsImporter {
         }
     }
 
-    public String submitMultipartServerDC(String format, String reportFile, JSONObject testExecInfo, JSONObject testInfo) throws Exception {        
-        OkHttpClient client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
+    public String submitMultipartServerDC(String format, String reportFile, JSONObject testExecInfo, JSONObject testInfo) throws IOException, XrayResultsImporterException {        
+        OkHttpClient client;
+        try {
+            client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
+        } catch (KeyManagementException | NoSuchAlgorithmException e) {
+            throw new XrayResultsImporterException(e.getMessage());
+        }
 
         String credentials;
         if (jiraPersonalAccessToken!= null) {
@@ -350,8 +368,13 @@ public class XrayResultsImporter {
         }
     }
 
-    public String submitMultipartCloud(String format, String reportFile, JSONObject testExecInfo, JSONObject testInfo) throws Exception {  	
-        OkHttpClient client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
+    public String submitMultipartCloud(String format, String reportFile, JSONObject testExecInfo, JSONObject testInfo) throws IOException, XrayResultsImporterException {  	
+        OkHttpClient client;
+        try {
+            client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
+        } catch (KeyManagementException | NoSuchAlgorithmException e) {
+            throw new XrayResultsImporterException(e.getMessage());
+        }
 
 		String authenticationPayload = "{ \"client_id\": \"" + clientId +"\", \"client_secret\": \"" + clientSecret +"\" }";
 		RequestBody body = RequestBody.create(authenticationPayload, MEDIA_TYPE_JSON);
@@ -422,7 +445,6 @@ public class XrayResultsImporter {
             if (response.isSuccessful()){
                 return responseBody;
             } else {
-                //System.err.println(responseBody);
                 throw new IOException(UNEXPECTED_HTTP_CODE + response);
             }
         } catch (IOException e) {
@@ -432,9 +454,13 @@ public class XrayResultsImporter {
 
     }
 
-    public String submitStandardServerDC(String format, String reportFile) throws Exception {        
-        OkHttpClient client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
-
+    public String submitStandardServerDC(String format, String reportFile) throws IOException, XrayResultsImporterException {        
+        OkHttpClient client;
+        try {
+            client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
+        } catch (KeyManagementException | NoSuchAlgorithmException e) {
+            throw new XrayResultsImporterException(e.getMessage());
+        }
         String credentials;
         if (jiraPersonalAccessToken!= null) {
             credentials = BEARER_HEADER_PREFIX + jiraPersonalAccessToken;
@@ -478,23 +504,20 @@ public class XrayResultsImporter {
                 .build();
 
                 // for cucumber and behave formats, these URL parameters are not yet available
-                if (projectKey != null) {
-                    builder.addQueryParameter("projectKey", this.projectKey);
-                }
-                if (fixVersion != null) {
-                    builder.addQueryParameter("fixVersion", this.fixVersion);
-                }
-                if (revision != null) {
-                    builder.addQueryParameter("revision", this.revision);
-                }
-                if (testPlanKey != null) {
-                    builder.addQueryParameter("testPlanKey", this.testPlanKey);
-                }
-                if (testExecKey != null) {
-                    builder.addQueryParameter("testExecKey", this.testExecKey);
-                }
-                if (testEnvironment != null) {
-                    builder.addQueryParameter("testEnvironments", this.testEnvironment);
+                Map<String, String> parameters = new HashMap<>();
+                parameters.put("projectKey", projectKey);
+                parameters.put("fixVersion", fixVersion);
+                parameters.put("revision", revision);
+                parameters.put("testPlanKey", testPlanKey);
+                parameters.put("testExecKey", testExecKey);
+                parameters.put("testEnvironments", testEnvironment);
+
+                // Iterate over the parameters and add query parameters
+                for (Map.Entry<String, String> entry : parameters.entrySet()) {
+                    String value = entry.getValue();
+                    if (value != null) {
+                        builder.addQueryParameter(entry.getKey(), value);
+                    }
                 }
                 request = new Request.Builder().url(builder.build()).post(requestBody).addHeader(AUTHORIZATION_HEADER, credentials).build();
             }
@@ -520,8 +543,13 @@ public class XrayResultsImporter {
         }
     }
 
-    public String submitStandardCloud(String format, String reportFile) throws Exception {
-        OkHttpClient client = CommonUtils.getHttpClient(useInternalTestProxy, ignoreSslErrors, this.timeout);
+    public String submitStandardCloud(String format, String reportFile) throws IOException, XrayResultsImporterException {
+        OkHttpClient client;
+        try {
+            client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
+        } catch (KeyManagementException | NoSuchAlgorithmException e) {
+            throw new XrayResultsImporterException(e.getMessage());
+        }
 
         String authenticationPayload = "{ \"client_id\": \"" + clientId +"\", \"client_secret\": \"" + clientSecret +"\" }";
         RequestBody body = RequestBody.create(authenticationPayload, MEDIA_TYPE_JSON);
@@ -578,24 +606,20 @@ public class XrayResultsImporter {
         HttpUrl.Builder builder = url.newBuilder();
 
         // cucumber, behave and xray endpoints dont support these URL parameters
-
-        if (projectKey != null) {
-            builder.addQueryParameter("projectKey", this.projectKey);
-        }
-        if (fixVersion != null) {
-            builder.addQueryParameter("fixVersion", this.fixVersion);
-        }
-        if (revision != null) {
-            builder.addQueryParameter("revision", this.revision);
-        }
-        if (testPlanKey != null) {
-            builder.addQueryParameter("testPlanKey", this.testPlanKey);
-        }
-        if (testExecKey != null) {
-            builder.addQueryParameter("testExecKey", this.testExecKey);
-        }
-        if (testEnvironment != null) {
-            builder.addQueryParameter("testEnvironments", this.testEnvironment);
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("projectKey", projectKey);
+        parameters.put("fixVersion", fixVersion);
+        parameters.put("revision", revision);
+        parameters.put("testPlanKey", testPlanKey);
+        parameters.put("testExecKey", testExecKey);
+        parameters.put("testEnvironments", testEnvironment);
+        
+        // Iterate over the parameters and add query parameters
+        for (Map.Entry<String, String> entry : parameters.entrySet()) {
+            String value = entry.getValue();
+            if (value != null) {
+                builder.addQueryParameter(entry.getKey(), value);
+            }
         }
 
         request = new Request.Builder().url(builder.build()).post(requestBody).addHeader(AUTHORIZATION_HEADER, credentials).build();

@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -26,6 +28,13 @@ import okhttp3.Response;
 // https://docs.getxray.app/display/XRAYCLOUD/Importing+Cucumber+Tests+-+REST+v2
 // https://docs.getxray.app/display/XRAY/Importing+Cucumber+Tests+-+REST
 
+// define a custom exception for import errors
+class XrayFeaturesImporterException extends Exception {
+    public XrayFeaturesImporterException(String message) {
+        super(message);
+    }
+}
+
 public class XrayFeaturesImporter {
     private static final String FEATURE_EXTENSION = ".feature";
     private static final MediaType MEDIA_TYPE_ZIP = MediaType.parse("application/zip");
@@ -36,6 +45,7 @@ public class XrayFeaturesImporter {
 	private static final String XRAY_CLOUD_AUTHENTICATE_URL = XRAY_CLOUD_API_BASE_URL + "/authenticate";
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_HEADER_PREFIX = "Bearer ";
+    private static final String TEMP_DIR = "/import_features";
 
     private String jiraBaseUrl;
     private String jiraUsername;
@@ -225,7 +235,7 @@ public class XrayFeaturesImporter {
 
     }
 
-    public JSONArray importFrom(String inputPath) throws Exception {
+    public JSONArray importFrom(String inputPath) throws IOException, XrayFeaturesImporterException {
         if (clientId != null) {
             return importCloud(inputPath, null, null);
         } else {
@@ -233,7 +243,7 @@ public class XrayFeaturesImporter {
         }
     }
 
-    public JSONArray importFrom(String inputPath, JSONObject testInfo) throws Exception {
+    public JSONArray importFrom(String inputPath, JSONObject testInfo) throws IOException, XrayFeaturesImporterException{
         if (clientId != null) {
             return importCloud(inputPath, testInfo, null);
         } else {
@@ -241,7 +251,7 @@ public class XrayFeaturesImporter {
         }
     }
 
-    public JSONArray importFrom(String inputPath, JSONObject testInfo, JSONObject precondInfo) throws Exception {
+    public JSONArray importFrom(String inputPath, JSONObject testInfo, JSONObject precondInfo) throws IOException, XrayFeaturesImporterException{
         if (clientId != null) {
             return importCloud(inputPath, testInfo, precondInfo);
         } else {
@@ -249,8 +259,13 @@ public class XrayFeaturesImporter {
         }
     }
 
-    public JSONArray importServerDC(String inputPath, JSONObject testInfo, JSONObject precondInfo) throws Exception {
-        OkHttpClient client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
+    public JSONArray importServerDC(String inputPath, JSONObject testInfo, JSONObject precondInfo) throws XrayFeaturesImporterException, IOException {
+        OkHttpClient client;
+        try {
+            client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
+        } catch (KeyManagementException | NoSuchAlgorithmException e) {
+            throw new XrayFeaturesImporterException(e.getMessage());
+        }
 
         File inputFile = new File(inputPath);
         String credentials;
@@ -282,9 +297,9 @@ public class XrayFeaturesImporter {
             // it may be a directory; check it, and if so zip it before sending it
             mediaType = MEDIA_TYPE_ZIP;
             if (inputFile.isDirectory()) {
-                Path tempZip = Files.createTempFile("dummy", ".zip");
-                zipDirectory(inputPath, tempZip.toFile().getAbsolutePath());
-                inputFile = tempZip.toFile();
+                File tempZip = File.createTempFile("dummy", ".zip", new File(TEMP_DIR));
+                zipDirectory(inputPath, tempZip.getAbsolutePath());
+                inputFile = tempZip;
             }
         }
 
@@ -302,7 +317,7 @@ public class XrayFeaturesImporter {
             requestBody = requestBodyBuilder.build();
         } catch (Exception e1) {
             logger.error(e1);
-            throw e1;
+            throw new XrayFeaturesImporterException(e1.getMessage());
         }
 
         Request request = new Request.Builder().url(builder.build()).post(requestBody).addHeader(AUTHORIZATION_HEADER, credentials).build();
@@ -318,12 +333,18 @@ public class XrayFeaturesImporter {
             }
         } catch (IOException e) {
             logger.error(e);
-            throw e;
+            throw new XrayFeaturesImporterException(e.getMessage());
         }
     }
 
-    public JSONArray importCloud(String inputPath, JSONObject testInfo, JSONObject precondInfo) throws Exception {
-        OkHttpClient client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
+    public JSONArray importCloud(String inputPath, JSONObject testInfo, JSONObject precondInfo) throws XrayFeaturesImporterException, IOException {
+        
+        OkHttpClient client;
+        try {
+            client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
+        } catch (KeyManagementException | NoSuchAlgorithmException e) {
+            throw new XrayFeaturesImporterException(e.getMessage());
+        }
         
         File inputFile = new File(inputPath);
         String authenticationPayload = "{ \"client_id\": \"" + clientId +"\", \"client_secret\": \"" + clientSecret +"\" }";
@@ -344,7 +365,7 @@ public class XrayFeaturesImporter {
             }
         } catch (IOException e) {
             logger.error(e);
-            throw e;
+            throw new XrayFeaturesImporterException(e.getMessage());
         }
         String credentials = BEARER_HEADER_PREFIX + authToken;
 
@@ -353,14 +374,16 @@ public class XrayFeaturesImporter {
         HttpUrl.Builder builder = url.newBuilder();
         MultipartBody requestBody = null;
 
-        if (projectKey != null) {
-            builder.addQueryParameter("projectKey", this.projectKey);
-        }
-        if (projectId != null) {
-            builder.addQueryParameter("projectId", this.projectId);
-        }
-        if (source != null) {
-            builder.addQueryParameter("source", this.source);
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("projectKey", projectKey);
+        parameters.put("projectId", projectId);
+        parameters.put("source", source);
+
+        for (Map.Entry<String, String> entry : parameters.entrySet()) {
+            String value = entry.getValue();
+            if (value != null) {
+                builder.addQueryParameter(entry.getKey(), value);
+            }
         }
 
         MediaType mediaType;
@@ -372,7 +395,7 @@ public class XrayFeaturesImporter {
             // it may be a directory; check it, and if so zip it before sending it
             mediaType = MEDIA_TYPE_ZIP;
             if (inputFile.isDirectory()) {
-                File tempZip = Files.createTempFile("dummy", ".zip").toFile();
+                File tempZip = File.createTempFile("dummy", ".zip", new File(TEMP_DIR));
                 zipDirectory(inputPath, tempZip.getAbsolutePath());
                 inputFile = tempZip;
             }
@@ -392,7 +415,7 @@ public class XrayFeaturesImporter {
             requestBody = requestBodyBuilder.build();
         } catch (Exception e1) {
             logger.error(e1);
-            throw e1;
+            throw new XrayFeaturesImporterException(e1.getMessage());
         }
 
         request = new Request.Builder().url(builder.build()).post(requestBody).addHeader(AUTHORIZATION_HEADER, credentials).build();
@@ -410,7 +433,7 @@ public class XrayFeaturesImporter {
             }
         } catch (IOException e) {
             logger.error(e);
-            throw e;
+            throw new XrayFeaturesImporterException(e.getMessage());
         }
     }
 

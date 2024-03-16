@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -21,6 +23,13 @@ import okhttp3.Response;
 // https://docs.getxray.app/display/XRAYCLOUD/Exporting+Cucumber+Tests+-+REST+v2
 // https://docs.getxray.app/display/XRAY/Exporting+Cucumber+Tests+-+REST
 
+// define a custom exception for import errors
+class XrayFeaturesExporterException extends Exception {
+    public XrayFeaturesExporterException(String message) {
+        super(message);
+    }
+}
+
 public class XrayFeaturesExporter {
     private static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json");
 
@@ -28,7 +37,6 @@ public class XrayFeaturesExporter {
 	private static final String XRAY_CLOUD_AUTHENTICATE_URL = XRAY_CLOUD_API_BASE_URL + "/authenticate";
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
-
     private static final String BEARER_HEADER_PREFIX = "Bearer ";
 
     private String jiraBaseUrl;
@@ -206,7 +214,7 @@ public class XrayFeaturesExporter {
 
     }
 
-    public String submit(String outputPath) throws Exception {
+    public String submit(String outputPath) throws IOException, XrayFeaturesExporterException {
         if (clientId != null) {
             return submitStandardCloud(outputPath);
         } else {
@@ -214,8 +222,13 @@ public class XrayFeaturesExporter {
         }
     }
 
-    public String submitStandardServerDC(String outputPath) throws Exception {
-        OkHttpClient client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
+    public String submitStandardServerDC(String outputPath) throws IOException, XrayFeaturesExporterException {
+        OkHttpClient client;
+        try {
+            client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
+        } catch (KeyManagementException | NoSuchAlgorithmException e) {
+            throw new XrayFeaturesExporterException(e.getMessage());
+        }
 
         String credentials;
         if (jiraPersonalAccessToken!= null) {
@@ -255,8 +268,13 @@ public class XrayFeaturesExporter {
         }
     }
 
-    public String submitStandardCloud(String outputPath) throws Exception {
-        OkHttpClient client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
+    public String submitStandardCloud(String outputPath) throws IOException, XrayFeaturesExporterException {
+        OkHttpClient client;
+        try {
+            client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
+        } catch (KeyManagementException | NoSuchAlgorithmException e) {
+            throw new XrayFeaturesExporterException(e.getMessage());
+        }
 
         String authenticationPayload = "{ \"client_id\": \"" + clientId + "\", \"client_secret\": \"" + clientSecret
                 + "\" }";
