@@ -214,7 +214,6 @@ public class ImportResultsMojo extends AbstractMojo {
                 } else {
                     // server/DC
 
-                    System.out.println("jiraToken: " + jiraToken);
                     app.getxray.xray.XrayResultsImporter.ServerDCBuilder xrayImporterBuilder;
                     if (jiraToken != null) {
                         xrayImporterBuilder = new XrayResultsImporter.ServerDCBuilder(jiraBaseUrl, jiraToken)
