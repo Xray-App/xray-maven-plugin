@@ -528,7 +528,6 @@ public class XrayResultsImporter {
         }
     }
 
-
     private OkHttpClient createHttpClient() throws XrayResultsImporterException {
         try {
             return CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
