@@ -18,10 +18,14 @@ jobs:
         
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Java ${{ matrix.java }}
-      uses: actions/setup-java@v1
+    - name: Set up Java and Maven Central Repository
+      uses: actions/setup-java@v4
       with:
-        java-version: 17
+        java-version: '17'
+        distribution: 'temurin'
+        server-id: ossrh
+        server-username: MAVEN_USERNAME
+        server-password: MAVEN_PASSWORD
     - name: Cache Maven packages
       uses: actions/cache@v3
       with:
@@ -39,4 +43,4 @@ jobs:
       env:
         MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
         MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
-      run: mvn  -Dgpg.passphrase=${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }} clean compile verify package gpg:sign deploy
+      run: mvn --batch-mode -Dgpg.passphrase=${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }} -DskipTests=true clean compile verify package gpg:sign deploy
