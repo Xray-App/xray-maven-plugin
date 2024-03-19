@@ -85,6 +85,31 @@ public class XrayDatacenterIT {
     @MavenGoal("xray:import-features")
     @SystemProperty(value = "xray.cloud", content = "false")
     @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:"+PORT_NUMBER)
+    @SystemProperty(value = "xray.jiraToken", content = "00112233445566778899")
+    @SystemProperty(value = "xray.projectKey", content = "CALC")
+    @SystemProperty(value = "xray.inputFeatures", content = "dummy.feature")
+    void single_feature_using_personal_access_token(MavenExecutionResult result) throws IOException {
+       String feature = CommonUtils.readResourceFileForImportFeatures("XrayDatacenterIT/single_feature_using_personal_access_token/dummy.feature");
+
+        wm.verify(
+            postRequestedFor(urlPathEqualTo("/rest/raven/2.0/import/feature"))
+                .withHeader("Authorization", equalTo("Bearer 00112233445566778899"))
+                .withHeader("Content-Type", containing("multipart/form-data;"))
+                .withQueryParam("projectKey", equalTo("CALC"))
+                .withAnyRequestBodyPart(
+                    aMultipart()
+                        .withName("file")
+                        .withHeader("Content-Type", containing("text/plain"))
+                        .withBody(equalTo(feature)))
+
+        );
+       assertThat(result).isSuccessful();
+    }
+
+    @MavenTest
+    @MavenGoal("xray:import-features")
+    @SystemProperty(value = "xray.cloud", content = "false")
+    @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:"+PORT_NUMBER)
     @SystemProperty(value = "xray.jiraUsername", content = "username")
     @SystemProperty(value = "xray.jiraPassword", content = "password")
     @SystemProperty(value = "xray.projectKey", content = "CALC")

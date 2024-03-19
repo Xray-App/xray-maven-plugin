@@ -85,6 +85,28 @@ public class XrayDatacenterIT {
        assertThat(CommonUtils.readFile(result.getMavenProjectResult().getTargetProjectDirectory()+"/features/dummy.feature")).isEqualTo(feature);
     }
 
+
+    @MavenTest
+    @MavenGoal("xray:export-features")
+    @SystemProperty(value = "xray.cloud", content = "false")
+    @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:"+PORT_NUMBER)
+    @SystemProperty(value = "xray.jiraToken", content = "00112233445566778899")
+    @SystemProperty(value = "xray.issueKeys", content = "CALC-1")
+    @SystemProperty(value = "xray.outputDir", content = "./features")
+    void single_feature_by_issueKeys_using_personal_access_token(MavenExecutionResult result) throws IOException {
+       String feature = CommonUtils.readResourceFileForExportFeatures("XrayDatacenterIT/single_feature_by_issueKeys_using_personal_access_token/dummy.feature");
+
+        wm.verify(
+            getRequestedFor(urlPathEqualTo("/rest/raven/2.0/export/test"))
+                .withHeader("Authorization", equalTo("Bearer 00112233445566778899"))
+                .withQueryParam("keys", equalTo("CALC-1"))
+                .withQueryParam("fz", equalTo("true"))
+        );
+       assertThat(result).isSuccessful();
+       assertThat(CommonUtils.readFile(result.getMavenProjectResult().getTargetProjectDirectory()+"/features/dummy.feature")).isEqualTo(feature);
+    }
+    
+
     @MavenTest
     @MavenGoal("xray:export-features")
     @SystemProperty(value = "xray.cloud", content = "false")
