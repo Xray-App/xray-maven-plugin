@@ -27,6 +27,8 @@ jobs:
         server-username: MAVEN_USERNAME
         server-password: MAVEN_PASSWORD
         cache: maven
+        gpg-private-key: ${{ secrets.OSSRH_GPG_SECRET_KEY }} # Value of the GPG private key to import
+        gpg-passphrase: MAVEN_GPG_PASSPHRASE # env variable for GPG private key passphrase
     - name: debug maven settings
       run: |
         cat ~/.m2/settings.xml
@@ -41,10 +43,7 @@ jobs:
       env:
         MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
         MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+        MAVEN_GPG_PASSPHRASE: ${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}
       run: |
-        echo "maven_username: $MAVEN_USERNAME" > user.txt
-        cat user.txt
-        echo "maven_password: $MAVEN_PASSWORD" > pass.txt
-        cat pass.txt
-        cat ~/.m2/settings.xml
-        mvn -X --batch-mode -Dgpg.passphrase=${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }} -DskipTests=true clean compile verify package gpg:sign deploy
+        # mvn -X --batch-mode -Dgpg.passphrase=${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }} -DskipTests=true clean compile verify package gpg:sign deploy
+        mvn -X --batch-mode -DskipTests=true clean compile verify package gpg:sign deploy
