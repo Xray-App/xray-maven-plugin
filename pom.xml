@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>app.getxray</groupId>
   <artifactId>xray-maven-plugin</artifactId>
-  <version>0.7.3</version>
+  <version>0.7.4</version>
   <packaging>maven-plugin</packaging>
   <name>xray-maven-plugin</name>
   <description>Maven plugin for interacting with Xray (server/datacenter and cloud), used in CI/CD for assisting in test automation flows, such as reporting test results back to Xray and, by consequence, Jira.</description>
@@ -54,6 +54,7 @@
     <maven-failsafe-plugin.version>3.2.5</maven-failsafe-plugin.version>
     <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
     <maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
+    <nexus-staging-maven-plugin.version>1.6.13</nexus-staging-maven-plugin.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <itf.version>0.13.1</itf.version>
     <junit.version>5.10.2</junit.version>
@@ -156,7 +157,17 @@
   <build>
     <plugins>
 
-
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <version>${nexus-staging-maven-plugin.version}</version>
+        <extensions>true</extensions>
+        <configuration>
+          <serverId>ossrh</serverId>
+          <nexusUrl>https://s01.oss.sonatype.org</nexusUrl>
+          <autoReleaseAfterClose>true</autoReleaseAfterClose>
+        </configuration>
+      </plugin>
 
         <!-- Jacoco runner to inspect code coverage -->
         <plugin>
