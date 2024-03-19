@@ -38,11 +38,6 @@ public class CommonUtils {
         }
     }
 
-    public static void logResponse(Log logger, Response response, Boolean logResponse) {
-        if ((logger != null) && (isTrue(logResponse)))
-            logResponse(logger, response, true);
-    }
-
     public static void logResponse(Log logger, Response response, boolean logResponse) {
         if (logger != null) {
             logger.debug("RESPONSE_CONTENT_TYPE:" + response.header("Content-Type"));

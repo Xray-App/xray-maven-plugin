@@ -54,6 +54,7 @@
     <maven-failsafe-plugin.version>3.2.5</maven-failsafe-plugin.version>
     <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
     <maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
+    <mockito.version>3.12.4</mockito.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <itf.version>0.13.1</itf.version>
     <junit.version>5.10.2</junit.version>
@@ -100,6 +101,13 @@
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
       <version>3.4.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
