@@ -9,6 +9,8 @@ on:
       - main
       - branch-*
 
+  workflow_dispatch:
+
   pull_request:
     branches: [ main ]
     
