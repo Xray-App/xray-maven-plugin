@@ -26,12 +26,18 @@ jobs:
         server-id: ossrh
         server-username: MAVEN_USERNAME
         server-password: MAVEN_PASSWORD
+    - name: debug maven settings
+      run: |
+        cat ~/.m2/settings.xml
     - name: Cache Maven packages
       uses: actions/cache@v3
       with:
         path: ~/.m2
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
         restore-keys: ${{ runner.os }}-m2
+    - name: debug maven settings2
+      run: |
+        cat ~/.m2/settings.xml
     - id: install-secret-key
       name: Install gpg secret key
       run: |
