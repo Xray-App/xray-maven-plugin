@@ -59,7 +59,7 @@ public class CommonUtils {
         return Boolean.TRUE.equals(bool);
     }
 
-    public static OkHttpClient getHttpClient(Boolean useInternalTestProxy, Boolean ignoreSslErrors, Integer timeout) throws KeyManagementException,  NoSuchAlgorithmException {
+    public static OkHttpClient createHttpClient(Boolean useInternalTestProxy, Boolean ignoreSslErrors, Integer timeout) throws KeyManagementException,  NoSuchAlgorithmException {
         OkHttpClient client;
         OkHttpClient.Builder newBuilder = new OkHttpClient.Builder();
 

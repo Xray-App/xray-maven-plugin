@@ -25,6 +25,10 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import static app.getxray.xray.CommonCloud.XRAY_CLOUD_API_BASE_URL;
+import static app.getxray.xray.CommonCloud.authenticateXrayAPIKeyCredentials;
+import static app.getxray.xray.CommonUtils.createHttpClient;
+
 // https://docs.getxray.app/display/XRAYCLOUD/Importing+Cucumber+Tests+-+REST+v2
 // https://docs.getxray.app/display/XRAY/Importing+Cucumber+Tests+-+REST
 
@@ -41,8 +45,6 @@ public class XrayFeaturesImporter {
     private static final MediaType MEDIA_TYPE_FOR_FEATURE_FILES = MediaType.parse("text/plain");
     private static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json");
 
-    private static final String XRAY_CLOUD_API_BASE_URL = "https://xray.cloud.getxray.app/api/v2";
-	private static final String XRAY_CLOUD_AUTHENTICATE_URL = XRAY_CLOUD_API_BASE_URL + "/authenticate";
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_HEADER_PREFIX = "Bearer ";
     private static final String TEMP_DIR = "/import_features";
@@ -260,7 +262,13 @@ public class XrayFeaturesImporter {
     }
 
     public JSONArray importServerDC(String inputPath, JSONObject testInfo, JSONObject precondInfo) throws XrayFeaturesImporterException, IOException {
-        OkHttpClient client = createHttpClient();
+        OkHttpClient client;
+        try {
+            client = createHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
+        } catch (KeyManagementException | NoSuchAlgorithmException e) {
+            logger.error(e);
+            throw new XrayFeaturesImporterException(e.getMessage());
+        }
 
         File inputFile = new File(inputPath);
         String credentials;
@@ -299,21 +307,16 @@ public class XrayFeaturesImporter {
         }
 
         String partName = "file";
-        try {
-            Builder requestBodyBuilder = new MultipartBody.Builder()
-                    .setType(MultipartBody.FORM)
-                    .addFormDataPart(partName, inputFile.getName(), RequestBody.create(inputFile, mediaType));
-            if (testInfo != null) {
-                requestBodyBuilder = requestBodyBuilder.addFormDataPart("testInfo", "testinfo.json", RequestBody.create(testInfo.toString(), MEDIA_TYPE_JSON));
-            }
-            if (precondInfo != null) {
-                requestBodyBuilder = requestBodyBuilder.addFormDataPart("preCondInfo", "precondinfo.json", RequestBody.create(precondInfo.toString(), MEDIA_TYPE_JSON));
-            }
-            requestBody = requestBodyBuilder.build();
-        } catch (Exception e1) {
-            logger.error(e1);
-            throw new XrayFeaturesImporterException(e1.getMessage());
+        Builder requestBodyBuilder = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart(partName, inputFile.getName(), RequestBody.create(inputFile, mediaType));
+        if (testInfo != null) {
+            requestBodyBuilder = requestBodyBuilder.addFormDataPart("testInfo", "testinfo.json", RequestBody.create(testInfo.toString(), MEDIA_TYPE_JSON));
         }
+        if (precondInfo != null) {
+            requestBodyBuilder = requestBodyBuilder.addFormDataPart("preCondInfo", "precondinfo.json", RequestBody.create(precondInfo.toString(), MEDIA_TYPE_JSON));
+        }
+        requestBody = requestBodyBuilder.build();
 
         Request request = new Request.Builder().url(builder.build()).post(requestBody).addHeader(AUTHORIZATION_HEADER, credentials).build();
         CommonUtils.logRequest(logger, request, this.verbose);
@@ -332,38 +335,21 @@ public class XrayFeaturesImporter {
         }
     }
 
-    private OkHttpClient createHttpClient() throws XrayFeaturesImporterException {
+    public JSONArray importCloud(String inputPath, JSONObject testInfo, JSONObject precondInfo) throws XrayFeaturesImporterException, IOException {
+        OkHttpClient client;
         try {
-            return CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
+            client = createHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
         } catch (KeyManagementException | NoSuchAlgorithmException e) {
+            logger.error(e);
             throw new XrayFeaturesImporterException(e.getMessage());
         }
-    }
 
-    private String authenticate(OkHttpClient client) throws IOException {
-        String authenticationPayload = "{ \"client_id\": \"" + clientId +"\", \"client_secret\": \"" + clientSecret +"\" }";
-        RequestBody body = RequestBody.create(authenticationPayload, MEDIA_TYPE_JSON);
-        Request request = new Request.Builder().url(XRAY_CLOUD_AUTHENTICATE_URL).post(body).build();
-        CommonUtils.logRequest(logger, request, this.verbose);
-        try (Response response = client.newCall(request).execute()) {
-            CommonUtils.logResponse(logger, response, this.verbose);
-            String responseBody = response.body().string();
-            if (response.isSuccessful()) {
-                return responseBody.replace("\"", "");
-            } else {
-                throw new IOException("failed to authenticate " + response);
-            }
-        }
-    }
-
-    public JSONArray importCloud(String inputPath, JSONObject testInfo, JSONObject precondInfo) throws XrayFeaturesImporterException, IOException {
-        OkHttpClient client = createHttpClient();
-        String authToken = authenticate(client);
+        String authToken = authenticateXrayAPIKeyCredentials(logger, verbose, client, clientId, clientSecret);
         String credentials = BEARER_HEADER_PREFIX + authToken;
         
         File inputFile = new File(inputPath);
 
-        String endpointUrl =  XRAY_CLOUD_API_BASE_URL + "/import/feature";
+        String endpointUrl = XRAY_CLOUD_API_BASE_URL + "/import/feature";
         HttpUrl url = HttpUrl.get(endpointUrl);
         HttpUrl.Builder builder = url.newBuilder();
         MultipartBody requestBody = null;

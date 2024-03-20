@@ -41,13 +41,13 @@ class CommonUtilsTest {
 
     @Test
     void getHttpClientTest() throws KeyManagementException, NoSuchAlgorithmException {
-        OkHttpClient client = CommonUtils.getHttpClient(false, true, 5);
+        OkHttpClient client = CommonUtils.createHttpClient(false, true, 5);
         assertNotNull(client);
     }
 
     @Test
     void getHttpClientUsingInternalProxyTest() throws KeyManagementException, NoSuchAlgorithmException {
-        OkHttpClient client = CommonUtils.getHttpClient(true, true, 5);
+        OkHttpClient client = CommonUtils.createHttpClient(true, true, 5);
         assertNotNull(client);
     }
 
