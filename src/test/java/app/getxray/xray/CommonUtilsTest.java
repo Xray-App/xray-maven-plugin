@@ -1,6 +1,7 @@
 package app.getxray.xray;
 
 import static app.getxray.xray.CommonUtils.isTrue;
+import static app.getxray.xray.CommonUtils.createHttpClient;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -41,13 +42,13 @@ class CommonUtilsTest {
 
     @Test
     void getHttpClientTest() throws KeyManagementException, NoSuchAlgorithmException {
-        OkHttpClient client = CommonUtils.createHttpClient(false, true, 5);
+        OkHttpClient client = createHttpClient(Boolean.FALSE, Boolean.TRUE, Integer.valueOf(5));
         assertNotNull(client);
     }
 
     @Test
     void getHttpClientUsingInternalProxyTest() throws KeyManagementException, NoSuchAlgorithmException {
-        OkHttpClient client = CommonUtils.createHttpClient(true, true, 5);
+        OkHttpClient client = createHttpClient(Boolean.TRUE, Boolean.TRUE, Integer.valueOf(5));
         assertNotNull(client);
     }
 
@@ -59,7 +60,7 @@ class CommonUtilsTest {
             .method("PUT", RequestBody.create("{}", MediaType.get("application/json")))
             .build();
 
-        CommonUtils.logRequest(log, request, true);
+        CommonUtils.logRequest(log, request, Boolean.TRUE);
         assertAll("logRequest",
             () -> Mockito.verify(log).debug("REQUEST_URL: " + request.url().toString()),
             () -> Mockito.verify(log).debug("REQUEST_METHOD: " + request.method()),

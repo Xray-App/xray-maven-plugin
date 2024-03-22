@@ -59,12 +59,26 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <itf.version>0.13.1</itf.version>
     <junit.version>5.10.2</junit.version>
+    <junit-platform.version>1.10.2</junit-platform.version>
     <jacoco.version>0.8.11</jacoco.version>
+    <internal.xray-maven-plugin.version>0.7.3</internal.xray-maven-plugin.version>
     <unit.coverage.file>${project.build.directory}/jacoco-output/jacoco-unit-tests.exec</unit.coverage.file>
     <it.coverage.file>${project.build.directory}/jacoco-output/jacoco-it-tests.exec</it.coverage.file>
     <merged.coverage.file>${project.build.directory}/jacoco-output/merged.exec</merged.coverage.file>
     <jacoco.maven.opts>-javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile=${it.coverage.file},append=true</jacoco.maven.opts>
   </properties>
+
+  <dependencyManagement>
+    <dependencies>
+            <dependency>
+                    <groupId>org.junit</groupId>
+                    <artifactId>junit-bom</artifactId>
+                    <version>${junit.version}</version>
+                    <type>pom</type>
+                    <scope>import</scope>
+            </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <dependencies>
     <dependency>
@@ -119,17 +133,11 @@
     </dependency>
 
     <dependency>
-      <groupId>org.assertj</groupId>
-      <artifactId>assertj-core</artifactId>
-      <version>3.22.0</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-engine</artifactId>
-      <version>${junit.version}</version>
+      <artifactId>junit-jupiter</artifactId>
       <scope>test</scope>
     </dependency>
+
     <dependency>
       <groupId>com.soebes.itf.jupiter.extension</groupId>
       <artifactId>itf-assertj</artifactId>
@@ -149,7 +157,21 @@
       <version>3.3.0</version>
       <scope>test</scope>
     </dependency>
-  
+
+    <dependency>
+      <groupId>app.getxray</groupId>
+      <artifactId>xray-junit-extensions</artifactId>
+      <version>0.7.1</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>app.getxray</groupId>
+      <artifactId>xray-maven-plugin</artifactId>
+      <version>${internal.xray-maven-plugin.version}</version>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
   <distributionManagement>
@@ -183,7 +205,6 @@
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
           <version>${jacoco.version}</version>
-
 
           <executions>
             <execution>
@@ -278,6 +299,10 @@
           <excludes>
             <exclude>**/*IT.java</exclude>
           </excludes>
+
+          <testFailureIgnore>true</testFailureIgnore>
+          <disableXmlReport>true</disableXmlReport>
+          <useFile>false</useFile>
         </configuration>
       </plugin>
 
@@ -372,8 +397,24 @@
         </executions>
       </plugin>
 
+      <plugin>
+        <groupId>app.getxray</groupId>
+        <artifactId>xray-maven-plugin</artifactId>
+        <version>${internal.xray-maven-plugin.version}</version>
+        <configuration>
+          <cloud>true</cloud>
+          <projectKey>XMP</projectKey>
+          <reportFormat>junit</reportFormat>
+          <reportFile>reports/custom*.xml</reportFile>
+        </configuration>
+      </plugin>
+
     </plugins>
+
     <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+      </testResource>
       <testResource>
         <directory>src/test/resources-its</directory>
       </testResource>
@@ -393,7 +434,6 @@
           </reportSet>
         </reportSets>
       </plugin>
-
     </plugins>
   </reporting>
 

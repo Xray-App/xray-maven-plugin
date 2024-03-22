@@ -2,11 +2,8 @@ package app.getxray.xray;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import java.io.IOException;
 
 import org.apache.maven.plugin.logging.Log;
 import org.junit.jupiter.api.Test;
@@ -14,38 +11,13 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import okhttp3.Call;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
-import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.Response.Builder;
-import okhttp3.ResponseBody;
 import okio.Buffer;
 
 class CommonCloudTest {
-      
-    private static OkHttpClient mockHttpClient(final String serializedBody) throws IOException {
-        final OkHttpClient okHttpClient = mock(OkHttpClient.class);
-
-        final Call remoteCall = mock(Call.class);
-
-        final Response response = new Response.Builder()
-                .request(new Request.Builder().url("https://xray.cloud.getxray.app/api/v2/authenticate").build())
-                .protocol(Protocol.HTTP_1_1)
-                .code(200).message("").body(
-                    ResponseBody.create(
-                        serializedBody,
-                        MediaType.parse("application/json")
-                ))
-                .build();
-
-        when(remoteCall.execute()).thenReturn(response);
-        when(okHttpClient.newCall(any())).thenReturn(remoteCall);
-
-        return okHttpClient;
-    }
-
     
     @Test
     void authenticateXrayAPIKeyCredentialsTest() throws Exception{

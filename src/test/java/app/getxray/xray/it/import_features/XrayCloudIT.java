@@ -24,7 +24,7 @@ import com.soebes.itf.jupiter.extension.MavenTest;
 import com.soebes.itf.jupiter.extension.SystemProperty;
 import com.soebes.itf.jupiter.maven.MavenExecutionResult;
 
-import app.getxray.xray.it.CommonUtils;
+import app.getxray.xray.it.TestingUtils;
 
 @MavenJupiterExtension
 public class XrayCloudIT {
@@ -74,7 +74,7 @@ public class XrayCloudIT {
     @SystemProperty(value = "xray.projectKey", content = "CALC")
     @SystemProperty(value = "xray.inputFeatures", content = "dummy.feature")
     void single_feature(MavenExecutionResult result) throws IOException {
-       String feature = CommonUtils.readResourceFileForImportFeatures("XrayCloudIT/single_feature/dummy.feature");
+       String feature = TestingUtils.readResourceFileForImportFeatures("XrayCloudIT/single_feature/dummy.feature");
 
         wm.verify(
             postRequestedFor(urlPathEqualTo("/api/v2/import/feature"))
@@ -102,9 +102,9 @@ public class XrayCloudIT {
     @SystemProperty(value = "xray.precondInfoJson", content = "precondInfo.json")
     @SystemProperty(value = "xray.testInfoJson", content = "testInfo.json")
     void single_feature_custom_test_precondition_info(MavenExecutionResult result) throws IOException {
-       String feature = CommonUtils.readResourceFileForImportFeatures("XrayCloudIT/single_feature_custom_test_precondition_info/dummy.feature");
-       String precondInfo = CommonUtils.readResourceFileForImportFeatures("XrayCloudIT/single_feature_custom_test_precondition_info/precondInfo.json");
-       String testInfo = CommonUtils.readResourceFileForImportFeatures("XrayCloudIT/single_feature_custom_test_precondition_info/testInfo.json");
+       String feature = TestingUtils.readResourceFileForImportFeatures("XrayCloudIT/single_feature_custom_test_precondition_info/dummy.feature");
+       String precondInfo = TestingUtils.readResourceFileForImportFeatures("XrayCloudIT/single_feature_custom_test_precondition_info/precondInfo.json");
+       String testInfo = TestingUtils.readResourceFileForImportFeatures("XrayCloudIT/single_feature_custom_test_precondition_info/testInfo.json");
 
         wm.verify(
             postRequestedFor(urlPathEqualTo("/api/v2/import/feature"))
@@ -143,7 +143,7 @@ public class XrayCloudIT {
     @SystemProperty(value = "xray.projectKey", content = "CALC")
     @SystemProperty(value = "xray.inputFeatures", content = "features.zip")
     void multiple_features(MavenExecutionResult result) throws IOException {
-       byte[] zippedContent = CommonUtils.readRawResourceFile("import_features/XrayCloudIT/multiple_features/features.zip");
+       byte[] zippedContent = TestingUtils.readRawResourceFile("import_features/XrayCloudIT/multiple_features/features.zip");
 
         wm.verify(
             postRequestedFor(urlPathEqualTo("/api/v2/import/feature"))

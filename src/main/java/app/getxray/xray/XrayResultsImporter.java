@@ -301,12 +301,7 @@ public class XrayResultsImporter {
             throw new XrayResultsImporterException(e.getMessage());
         }
 
-        String credentials;
-        if (jiraPersonalAccessToken!= null) {
-            credentials = BEARER_HEADER_PREFIX + jiraPersonalAccessToken;
-        } else {
-            credentials = Credentials.basic(jiraUsername, jiraPassword);
-        } 
+        String credentials = generateDCAuthorizationHeaderContent();
 
         String[] supportedFormats = new String [] { XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT, BEHAVE_FORMAT }; 
         if (!Arrays.asList(supportedFormats).contains(format)) {
@@ -338,6 +333,7 @@ public class XrayResultsImporter {
         } else {
             partName = "file";
         }
+
         try {
             okhttp3.MultipartBody.Builder requestBodyBuilder = new MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
@@ -433,6 +429,15 @@ public class XrayResultsImporter {
 
     }
 
+    public String generateDCAuthorizationHeaderContent() {
+        if (jiraPersonalAccessToken!= null) {
+            return BEARER_HEADER_PREFIX + jiraPersonalAccessToken;
+        } else {
+            return Credentials.basic(jiraUsername, jiraPassword);
+        }
+    }
+
+    
     public String submitStandardServerDC(String format, String reportFile) throws IOException, XrayResultsImporterException {        
         OkHttpClient client;
         try {
@@ -442,12 +447,7 @@ public class XrayResultsImporter {
             throw new XrayResultsImporterException(e.getMessage());
         }
 
-        String credentials;
-        if (jiraPersonalAccessToken!= null) {
-            credentials = BEARER_HEADER_PREFIX + jiraPersonalAccessToken;
-        } else {
-            credentials = Credentials.basic(jiraUsername, jiraPassword);
-        } 
+        String credentials = generateDCAuthorizationHeaderContent();
     
         String[] supportedFormats = new String [] { XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT, BEHAVE_FORMAT }; 
         if (!Arrays.asList(supportedFormats).contains(format)) {
@@ -585,7 +585,7 @@ public class XrayResultsImporter {
                 return(responseBody);
             } else {
                 throw new IOException(UNEXPECTED_HTTP_CODE + response);
-            }
+            }    
         } catch (IOException e) {
             logger.error(e);
             throw new XrayResultsImporterException(e.getMessage());

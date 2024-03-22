@@ -23,7 +23,7 @@ import com.soebes.itf.jupiter.extension.MavenTest;
 import com.soebes.itf.jupiter.extension.SystemProperty;
 import com.soebes.itf.jupiter.maven.MavenExecutionResult;
 
-import app.getxray.xray.it.CommonUtils;
+import app.getxray.xray.it.TestingUtils;
 
 @MavenJupiterExtension
 public class XrayCloudIT {
@@ -54,7 +54,7 @@ public class XrayCloudIT {
 
         byte[] zippedFeature = null;
         try {
-            zippedFeature = CommonUtils.readRawResourceFile("export_features/XrayCloudIT/single_feature_by_issueKeys/dummy.zip");
+            zippedFeature = TestingUtils.readRawResourceFile("export_features/XrayCloudIT/single_feature_by_issueKeys/dummy.zip");
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(1);
@@ -84,7 +84,7 @@ public class XrayCloudIT {
     @SystemProperty(value = "xray.issueKeys", content = "CALC-1")
     @SystemProperty(value = "xray.outputDir", content = "./features")
     void single_feature_by_issueKeys(MavenExecutionResult result) throws IOException {
-       String feature = CommonUtils.readResourceFileForExportFeatures("XrayCloudIT/single_feature_by_issueKeys/dummy.feature");
+       String feature = TestingUtils.readResourceFileForExportFeatures("XrayCloudIT/single_feature_by_issueKeys/dummy.feature");
 
         wm.verify(
             getRequestedFor(urlPathEqualTo("/api/v2/export/cucumber"))
@@ -92,7 +92,7 @@ public class XrayCloudIT {
                 .withQueryParam("keys", equalTo("CALC-1"))
         );
        assertThat(result).isSuccessful();
-       assertThat(CommonUtils.readFile(result.getMavenProjectResult().getTargetProjectDirectory()+"/features/dummy.feature")).isEqualTo(feature);
+       assertThat(TestingUtils.readFile(result.getMavenProjectResult().getTargetProjectDirectory()+"/features/dummy.feature")).isEqualTo(feature);
     }
 
     @MavenTest
@@ -104,7 +104,7 @@ public class XrayCloudIT {
     @SystemProperty(value = "xray.filterId", content = "12345")
     @SystemProperty(value = "xray.outputDir", content = "./features")
     void single_feature_by_filterId(MavenExecutionResult result) throws IOException {
-       String feature = CommonUtils.readResourceFileForExportFeatures("XrayCloudIT/single_feature_by_filterId/dummy.feature");
+       String feature = TestingUtils.readResourceFileForExportFeatures("XrayCloudIT/single_feature_by_filterId/dummy.feature");
 
         wm.verify(
             getRequestedFor(urlPathEqualTo("/api/v2/export/cucumber"))
@@ -112,7 +112,7 @@ public class XrayCloudIT {
                 .withQueryParam("filter", equalTo("12345"))
         );
        assertThat(result).isSuccessful();
-       assertThat(CommonUtils.readFile(result.getMavenProjectResult().getTargetProjectDirectory()+"/features/dummy.feature")).isEqualTo(feature);
+       assertThat(TestingUtils.readFile(result.getMavenProjectResult().getTargetProjectDirectory()+"/features/dummy.feature")).isEqualTo(feature);
     }
 
 }

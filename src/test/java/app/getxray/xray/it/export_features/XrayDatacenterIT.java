@@ -22,7 +22,7 @@ import com.soebes.itf.jupiter.extension.MavenTest;
 import com.soebes.itf.jupiter.extension.SystemProperty;
 import com.soebes.itf.jupiter.maven.MavenExecutionResult;
 
-import app.getxray.xray.it.CommonUtils;
+import app.getxray.xray.it.TestingUtils;
 
 @MavenJupiterExtension
 public class XrayDatacenterIT {
@@ -47,7 +47,7 @@ public class XrayDatacenterIT {
 
         byte[] zippedFeature = null;
         try {
-            zippedFeature = CommonUtils.readRawResourceFile("export_features/XrayDatacenterIT/single_feature_by_issueKeys/dummy.zip");
+            zippedFeature = TestingUtils.readRawResourceFile("export_features/XrayDatacenterIT/single_feature_by_issueKeys/dummy.zip");
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(1);
@@ -73,7 +73,7 @@ public class XrayDatacenterIT {
     @SystemProperty(value = "xray.issueKeys", content = "CALC-1")
     @SystemProperty(value = "xray.outputDir", content = "./features")
     void single_feature_by_issueKeys(MavenExecutionResult result) throws IOException {
-       String feature = CommonUtils.readResourceFileForExportFeatures("XrayDatacenterIT/single_feature_by_issueKeys/dummy.feature");
+       String feature = TestingUtils.readResourceFileForExportFeatures("XrayDatacenterIT/single_feature_by_issueKeys/dummy.feature");
 
         wm.verify(
             getRequestedFor(urlPathEqualTo("/rest/raven/2.0/export/test"))
@@ -82,7 +82,7 @@ public class XrayDatacenterIT {
                 .withQueryParam("fz", equalTo("true"))
         );
        assertThat(result).isSuccessful();
-       assertThat(CommonUtils.readFile(result.getMavenProjectResult().getTargetProjectDirectory()+"/features/dummy.feature")).isEqualTo(feature);
+       assertThat(TestingUtils.readFile(result.getMavenProjectResult().getTargetProjectDirectory()+"/features/dummy.feature")).isEqualTo(feature);
     }
 
 
@@ -94,7 +94,7 @@ public class XrayDatacenterIT {
     @SystemProperty(value = "xray.issueKeys", content = "CALC-1")
     @SystemProperty(value = "xray.outputDir", content = "./features")
     void single_feature_by_issueKeys_using_personal_access_token(MavenExecutionResult result) throws IOException {
-       String feature = CommonUtils.readResourceFileForExportFeatures("XrayDatacenterIT/single_feature_by_issueKeys_using_personal_access_token/dummy.feature");
+       String feature = TestingUtils.readResourceFileForExportFeatures("XrayDatacenterIT/single_feature_by_issueKeys_using_personal_access_token/dummy.feature");
 
         wm.verify(
             getRequestedFor(urlPathEqualTo("/rest/raven/2.0/export/test"))
@@ -103,7 +103,7 @@ public class XrayDatacenterIT {
                 .withQueryParam("fz", equalTo("true"))
         );
        assertThat(result).isSuccessful();
-       assertThat(CommonUtils.readFile(result.getMavenProjectResult().getTargetProjectDirectory()+"/features/dummy.feature")).isEqualTo(feature);
+       assertThat(TestingUtils.readFile(result.getMavenProjectResult().getTargetProjectDirectory()+"/features/dummy.feature")).isEqualTo(feature);
     }
     
 
@@ -116,7 +116,7 @@ public class XrayDatacenterIT {
     @SystemProperty(value = "xray.filterId", content = "12345")
     @SystemProperty(value = "xray.outputDir", content = "./features")
     void single_feature_by_filterId(MavenExecutionResult result) throws IOException {
-       String feature = CommonUtils.readResourceFileForExportFeatures("XrayDatacenterIT/single_feature_by_filterId/dummy.feature");
+       String feature = TestingUtils.readResourceFileForExportFeatures("XrayDatacenterIT/single_feature_by_filterId/dummy.feature");
 
         wm.verify(
             getRequestedFor(urlPathEqualTo("/rest/raven/2.0/export/test"))
@@ -125,6 +125,6 @@ public class XrayDatacenterIT {
                 .withQueryParam("fz", equalTo("true"))
         );
        assertThat(result).isSuccessful();
-       assertThat(CommonUtils.readFile(result.getMavenProjectResult().getTargetProjectDirectory()+"/features/dummy.feature")).isEqualTo(feature);
+       assertThat(TestingUtils.readFile(result.getMavenProjectResult().getTargetProjectDirectory()+"/features/dummy.feature")).isEqualTo(feature);
     }
 }
