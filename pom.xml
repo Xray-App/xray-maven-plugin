@@ -139,6 +139,12 @@
     </dependency>
 
     <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
       <groupId>com.soebes.itf.jupiter.extension</groupId>
       <artifactId>itf-assertj</artifactId>
       <version>${itf.version}</version>

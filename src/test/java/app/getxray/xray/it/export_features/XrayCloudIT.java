@@ -15,6 +15,7 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayNameGeneration;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.soebes.itf.jupiter.extension.MavenGoal;
@@ -23,10 +24,12 @@ import com.soebes.itf.jupiter.extension.MavenTest;
 import com.soebes.itf.jupiter.extension.SystemProperty;
 import com.soebes.itf.jupiter.maven.MavenExecutionResult;
 
+import app.getxray.xray.CloudCustomDisplayNameGenerator;
 import app.getxray.xray.it.TestingUtils;
 import app.getxray.xray.junit.customjunitxml.annotations.Requirement;
 
 @MavenJupiterExtension
+@DisplayNameGeneration(CloudCustomDisplayNameGenerator.class)
 public class XrayCloudIT {
 
     private static final String CLIENT_ID = "32A27E69C0AC4E539C14010000000000";

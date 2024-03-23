@@ -16,6 +16,7 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayNameGeneration;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.BasicCredentials;
@@ -25,10 +26,12 @@ import com.soebes.itf.jupiter.extension.MavenTest;
 import com.soebes.itf.jupiter.extension.SystemProperty;
 import com.soebes.itf.jupiter.maven.MavenExecutionResult;
 
+import app.getxray.xray.DCCustomDisplayNameGenerator;
 import app.getxray.xray.it.TestingUtils;
 import app.getxray.xray.junit.customjunitxml.annotations.Requirement;
 
 @MavenJupiterExtension
+@DisplayNameGeneration(DCCustomDisplayNameGenerator.class)
 public class XrayDatacenterIT {
 
     static WireMockServer wm;

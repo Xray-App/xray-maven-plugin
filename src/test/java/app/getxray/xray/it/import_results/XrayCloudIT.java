@@ -17,6 +17,7 @@ import java.io.IOException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DisplayNameGeneration;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.soebes.itf.jupiter.extension.MavenGoal;
@@ -26,10 +27,13 @@ import com.soebes.itf.jupiter.extension.MavenTest;
 import com.soebes.itf.jupiter.extension.SystemProperty;
 import com.soebes.itf.jupiter.maven.MavenExecutionResult;
 
+import app.getxray.xray.CloudCustomDisplayNameGenerator;
 import app.getxray.xray.it.TestingUtils;
 import app.getxray.xray.junit.customjunitxml.annotations.Requirement;
 
+
 @MavenJupiterExtension
+@DisplayNameGeneration(CloudCustomDisplayNameGenerator.class)
 public class XrayCloudIT {
 
     private static final String CLIENT_ID = "32A27E69C0AC4E539C14010000000000";
@@ -238,7 +242,6 @@ public class XrayCloudIT {
  @SystemProperty(value = "xray.testEnvironment", content = "chrome")
  @SystemProperty(value = "xray.useInternalTestProxy", content = "true")
  @Requirement("XMP-2")
- @DisplayName("JUnit Standard (cloud)")
  void junit_standard(MavenExecutionResult result) throws IOException {
     String report = TestingUtils.readResourceFileForImportResults("XrayCloudIT/junit_standard/junit.xml");
 

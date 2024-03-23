@@ -17,7 +17,7 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 public class TestingUtils {
-    
+
     private static OkHttpClient mockHttpClient(final String serializedBody) throws IOException {
         final OkHttpClient okHttpClient = mock(OkHttpClient.class);
 
