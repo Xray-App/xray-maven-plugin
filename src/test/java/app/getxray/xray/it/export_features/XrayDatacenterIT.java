@@ -23,6 +23,7 @@ import com.soebes.itf.jupiter.extension.SystemProperty;
 import com.soebes.itf.jupiter.maven.MavenExecutionResult;
 
 import app.getxray.xray.it.TestingUtils;
+import app.getxray.xray.junit.customjunitxml.annotations.Requirement;
 
 @MavenJupiterExtension
 public class XrayDatacenterIT {
@@ -72,6 +73,7 @@ public class XrayDatacenterIT {
     @SystemProperty(value = "xray.jiraPassword", content = "password")
     @SystemProperty(value = "xray.issueKeys", content = "CALC-1")
     @SystemProperty(value = "xray.outputDir", content = "./features")
+    @Requirement("XMP-126")
     void single_feature_by_issueKeys(MavenExecutionResult result) throws IOException {
        String feature = TestingUtils.readResourceFileForExportFeatures("XrayDatacenterIT/single_feature_by_issueKeys/dummy.feature");
 
@@ -93,6 +95,7 @@ public class XrayDatacenterIT {
     @SystemProperty(value = "xray.jiraToken", content = "00112233445566778899")
     @SystemProperty(value = "xray.issueKeys", content = "CALC-1")
     @SystemProperty(value = "xray.outputDir", content = "./features")
+    @Requirement("XMP-126")
     void single_feature_by_issueKeys_using_personal_access_token(MavenExecutionResult result) throws IOException {
        String feature = TestingUtils.readResourceFileForExportFeatures("XrayDatacenterIT/single_feature_by_issueKeys_using_personal_access_token/dummy.feature");
 
@@ -115,6 +118,7 @@ public class XrayDatacenterIT {
     @SystemProperty(value = "xray.jiraPassword", content = "password")
     @SystemProperty(value = "xray.filterId", content = "12345")
     @SystemProperty(value = "xray.outputDir", content = "./features")
+    @Requirement("XMP-126")
     void single_feature_by_filterId(MavenExecutionResult result) throws IOException {
        String feature = TestingUtils.readResourceFileForExportFeatures("XrayDatacenterIT/single_feature_by_filterId/dummy.feature");
 

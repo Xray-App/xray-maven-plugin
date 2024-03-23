@@ -1,5 +1,6 @@
 package app.getxray.xray;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Test;
 import app.getxray.xray.XrayResultsImporter.CloudBuilder;
@@ -51,5 +52,18 @@ class ImportResultsTest {
             .withTimeout(5);
         assertNotNull(xrayImporterBuilder.build());
     }
+
+    @Test
+    void generateDCAuthorizationHeaderContentTest() {
+        ServerDCBuilder xrayImporterBuilder = new XrayResultsImporter.ServerDCBuilder("https://jira.example.com", "jiraUsername", "jiraPassword");
+
+        assertEquals("Basic amlyYVVzZXJuYW1lOmppcmFQYXNzd29yZA==", xrayImporterBuilder.build().generateDCAuthorizationHeaderContent());
+    }
+
+    @Test
+    void importResultsExceptionTest() {
+        XrayResultsImporterException exception = new XrayResultsImporterException("message");
+        assertEquals("message", exception.getMessage());
+    }   
 
 }

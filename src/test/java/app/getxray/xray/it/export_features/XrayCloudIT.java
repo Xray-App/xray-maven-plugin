@@ -24,6 +24,7 @@ import com.soebes.itf.jupiter.extension.SystemProperty;
 import com.soebes.itf.jupiter.maven.MavenExecutionResult;
 
 import app.getxray.xray.it.TestingUtils;
+import app.getxray.xray.junit.customjunitxml.annotations.Requirement;
 
 @MavenJupiterExtension
 public class XrayCloudIT {
@@ -83,6 +84,7 @@ public class XrayCloudIT {
     @SystemProperty(value = "xray.useInternalTestProxy", content = "true")
     @SystemProperty(value = "xray.issueKeys", content = "CALC-1")
     @SystemProperty(value = "xray.outputDir", content = "./features")
+    @Requirement("XMP-126")
     void single_feature_by_issueKeys(MavenExecutionResult result) throws IOException {
        String feature = TestingUtils.readResourceFileForExportFeatures("XrayCloudIT/single_feature_by_issueKeys/dummy.feature");
 
@@ -103,6 +105,7 @@ public class XrayCloudIT {
     @SystemProperty(value = "xray.useInternalTestProxy", content = "true")
     @SystemProperty(value = "xray.filterId", content = "12345")
     @SystemProperty(value = "xray.outputDir", content = "./features")
+    @Requirement("XMP-126")
     void single_feature_by_filterId(MavenExecutionResult result) throws IOException {
        String feature = TestingUtils.readResourceFileForExportFeatures("XrayCloudIT/single_feature_by_filterId/dummy.feature");
 

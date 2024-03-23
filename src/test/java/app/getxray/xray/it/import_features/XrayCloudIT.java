@@ -25,6 +25,7 @@ import com.soebes.itf.jupiter.extension.SystemProperty;
 import com.soebes.itf.jupiter.maven.MavenExecutionResult;
 
 import app.getxray.xray.it.TestingUtils;
+import app.getxray.xray.junit.customjunitxml.annotations.Requirement;
 
 @MavenJupiterExtension
 public class XrayCloudIT {
@@ -73,6 +74,7 @@ public class XrayCloudIT {
     @SystemProperty(value = "xray.useInternalTestProxy", content = "true")
     @SystemProperty(value = "xray.projectKey", content = "CALC")
     @SystemProperty(value = "xray.inputFeatures", content = "dummy.feature")
+    @Requirement("XMP-125")
     void single_feature(MavenExecutionResult result) throws IOException {
        String feature = TestingUtils.readResourceFileForImportFeatures("XrayCloudIT/single_feature/dummy.feature");
 
@@ -101,6 +103,7 @@ public class XrayCloudIT {
     @SystemProperty(value = "xray.inputFeatures", content = "dummy.feature")
     @SystemProperty(value = "xray.precondInfoJson", content = "precondInfo.json")
     @SystemProperty(value = "xray.testInfoJson", content = "testInfo.json")
+    @Requirement("XMP-125")
     void single_feature_custom_test_precondition_info(MavenExecutionResult result) throws IOException {
        String feature = TestingUtils.readResourceFileForImportFeatures("XrayCloudIT/single_feature_custom_test_precondition_info/dummy.feature");
        String precondInfo = TestingUtils.readResourceFileForImportFeatures("XrayCloudIT/single_feature_custom_test_precondition_info/precondInfo.json");
@@ -142,6 +145,7 @@ public class XrayCloudIT {
     @SystemProperty(value = "xray.useInternalTestProxy", content = "true")
     @SystemProperty(value = "xray.projectKey", content = "CALC")
     @SystemProperty(value = "xray.inputFeatures", content = "features.zip")
+    @Requirement("XMP-125")
     void multiple_features(MavenExecutionResult result) throws IOException {
        byte[] zippedContent = TestingUtils.readRawResourceFile("import_features/XrayCloudIT/multiple_features/features.zip");
 

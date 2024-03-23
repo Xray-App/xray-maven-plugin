@@ -383,6 +383,7 @@ public class XrayDatacenterIT {
  @SystemProperty(value = "xray.reportFormat", content = "testng")
  @SystemProperty(value = "xray.reportFile", content = "testng.xml")
  @SystemProperty(value = "xray.projectKey", content = "CALC")
+ @Requirement("XMP-4")
  void testng_standard(MavenExecutionResult result) throws IOException {
     String report = TestingUtils.readResourceFileForImportResults("XrayDatacenterIT/testng_standard/testng.xml");
 
@@ -409,6 +410,7 @@ public class XrayDatacenterIT {
  @SystemProperty(value = "xray.reportFormat", content = "testng")
  @SystemProperty(value = "xray.reportFile", content = "testng.xml")
  @SystemProperty(value = "xray.testExecInfoJson", content = "testExecInfo.json")
+ @Requirement("XMP-139")
  void testng_multipart(MavenExecutionResult result) throws IOException {
     String testExecInfo = TestingUtils.readResourceFileForImportResults("XrayDatacenterIT/testng_multipart/testExecInfo.json");
     String report = TestingUtils.readResourceFileForImportResults("XrayDatacenterIT/testng_multipart/testng.xml");
@@ -443,6 +445,7 @@ public class XrayDatacenterIT {
  @SystemProperty(value = "xray.reportFormat", content = "nunit")
  @SystemProperty(value = "xray.reportFile", content = "nunit.xml")
  @SystemProperty(value = "xray.projectKey", content = "CALC")
+ @Requirement("XMP-133")
  void nunit_standard(MavenExecutionResult result) throws IOException {
     String report = TestingUtils.readResourceFileForImportResults("XrayDatacenterIT/nunit_standard/nunit.xml");
 
@@ -469,6 +472,7 @@ public class XrayDatacenterIT {
  @SystemProperty(value = "xray.reportFormat", content = "nunit")
  @SystemProperty(value = "xray.reportFile", content = "nunit.xml")
  @SystemProperty(value = "xray.testExecInfoJson", content = "testExecInfo.json")
+ @Requirement("XMP-134")
  void nunit_multipart(MavenExecutionResult result) throws IOException {
     String testExecInfo = TestingUtils.readResourceFileForImportResults("XrayDatacenterIT/nunit_multipart/testExecInfo.json");
     String report = TestingUtils.readResourceFileForImportResults("XrayDatacenterIT/nunit_multipart/nunit.xml");
@@ -502,6 +506,7 @@ public class XrayDatacenterIT {
  @SystemProperty(value = "xray.reportFormat", content = "xunit")
  @SystemProperty(value = "xray.reportFile", content = "xunit.xml")
  @SystemProperty(value = "xray.projectKey", content = "CALC")
+ @Requirement("XMP-128")
  void xunit_standard(MavenExecutionResult result) throws IOException {
     String report = TestingUtils.readResourceFileForImportResults("XrayDatacenterIT/xunit_standard/xunit.xml");
 
@@ -528,6 +533,7 @@ public class XrayDatacenterIT {
  @SystemProperty(value = "xray.reportFormat", content = "xunit")
  @SystemProperty(value = "xray.reportFile", content = "xunit.xml")
  @SystemProperty(value = "xray.testExecInfoJson", content = "testExecInfo.json")
+ @Requirement("XMP-129")
  void xunit_multipart(MavenExecutionResult result) throws IOException {
     String testExecInfo = TestingUtils.readResourceFileForImportResults("XrayDatacenterIT/xunit_multipart/testExecInfo.json");
     String report = TestingUtils.readResourceFileForImportResults("XrayDatacenterIT/xunit_multipart/xunit.xml");
@@ -561,6 +567,7 @@ public class XrayDatacenterIT {
  @SystemProperty(value = "xray.reportFormat", content = "robot")
  @SystemProperty(value = "xray.reportFile", content = "robot.xml")
  @SystemProperty(value = "xray.projectKey", content = "CALC")
+ @Requirement("XMP-137")
  void robot_standard(MavenExecutionResult result) throws IOException {
     String report = TestingUtils.readResourceFileForImportResults("XrayDatacenterIT/robot_standard/robot.xml");
 
@@ -587,6 +594,7 @@ public class XrayDatacenterIT {
  @SystemProperty(value = "xray.reportFormat", content = "robot")
  @SystemProperty(value = "xray.reportFile", content = "robot.xml")
  @SystemProperty(value = "xray.testExecInfoJson", content = "testExecInfo.json")
+ @Requirement("XMP-138")
  void robot_multipart(MavenExecutionResult result) throws IOException {
     String testExecInfo = TestingUtils.readResourceFileForImportResults("XrayDatacenterIT/robot_multipart/testExecInfo.json");
     String report = TestingUtils.readResourceFileForImportResults("XrayDatacenterIT/robot_multipart/robot.xml");
@@ -619,6 +627,7 @@ public class XrayDatacenterIT {
  @SystemProperty(value = "xray.jiraPassword", content = "password")
  @SystemProperty(value = "xray.reportFormat", content = "cucumber")
  @SystemProperty(value = "xray.reportFile", content = "cucumber.json")
+ @Requirement("XMP-130")
  void cucumber_standard(MavenExecutionResult result) throws IOException {
     String report = TestingUtils.readResourceFileForImportResults("XrayDatacenterIT/cucumber_standard/cucumber.json");
 
@@ -640,6 +649,7 @@ public class XrayDatacenterIT {
  @SystemProperty(value = "xray.reportFormat", content = "cucumber")
  @SystemProperty(value = "xray.reportFile", content = "cucumber.json")
  @SystemProperty(value = "xray.testExecInfoJson", content = "testExecInfo.json")
+ @Requirement("XMP-131")
  void cucumber_multipart(MavenExecutionResult result) throws IOException {
     String testExecInfo = TestingUtils.readResourceFileForImportResults("XrayDatacenterIT/cucumber_multipart/testExecInfo.json");
     String report = TestingUtils.readResourceFileForImportResults("XrayDatacenterIT/cucumber_multipart/cucumber.json");
@@ -672,6 +682,7 @@ public class XrayDatacenterIT {
  @SystemProperty(value = "xray.jiraPassword", content = "password")
  @SystemProperty(value = "xray.reportFormat", content = "behave")
  @SystemProperty(value = "xray.reportFile", content = "behave.json")
+ @Requirement("XMP-135")
  void behave_standard(MavenExecutionResult result) throws IOException {
     String report = TestingUtils.readResourceFileForImportResults("XrayDatacenterIT/behave_standard/behave.json");
 
@@ -693,6 +704,7 @@ public class XrayDatacenterIT {
  @SystemProperty(value = "xray.reportFormat", content = "behave")
  @SystemProperty(value = "xray.reportFile", content = "behave.json")
  @SystemProperty(value = "xray.testExecInfoJson", content = "testExecInfo.json")
+ @Requirement("XMP-136")
  void behave_multipart(MavenExecutionResult result) throws IOException {
     String testExecInfo = TestingUtils.readResourceFileForImportResults("XrayDatacenterIT/behave_multipart/testExecInfo.json");
     String report = TestingUtils.readResourceFileForImportResults("XrayDatacenterIT/behave_multipart/behave.json");

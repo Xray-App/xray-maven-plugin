@@ -1,6 +1,8 @@
 package app.getxray.xray;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -54,5 +56,30 @@ class CommonCloudTest {
         req.getValue().body().writeTo(buffer);
         assertEquals(authenticationPayload,  buffer.readUtf8());
     }
-            
+
+    @Test
+    void authenticateXrayAPIKeyCredentialsTestFailure() throws Exception{
+        String clientId = "22334455";
+        String clientSecret = "998877665544";
+
+        Log log = Mockito.mock(Log.class);
+        OkHttpClient client = Mockito.mock(OkHttpClient.class);
+        Builder responseBuilder = new Response.Builder();
+        responseBuilder.protocol(okhttp3.Protocol.HTTP_1_1);
+        responseBuilder.request(new Request.Builder().url("https://xray.cloud.getxray.app/api/v2/authenticate").build());
+        responseBuilder.code(403);
+        responseBuilder.message("Forbidden");
+        responseBuilder.header("Content-Type", "application/json");
+        responseBuilder.body(okhttp3.ResponseBody.create("", okhttp3.MediaType.parse("application/json"))); 
+        Response response = responseBuilder.build();
+
+        final Call remoteCall = Mockito.mock(Call.class);
+        when(remoteCall.execute()).thenReturn(response);
+        when(client.newCall(any())).thenReturn(remoteCall);
+
+        Exception exception = assertThrows(Exception.class, () -> {
+            CommonCloud.authenticateXrayAPIKeyCredentials(log, true, client, clientId, clientSecret);
+        });
+        assertTrue(exception.getMessage().startsWith("failed to authenticate"));
+    }
 }

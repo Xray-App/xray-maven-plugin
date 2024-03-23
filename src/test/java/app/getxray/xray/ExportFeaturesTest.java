@@ -1,5 +1,6 @@
 package app.getxray.xray;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Test;
 
@@ -36,6 +37,12 @@ class ExportFeaturesTest {
             .withVerbose(true)
             .withTimeout(5);
         assertNotNull(xrayBuilder.build());
+    }
+
+    @Test
+    void exportFeaturesExceptionTest() {
+        XrayFeaturesExporterException exception = new XrayFeaturesExporterException("message");
+        assertEquals("message", exception.getMessage());
     }
 
 }
