@@ -17,7 +17,7 @@ public class DCCustomDisplayNameGenerator extends Standard {
     
     @Override
     public String generateDisplayNameForMethod(Class<?> testClass, Method testMethod) {
-        return this.replaceCamelCase(replaceUndercoreBySpace(testMethod.getName())) + "(DC)";
+        return this.replaceCamelCase(replaceUndercoreBySpace(testMethod.getName())) + " (DC)";
     }
 
     String replaceUndercoreBySpace(String s) {

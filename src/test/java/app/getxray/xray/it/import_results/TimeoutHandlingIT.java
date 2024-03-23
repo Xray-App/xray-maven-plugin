@@ -146,7 +146,7 @@ public class TimeoutHandlingIT {
     @MavenGoal("xray:import-results")
     @SystemProperty(value = "xray.cloud", content = "false")
     @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:"+PORT_NUMBER)
-  @SystemProperty(value = "xray.jiraUsername", content = "username")
+    @SystemProperty(value = "xray.jiraUsername", content = "username")
     @SystemProperty(value = "xray.jiraPassword", content = "password")
     @SystemProperty(value = "xray.reportFormat", content = "junit")
     @SystemProperty(value = "xray.reportFile", content = "junit.xml")

@@ -17,7 +17,7 @@ public class CloudCustomDisplayNameGenerator extends Standard {
     
     @Override
     public String generateDisplayNameForMethod(Class<?> testClass, Method testMethod) {
-        return this.replaceCamelCase(replaceUndercoreBySpace(testMethod.getName())) + "(cloud)";
+        return this.replaceCamelCase(replaceUndercoreBySpace(testMethod.getName())) + " (cloud)";
     }
 
     String replaceUndercoreBySpace(String s) {
