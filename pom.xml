@@ -61,7 +61,7 @@
     <junit.version>5.10.2</junit.version>
     <junit-platform.version>1.10.2</junit-platform.version>
     <jacoco.version>0.8.11</jacoco.version>
-    <internal.xray-maven-plugin.version>0.7.3</internal.xray-maven-plugin.version>
+    <internal.xray-maven-plugin.version>0.7.4</internal.xray-maven-plugin.version>
     <unit.coverage.file>${project.build.directory}/jacoco-output/jacoco-unit-tests.exec</unit.coverage.file>
     <it.coverage.file>${project.build.directory}/jacoco-output/jacoco-it-tests.exec</it.coverage.file>
     <merged.coverage.file>${project.build.directory}/jacoco-output/merged.exec</merged.coverage.file>
