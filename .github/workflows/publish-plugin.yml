@@ -45,5 +45,4 @@ jobs:
         MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
         # MAVEN_GPG_PASSPHRASE: ${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}
       run: |
-        mvn -X --batch-mode -Dgpg.passphrase=${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }} -DskipTests=true clean compile verify package gpg:sign deploy
-        # mvn -X --batch-mode -DskipTests=true clean compile verify package gpg:sign deploy
+        mvn --batch-mode -Dgpg.passphrase=${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }} -DskipTests=true clean compile verify package gpg:sign deploy
