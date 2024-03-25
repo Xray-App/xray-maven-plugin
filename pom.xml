@@ -410,6 +410,7 @@
         <configuration>
           <cloud>true</cloud>
           <projectKey>XMP</projectKey>
+          <version>${project.version}</version>
           <reportFormat>junit</reportFormat>
           <reportFile>reports/custom*.xml</reportFile>
         </configuration>
