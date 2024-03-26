@@ -292,7 +292,7 @@ public class XrayResultsImporter {
         }
     }
 
-    public String submitMultipartServerDC(String format, String reportFile, JSONObject testExecInfo, JSONObject testInfo) throws IOException, XrayResultsImporterException {        
+    public String submitMultipartServerDC(String format, String reportFile, JSONObject testExecInfo, JSONObject testInfo) throws XrayResultsImporterException {
         OkHttpClient client;
         try {
             client = createHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
@@ -348,6 +348,10 @@ public class XrayResultsImporter {
             throw e1;
         }
 
+        return makeHttpRequest(client, credentials, builder, requestBody);
+    }
+
+    private String makeHttpRequest(OkHttpClient client, String credentials, HttpUrl.Builder builder, RequestBody requestBody) throws XrayResultsImporterException {
         Request request = new Request.Builder().url(builder.build()).post(requestBody).addHeader(AUTHORIZATION_HEADER, credentials).build();
         CommonUtils.logRequest(logger, request, this.verbose);
 
@@ -410,23 +414,7 @@ public class XrayResultsImporter {
         }
         requestBody = requestBodyBuilder.build();
 
-        Request request = new Request.Builder().url(builder.build()).post(requestBody).addHeader(AUTHORIZATION_HEADER, credentials).build();
-        CommonUtils.logRequest(logger, request, this.verbose);
-        Response response = null;
-        try {
-            response = client.newCall(request).execute();
-            CommonUtils.logResponse(logger, response, this.verbose);
-            String responseBody = response.body().string();
-            if (response.isSuccessful()){
-                return responseBody;
-            } else {
-                throw new IOException(UNEXPECTED_HTTP_CODE + response);
-            }
-        } catch (IOException e) {
-            logger.error(e);
-            throw new XrayResultsImporterException(e.getMessage());
-        }
-
+        return makeHttpRequest(client, credentials, builder, requestBody);
     }
 
     public String generateDCAuthorizationHeaderContent() {
@@ -437,7 +425,7 @@ public class XrayResultsImporter {
         }
     }
 
-    
+
     public String submitStandardServerDC(String format, String reportFile) throws IOException, XrayResultsImporterException {        
         OkHttpClient client;
         try {
@@ -469,17 +457,16 @@ public class XrayResultsImporter {
             endpointUrl = jiraBaseUrl + "/rest/raven/2.0/import/execution/" + format;
         }
 
-        Request request;
         HttpUrl url = HttpUrl.get(endpointUrl);
         HttpUrl.Builder builder = url.newBuilder();
         // for cucumber and behave reports send the report directly on the body
 
+            RequestBody requestBody = null;
             if (XRAY_FORMAT.equals(format) || CUCUMBER_FORMAT.equals(format) || BEHAVE_FORMAT.equals(format) ) {
                 String reportContent = new String ( Files.readAllBytes( Paths.get(reportFile) ) );
-                RequestBody requestBody = RequestBody.create(reportContent, mediaType);
-                request = new Request.Builder().url(builder.build()).post(requestBody).addHeader(AUTHORIZATION_HEADER, credentials).build();
+                requestBody = RequestBody.create(reportContent, mediaType);
             } else {
-                MultipartBody requestBody = new MultipartBody.Builder()
+                requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("file", reportFile, RequestBody.create(new File(reportFile), mediaType))
                 .build();
@@ -500,23 +487,9 @@ public class XrayResultsImporter {
                         builder.addQueryParameter(entry.getKey(), value);
                     }
                 }
-                request = new Request.Builder().url(builder.build()).post(requestBody).addHeader(AUTHORIZATION_HEADER, credentials).build();
             }
-            CommonUtils.logRequest(logger, request, this.verbose);
 
-        try {
-            Response response = client.newCall(request).execute();
-            CommonUtils.logResponse(logger, response, this.verbose);
-            String responseBody = response.body().string();
-            if (response.isSuccessful()){
-                return(responseBody);
-            } else {
-                throw new IOException(UNEXPECTED_HTTP_CODE + response);
-            }
-        } catch (IOException e) {
-            logger.error(e);
-            throw new XrayResultsImporterException(e.getMessage());
-        }
+        return makeHttpRequest(client, credentials, builder, requestBody);
     }
     
     public String submitStandardCloud(String format, String reportFile) throws IOException, XrayResultsImporterException {
@@ -574,23 +547,7 @@ public class XrayResultsImporter {
             }
         }
 
-        Request request = new Request.Builder().url(builder.build()).post(requestBody).addHeader(AUTHORIZATION_HEADER, credentials).build();
-        CommonUtils.logRequest(logger, request, this.verbose);
-
-        try {
-            Response response = client.newCall(request).execute();
-            CommonUtils.logResponse(logger, response, this.verbose);
-            String responseBody = response.body().string();            
-            if (response.isSuccessful()){
-                return(responseBody);
-            } else {
-                throw new IOException(UNEXPECTED_HTTP_CODE + response);
-            }    
-        } catch (IOException e) {
-            logger.error(e);
-            throw new XrayResultsImporterException(e.getMessage());
-        }
-
+        return makeHttpRequest(client, credentials, builder, requestBody);
     }
 
 }
