@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 
 import org.json.JSONObject;
 import java.util.Arrays;
@@ -292,14 +290,8 @@ public class XrayResultsImporter {
         }
     }
 
-    public String submitMultipartServerDC(String format, String reportFile, JSONObject testExecInfo, JSONObject testInfo) throws XrayResultsImporterException {
-        OkHttpClient client;
-        try {
-            client = createHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
-        } catch (KeyManagementException | NoSuchAlgorithmException e) {
-            logger.error(e);
-            throw new XrayResultsImporterException(e.getMessage());
-        }
+    public String submitMultipartServerDC(String format, String reportFile, JSONObject testExecInfo, JSONObject testInfo) throws XrayResultsImporterException, IOException {
+        OkHttpClient client = createHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
 
         String credentials = generateDCAuthorizationHeaderContent();
 
@@ -371,13 +363,7 @@ public class XrayResultsImporter {
     }
 
     public String submitMultipartCloud(String format, String reportFile, JSONObject testExecInfo, JSONObject testInfo) throws IOException, XrayResultsImporterException {  	
-        OkHttpClient client;
-        try {
-            client = createHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
-        } catch (KeyManagementException | NoSuchAlgorithmException e) {
-            logger.error(e);
-            throw new XrayResultsImporterException(e.getMessage());
-        }
+        OkHttpClient client = createHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
 
         String authToken = authenticateXrayAPIKeyCredentials(logger, verbose, client, clientId, clientSecret);
         String credentials = BEARER_HEADER_PREFIX + authToken;
@@ -427,13 +413,7 @@ public class XrayResultsImporter {
 
 
     public String submitStandardServerDC(String format, String reportFile) throws IOException, XrayResultsImporterException {        
-        OkHttpClient client;
-        try {
-            client = createHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
-        } catch (KeyManagementException | NoSuchAlgorithmException e) {
-            logger.error(e);
-            throw new XrayResultsImporterException(e.getMessage());
-        }
+        OkHttpClient client = createHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
 
         String credentials = generateDCAuthorizationHeaderContent();
     
@@ -493,13 +473,7 @@ public class XrayResultsImporter {
     }
     
     public String submitStandardCloud(String format, String reportFile) throws IOException, XrayResultsImporterException {
-        OkHttpClient client;
-        try {
-            client = createHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
-        } catch (KeyManagementException | NoSuchAlgorithmException e) {
-            logger.error(e);
-            throw new XrayResultsImporterException(e.getMessage());
-        }
+        OkHttpClient client = createHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
 
         String authToken = authenticateXrayAPIKeyCredentials(logger, verbose, client, clientId, clientSecret);
         String credentials = BEARER_HEADER_PREFIX + authToken;

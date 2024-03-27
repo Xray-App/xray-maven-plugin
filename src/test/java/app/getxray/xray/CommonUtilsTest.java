@@ -1,17 +1,17 @@
 package app.getxray.xray;
 
-import static app.getxray.xray.CommonUtils.isTrue;
 import static app.getxray.xray.CommonUtils.createHttpClient;
+import static app.getxray.xray.CommonUtils.isTrue;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
+import java.io.IOException;
 
 import org.apache.maven.plugin.logging.Log;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -19,7 +19,6 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import org.mockito.Mockito;
 
 class CommonUtilsTest {
  
@@ -41,13 +40,13 @@ class CommonUtilsTest {
     }
 
     @Test
-    void getHttpClientTest() throws KeyManagementException, NoSuchAlgorithmException {
+    void getHttpClientTest() throws IOException {
         OkHttpClient client = createHttpClient(Boolean.FALSE, Boolean.TRUE, Integer.valueOf(5));
         assertNotNull(client);
     }
 
     @Test
-    void getHttpClientUsingInternalProxyTest() throws KeyManagementException, NoSuchAlgorithmException {
+    void getHttpClientUsingInternalProxyTest() throws IOException {
         OkHttpClient client = createHttpClient(Boolean.TRUE, Boolean.TRUE, Integer.valueOf(5));
         assertNotNull(client);
     }

@@ -1,11 +1,16 @@
 package app.getxray.xray;
 
+import static app.getxray.xray.CommonCloud.XRAY_CLOUD_API_BASE_URL;
+import static app.getxray.xray.CommonCloud.authenticateXrayAPIKeyCredentials;
+import static app.getxray.xray.CommonUtils.createHttpClient;
+
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
+import java.nio.file.Files;
+import java.nio.file.attribute.FileTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -25,10 +30,6 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-import static app.getxray.xray.CommonCloud.XRAY_CLOUD_API_BASE_URL;
-import static app.getxray.xray.CommonCloud.authenticateXrayAPIKeyCredentials;
-import static app.getxray.xray.CommonUtils.createHttpClient;
-
 // https://docs.getxray.app/display/XRAYCLOUD/Importing+Cucumber+Tests+-+REST+v2
 // https://docs.getxray.app/display/XRAY/Importing+Cucumber+Tests+-+REST
 
@@ -47,7 +48,7 @@ public class XrayFeaturesImporter {
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_HEADER_PREFIX = "Bearer ";
-    private static final String TEMP_DIR = "/import_features";
+    private static final String TEMP_DIR_PREFIX = "import_features";
 
     private String jiraBaseUrl;
     private String jiraUsername;
@@ -262,13 +263,7 @@ public class XrayFeaturesImporter {
     }
 
     public JSONArray importServerDC(String inputPath, JSONObject testInfo, JSONObject precondInfo) throws XrayFeaturesImporterException, IOException {
-        OkHttpClient client;
-        try {
-            client = createHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
-        } catch (KeyManagementException | NoSuchAlgorithmException e) {
-            logger.error(e);
-            throw new XrayFeaturesImporterException(e.getMessage());
-        }
+        OkHttpClient client = createHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
 
         File inputFile = new File(inputPath);
         String credentials;
@@ -298,11 +293,14 @@ public class XrayFeaturesImporter {
             mediaType = MEDIA_TYPE_FOR_FEATURE_FILES;
         } else {
             // it may be a directory; check it, and if so zip it before sending it
-            mediaType = MEDIA_TYPE_ZIP;
             if (inputFile.isDirectory()) {
-                File tempZip = File.createTempFile("dummy", ".zip", new File(TEMP_DIR));
+                mediaType = MEDIA_TYPE_ZIP;
+                File tempDir = Files.createTempDirectory(TEMP_DIR_PREFIX).toFile();
+                File tempZip = File.createTempFile("dummy", ".zip", tempDir);
                 zipDirectory(inputPath, tempZip.getAbsolutePath());
                 inputFile = tempZip;
+            } else {
+                throw new XrayFeaturesImporterException("Unsupported file format");
             }
         }
 
@@ -336,13 +334,7 @@ public class XrayFeaturesImporter {
     }
 
     public JSONArray importCloud(String inputPath, JSONObject testInfo, JSONObject precondInfo) throws XrayFeaturesImporterException, IOException {
-        OkHttpClient client;
-        try {
-            client = createHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
-        } catch (KeyManagementException | NoSuchAlgorithmException e) {
-            logger.error(e);
-            throw new XrayFeaturesImporterException(e.getMessage());
-        }
+        OkHttpClient client = createHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
 
         String authToken = authenticateXrayAPIKeyCredentials(logger, verbose, client, clientId, clientSecret);
         String credentials = BEARER_HEADER_PREFIX + authToken;
@@ -375,7 +367,8 @@ public class XrayFeaturesImporter {
             // it may be a directory; check it, and if so zip it before sending it
             mediaType = MEDIA_TYPE_ZIP;
             if (inputFile.isDirectory()) {
-                File tempZip = File.createTempFile("dummy", ".zip", new File(TEMP_DIR));
+                File tempDir = Files.createTempDirectory(TEMP_DIR_PREFIX).toFile();
+                File tempZip = File.createTempFile("dummy", ".zip", tempDir);
                 zipDirectory(inputPath, tempZip.getAbsolutePath());
                 inputFile = tempZip;
             }
@@ -420,10 +413,14 @@ public class XrayFeaturesImporter {
 
     public static void zipDirectory(String sourceDir, String outputZip) throws IOException {
         FileOutputStream fos = new FileOutputStream(outputZip);
-        ZipOutputStream zipOut = new ZipOutputStream(fos);
+        BufferedOutputStream bos = new BufferedOutputStream(fos);
+        ZipOutputStream zipOut = new ZipOutputStream(bos);
+        zipOut.setMethod(ZipOutputStream.DEFLATED);
+        zipOut.setLevel(0);
         File fileToZip = new File(sourceDir);
 
         zipFile(fileToZip, fileToZip.getName(), zipOut, false);
+        zipOut.finish();
         zipOut.close();
         fos.close();
     }
@@ -434,11 +431,17 @@ public class XrayFeaturesImporter {
         }
         if (fileToZip.isDirectory()) {
             if (createDir) {
+                ZipEntry zipEntry;
                 if (fileName.endsWith("/")) {
-                    zipOut.putNextEntry(new ZipEntry(fileName));
+                    zipEntry = new ZipEntry(fileName);
                 } else {
-                    zipOut.putNextEntry(new ZipEntry(fileName + "/"));
+                    zipEntry = new ZipEntry(fileName + "/");
                 }
+                FileTime time=FileTime.fromMillis(System.currentTimeMillis());
+                zipEntry.setCreationTime(time);
+                zipEntry.setLastAccessTime(time);
+                zipEntry.setLastModifiedTime(time);
+                zipOut.putNextEntry(zipEntry);
                 zipOut.closeEntry();
             }
 
@@ -459,12 +462,19 @@ public class XrayFeaturesImporter {
         }
         try (FileInputStream fis = new FileInputStream(fileToZip)) {
             ZipEntry zipEntry = new ZipEntry(fileName);
+            zipEntry.setSize(fileToZip.length());
+            FileTime time=FileTime.fromMillis(System.currentTimeMillis());
+            zipEntry.setCreationTime(time);
+            zipEntry.setLastAccessTime(time);
+            zipEntry.setLastModifiedTime(time);
             zipOut.putNextEntry(zipEntry);
             byte[] bytes = new byte[1024];
             int length;
-            while ((length = fis.read(bytes)) >= 0) {
+            while ((length = fis.read(bytes)) > 0) {
                 zipOut.write(bytes, 0, length);
             }
+            zipOut.flush();
+            zipOut.closeEntry();
         }
     }
 }

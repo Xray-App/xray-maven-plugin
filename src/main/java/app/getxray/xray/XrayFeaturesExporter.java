@@ -1,14 +1,11 @@
 package app.getxray.xray;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
+import static app.getxray.xray.CommonCloud.XRAY_CLOUD_API_BASE_URL;
+import static app.getxray.xray.CommonCloud.authenticateXrayAPIKeyCredentials;
+import static app.getxray.xray.CommonUtils.createHttpClient;
+import static app.getxray.xray.CommonUtils.unzipContentsToFolder;
+
 import java.io.IOException;
-import java.io.InputStream;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 import org.apache.maven.plugin.logging.Log;
 
 import okhttp3.Credentials;
@@ -16,10 +13,6 @@ import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-
-import static app.getxray.xray.CommonCloud.XRAY_CLOUD_API_BASE_URL;
-import static app.getxray.xray.CommonCloud.authenticateXrayAPIKeyCredentials;
-import static app.getxray.xray.CommonUtils.createHttpClient;
 
 // https://docs.getxray.app/display/XRAYCLOUD/Exporting+Cucumber+Tests+-+REST+v2
 // https://docs.getxray.app/display/XRAY/Exporting+Cucumber+Tests+-+REST
@@ -210,7 +203,7 @@ public class XrayFeaturesExporter {
 
     }
 
-    public String submit(String outputPath) throws XrayFeaturesExporterException {
+    public String submit(String outputPath) throws XrayFeaturesExporterException, IOException {
         if (clientId != null) {
             return submitStandardCloud(outputPath);
         } else {
@@ -218,14 +211,8 @@ public class XrayFeaturesExporter {
         }
     }
 
-    public String submitStandardServerDC(String outputPath) throws XrayFeaturesExporterException {
-        OkHttpClient client;
-        try {
-            client = createHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
-        } catch (KeyManagementException | NoSuchAlgorithmException e) {
-            logger.error(e);
-            throw new XrayFeaturesExporterException(e.getMessage());
-        }
+    public String submitStandardServerDC(String outputPath) throws XrayFeaturesExporterException, IOException {
+        OkHttpClient client = createHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
 
         String credentials;
         if (jiraPersonalAccessToken!= null) {
@@ -265,11 +252,9 @@ public class XrayFeaturesExporter {
         }
     }
 
-    public String submitStandardCloud(String outputPath) throws XrayFeaturesExporterException {
-        OkHttpClient client;
+    public String submitStandardCloud(String outputPath) throws XrayFeaturesExporterException, IOException {
+        OkHttpClient client = createHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
         try {
-            client = createHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
-        
             String authToken = authenticateXrayAPIKeyCredentials(logger, verbose, client, clientId, clientSecret);
             String credentials = BEARER_HEADER_PREFIX + authToken;
 
@@ -295,54 +280,10 @@ public class XrayFeaturesExporter {
             } else {
                 throw new IOException("Unexpected HTTP code " + response);
             }
-        } catch (KeyManagementException | NoSuchAlgorithmException | IOException e) {
+        } catch (IOException e) {
             logger.error(e);
             throw new XrayFeaturesExporterException(e.getMessage());
         }
-    }
-
-    private void unzipContentsToFolder(InputStream zippedContents, String outputFolder) throws IOException {
-        File destDir = new File(outputFolder);
-        byte[] buffer = new byte[1024];
-        ZipInputStream zis = new ZipInputStream(new BufferedInputStream(zippedContents));
-        ZipEntry zipEntry;
-        while ((zipEntry = zis.getNextEntry()) != null) {
-            File newFile = newFile(destDir, zipEntry);
-
-            if (zipEntry.isDirectory()) {
-                if (!newFile.isDirectory() && !newFile.mkdirs()) {
-                    throw new IOException("Failed to create directory " + newFile);
-                }
-            } else {
-                // fix for Windows-created archives
-                File parent = newFile.getParentFile();
-                if (!parent.isDirectory() && !parent.mkdirs()) {
-                    throw new IOException("Failed to create directory " + parent);
-                }
-
-                try (
-                FileOutputStream fos = new FileOutputStream(newFile)) {
-                    int len;
-                    while ((len = zis.read(buffer)) > 0) {
-                        fos.write(buffer, 0, len);
-                    }
-                }
-            }
-        }
-        zis.closeEntry();
-        zis.close();
-    }
-
-    private static File newFile(File destinationDir, ZipEntry zipEntry) throws IOException {
-        File destFile = new File(destinationDir, zipEntry.getName());
-        String destDirPath = destinationDir.getCanonicalPath();
-        String destFilePath = destFile.getCanonicalPath();
-
-        if (!destFilePath.startsWith(destDirPath + File.separator)) {
-            throw new IOException("Entry is outside of the target dir: " + zipEntry.getName());
-        }
-
-        return destFile;
     }
 
 }
