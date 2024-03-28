@@ -10,6 +10,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.print.attribute.standard.Media;
+
 import okhttp3.Credentials;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
@@ -295,18 +297,7 @@ public class XrayResultsImporter {
 
         String credentials = generateDCAuthorizationHeaderContent();
 
-        String[] supportedFormats = new String [] { XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT, BEHAVE_FORMAT }; 
-        if (!Arrays.asList(supportedFormats).contains(format)) {
-            throw new IllegalArgumentException(UNSUPPORTED_REPORT_FORMAT + format);
-        }
-
-        MediaType mediaType;
-        String[] xmlBasedFormats = new String [] { JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT}; 
-        if (Arrays.asList(xmlBasedFormats).contains(format)) {
-            mediaType = MEDIA_TYPE_XML;
-        } else {
-            mediaType = MEDIA_TYPE_JSON;
-        }
+        MediaType mediaType = getMediaTypeForFormat(format);
 
         String endpointUrl;
         if (XRAY_FORMAT.equals(format)) {
@@ -368,18 +359,7 @@ public class XrayResultsImporter {
         String authToken = authenticateXrayAPIKeyCredentials(logger, verbose, client, clientId, clientSecret);
         String credentials = BEARER_HEADER_PREFIX + authToken;
 
-        String[] supportedFormats = new String [] { XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT, BEHAVE_FORMAT }; 
-        if (!Arrays.asList(supportedFormats).contains(format)) {
-            throw new IllegalArgumentException(UNSUPPORTED_REPORT_FORMAT + format);
-        }
-
-        MediaType mediaType;
-        String[] xmlBasedFormats = new String [] { JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT}; 
-        if (Arrays.asList(xmlBasedFormats).contains(format)) {
-            mediaType = MEDIA_TYPE_XML;
-        } else {
-            mediaType = MEDIA_TYPE_JSON;
-        }
+        MediaType mediaType = getMediaTypeForFormat(format);
 
         String endpointUrl;
         if ("xray".equals(format)) {
@@ -417,18 +397,7 @@ public class XrayResultsImporter {
 
         String credentials = generateDCAuthorizationHeaderContent();
     
-        String[] supportedFormats = new String [] { XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT, BEHAVE_FORMAT }; 
-        if (!Arrays.asList(supportedFormats).contains(format)) {
-            throw new IllegalArgumentException(UNSUPPORTED_REPORT_FORMAT + format);
-        }
-
-        MediaType mediaType;
-        String[] xmlBasedFormats = new String [] { JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT}; 
-        if (Arrays.asList(xmlBasedFormats).contains(format)) {
-            mediaType = MEDIA_TYPE_XML;
-        } else {
-            mediaType = MEDIA_TYPE_JSON;
-        }
+        MediaType mediaType = getMediaTypeForFormat(format);
 
         String endpointUrl;
         if (XRAY_FORMAT.equals(format)) {
@@ -471,13 +440,8 @@ public class XrayResultsImporter {
 
         return makeHttpRequest(client, credentials, builder, requestBody);
     }
-    
-    public String submitStandardCloud(String format, String reportFile) throws IOException, XrayResultsImporterException {
-        OkHttpClient client = createHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
 
-        String authToken = authenticateXrayAPIKeyCredentials(logger, verbose, client, clientId, clientSecret);
-        String credentials = BEARER_HEADER_PREFIX + authToken;
-
+    private MediaType getMediaTypeForFormat(String format) {
         String[] supportedFormats = new String [] { XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT, BEHAVE_FORMAT };
         if (!Arrays.asList(supportedFormats).contains(format)) {
             throw new IllegalArgumentException(UNSUPPORTED_REPORT_FORMAT + format);
@@ -490,6 +454,16 @@ public class XrayResultsImporter {
         } else {
             mediaType = MEDIA_TYPE_JSON;
         }
+        return mediaType;
+    }
+    
+    public String submitStandardCloud(String format, String reportFile) throws IOException, XrayResultsImporterException {
+        OkHttpClient client = createHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
+
+        String authToken = authenticateXrayAPIKeyCredentials(logger, verbose, client, clientId, clientSecret);
+        String credentials = BEARER_HEADER_PREFIX + authToken;
+
+        MediaType mediaType = getMediaTypeForFormat(format)
 
         String endpointUrl;
         if (XRAY_FORMAT.equals(format)) {
