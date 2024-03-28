@@ -10,8 +10,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.print.attribute.standard.Media;
-
 import okhttp3.Credentials;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
