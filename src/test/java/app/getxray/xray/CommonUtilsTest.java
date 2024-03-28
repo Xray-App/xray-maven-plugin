@@ -2,17 +2,25 @@ package app.getxray.xray;
 
 import static app.getxray.xray.CommonUtils.createHttpClient;
 import static app.getxray.xray.CommonUtils.isTrue;
+import static app.getxray.xray.CommonUtils.unzipContentsToFolder;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 
 import org.apache.maven.plugin.logging.Log;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import app.getxray.xray.it.TestingUtils;
+import junit.framework.Assert;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -66,6 +74,18 @@ class CommonUtilsTest {
             () -> Mockito.verify(log).debug("REQUEST_CONTENT_TYPE: " + request.body().contentType().toString()),
             () -> Mockito.verifyNoMoreInteractions(log)
         );
+    }
+
+    @Test
+    void testUnzipContentsToFolder() throws Exception {
+        File tempDir = Files.createTempDirectory("dummy").toFile();
+        byte[] zippedContent = TestingUtils.readRawResourceFile("import_features/XrayDatacenterIT/multiple_features/features.zip");
+        InputStream zippedContentStream = new ByteArrayInputStream(zippedContent);
+        unzipContentsToFolder(zippedContentStream, tempDir.getAbsolutePath().toString());
+        assertThat(tempDir.listFiles()).hasSize(2);
+        assertThat(tempDir.listFiles()).extracting(File::getName).containsExactly("core", "other");
+        assertThat(tempDir.listFiles()[0].listFiles()).extracting(File::getName).containsExactlyInAnyOrder("positive_sum.feature");
+        assertThat(tempDir.listFiles()[1].listFiles()).extracting(File::getName).containsExactlyInAnyOrder("negative_sum.feature");
     }
 
     @Test
