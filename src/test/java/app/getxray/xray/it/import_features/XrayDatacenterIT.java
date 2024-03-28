@@ -249,7 +249,6 @@ public class XrayDatacenterIT {
         File tempDir = Files.createTempDirectory("features").toFile();
         ServeEvent request = allServeEvents.get(0);
         byte[] zippedContent = request.getRequest().getPart("file").getBody().asBytes();
-        // Files.write(Paths.get("/tmp", "features.zip"), zippedContent);
         InputStream zippedContentStream = new ByteArrayInputStream(zippedContent);
         unzipContentsToFolder(zippedContentStream, tempDir.getAbsolutePath().toString());
         assertThat(tempDir.listFiles()).hasSize(2);

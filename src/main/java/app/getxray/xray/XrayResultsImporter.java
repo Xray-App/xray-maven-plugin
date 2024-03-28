@@ -441,33 +441,33 @@ public class XrayResultsImporter {
         HttpUrl.Builder builder = url.newBuilder();
         // for cucumber and behave reports send the report directly on the body
 
-            RequestBody requestBody = null;
-            if (XRAY_FORMAT.equals(format) || CUCUMBER_FORMAT.equals(format) || BEHAVE_FORMAT.equals(format) ) {
-                String reportContent = new String ( Files.readAllBytes( Paths.get(reportFile) ) );
-                requestBody = RequestBody.create(reportContent, mediaType);
-            } else {
-                requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("file", reportFile, RequestBody.create(new File(reportFile), mediaType))
-                .build();
+        RequestBody requestBody = null;
+        if (XRAY_FORMAT.equals(format) || CUCUMBER_FORMAT.equals(format) || BEHAVE_FORMAT.equals(format) ) {
+            String reportContent = new String ( Files.readAllBytes( Paths.get(reportFile) ) );
+            requestBody = RequestBody.create(reportContent, mediaType);
+        } else {
+            requestBody = new MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("file", reportFile, RequestBody.create(new File(reportFile), mediaType))
+            .build();
 
-                // for cucumber and behave formats, these URL parameters are not yet available
-                Map<String, String> parameters = new HashMap<>();
-                parameters.put("projectKey", projectKey);
-                parameters.put("fixVersion", fixVersion);
-                parameters.put("revision", revision);
-                parameters.put("testPlanKey", testPlanKey);
-                parameters.put("testExecKey", testExecKey);
-                parameters.put("testEnvironments", testEnvironment);
+            // for cucumber and behave formats, these URL parameters are not yet available
+            Map<String, String> parameters = new HashMap<>();
+            parameters.put("projectKey", projectKey);
+            parameters.put("fixVersion", fixVersion);
+            parameters.put("revision", revision);
+            parameters.put("testPlanKey", testPlanKey);
+            parameters.put("testExecKey", testExecKey);
+            parameters.put("testEnvironments", testEnvironment);
 
-                // Iterate over the parameters and add query parameters
-                for (Map.Entry<String, String> entry : parameters.entrySet()) {
-                    String value = entry.getValue();
-                    if (value != null) {
-                        builder.addQueryParameter(entry.getKey(), value);
-                    }
+            // Iterate over the parameters and add query parameters
+            for (Map.Entry<String, String> entry : parameters.entrySet()) {
+                String value = entry.getValue();
+                if (value != null) {
+                    builder.addQueryParameter(entry.getKey(), value);
                 }
             }
+        }
 
         return makeHttpRequest(client, credentials, builder, requestBody);
     }
