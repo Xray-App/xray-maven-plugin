@@ -463,7 +463,7 @@ public class XrayResultsImporter {
         String authToken = authenticateXrayAPIKeyCredentials(logger, verbose, client, clientId, clientSecret);
         String credentials = BEARER_HEADER_PREFIX + authToken;
 
-        MediaType mediaType = getMediaTypeForFormat(format)
+        MediaType mediaType = getMediaTypeForFormat(format);
 
         String endpointUrl;
         if (XRAY_FORMAT.equals(format)) {
