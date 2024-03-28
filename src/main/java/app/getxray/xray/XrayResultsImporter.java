@@ -4,8 +4,12 @@ import java.io.IOException;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+
 import org.json.JSONObject;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
 import okhttp3.Credentials;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
@@ -17,12 +21,20 @@ import okhttp3.Response;
 
 import org.apache.maven.plugin.logging.Log;
 
-public class XrayResultsImporter {
-    private final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json");
-    private final MediaType MEDIA_TYPE_XML = MediaType.parse("application/xml");
+import static app.getxray.xray.CommonCloud.XRAY_CLOUD_API_BASE_URL;
+import static app.getxray.xray.CommonCloud.authenticateXrayAPIKeyCredentials;
+import static app.getxray.xray.CommonUtils.createHttpClient;
 
-    private final String xrayCloudApiBaseUrl = "https://xray.cloud.getxray.app/api/v2";
-	private final String xrayCloudAuthenticateUrl = xrayCloudApiBaseUrl + "/authenticate";
+// define a custom exception for import errors
+class XrayResultsImporterException extends Exception {
+    public XrayResultsImporterException(String message) {
+        super(message);
+    }
+}
+
+public class XrayResultsImporter {
+    private static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json");
+    private static final MediaType MEDIA_TYPE_XML = MediaType.parse("application/xml");
 
     public static final String XRAY_FORMAT = "xray";
     public static final String JUNIT_FORMAT = "junit";
@@ -32,6 +44,10 @@ public class XrayResultsImporter {
     public static final String NUNIT_FORMAT = "nunit";
     public static final String CUCUMBER_FORMAT = "cucumber";
     public static final String BEHAVE_FORMAT = "behave";
+    private static final String UNSUPPORTED_REPORT_FORMAT = "unsupported report format: ";
+    private static final String UNEXPECTED_HTTP_CODE = "Unexpected HTTP code ";
+    private static final String BEARER_HEADER_PREFIX = "Bearer ";
+    private static final String AUTHORIZATION_HEADER = "Authorization";
 
     private String jiraBaseUrl;
     private String jiraUsername;
@@ -266,7 +282,7 @@ public class XrayResultsImporter {
     
     }    
 
-    public String submit(String format, String reportFile) throws Exception {
+    public String submit(String format, String reportFile) throws IOException, XrayResultsImporterException {
         if (clientId != null) {
             return submitStandardCloud(format, reportFile);
         } else {
@@ -274,28 +290,12 @@ public class XrayResultsImporter {
         }
     }
 
-    public String submitMultipartServerDC(String format, String reportFile, JSONObject testExecInfo, JSONObject testInfo) throws Exception {        
-        OkHttpClient client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
+    public String submitMultipartServerDC(String format, String reportFile, JSONObject testExecInfo, JSONObject testInfo) throws XrayResultsImporterException, IOException {
+        OkHttpClient client = createHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
 
-        String credentials;
-        if (jiraPersonalAccessToken!= null) {
-            credentials = "Bearer " + jiraPersonalAccessToken;
-        } else {
-            credentials = Credentials.basic(jiraUsername, jiraPassword);
-        } 
+        String credentials = generateDCAuthorizationHeaderContent();
 
-        String supportedFormats[] = new String [] { XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT, BEHAVE_FORMAT }; 
-        if (!Arrays.asList(supportedFormats).contains(format)) {
-            throw new Exception("unsupported report format: " + format);
-        }
-
-        MediaType mediaType;
-        String xmlBasedFormats[] = new String [] { JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT}; 
-        if (Arrays.asList(xmlBasedFormats).contains(format)) {
-            mediaType = MEDIA_TYPE_XML;
-        } else {
-            mediaType = MEDIA_TYPE_JSON;
-        }
+        MediaType mediaType = getMediaTypeForFormat(format);
 
         String endpointUrl;
         if (XRAY_FORMAT.equals(format)) {
@@ -314,6 +314,7 @@ public class XrayResultsImporter {
         } else {
             partName = "file";
         }
+
         try {
             okhttp3.MultipartBody.Builder requestBodyBuilder = new MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
@@ -324,137 +325,77 @@ public class XrayResultsImporter {
             }
             requestBody = requestBodyBuilder.build();
         } catch (Exception e1) {
-            e1.printStackTrace();
+            logger.error(e1);
             throw e1;
         }
 
-        Request request = new Request.Builder().url(builder.build()).post(requestBody).addHeader("Authorization", credentials).build();
-        CommonUtils.logRequest(logger, request);
-        Response response = null;
+        return makeHttpRequest(client, credentials, builder, requestBody);
+    }
+
+    private String makeHttpRequest(OkHttpClient client, String credentials, HttpUrl.Builder builder, RequestBody requestBody) throws XrayResultsImporterException {
+        Request request = new Request.Builder().url(builder.build()).post(requestBody).addHeader(AUTHORIZATION_HEADER, credentials).build();
+        CommonUtils.logRequest(logger, request, this.verbose);
+
         try {
-            response = client.newCall(request).execute();
-            CommonUtils.logResponse(logger, response);
+            Response response = client.newCall(request).execute();
+            CommonUtils.logResponse(logger, response, this.verbose);
             String responseBody = response.body().string();
             if (response.isSuccessful()){
-                JSONObject responseObj = new JSONObject(responseBody);
-                // System.out.println("Test Execution: "+((JSONObject)(responseObj.get("testExecIssue"))).get("key"));
                 return responseBody;
             } else {
-                //System.err.println(responseBody);
-                throw new IOException("Unexpected HTTP code " + response);
+                throw new IOException(UNEXPECTED_HTTP_CODE + response);
             }
         } catch (IOException e) {
-            e.printStackTrace();
-            throw e;
+            logger.error(e);
+            throw new XrayResultsImporterException(e.getMessage());
         }
     }
 
-    public String submitMultipartCloud(String format, String reportFile, JSONObject testExecInfo, JSONObject testInfo) throws Exception {  	
-        OkHttpClient client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
+    public String submitMultipartCloud(String format, String reportFile, JSONObject testExecInfo, JSONObject testInfo) throws IOException, XrayResultsImporterException {  	
+        OkHttpClient client = createHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
 
-		String authenticationPayload = "{ \"client_id\": \"" + clientId +"\", \"client_secret\": \"" + clientSecret +"\" }";
-		RequestBody body = RequestBody.create(authenticationPayload, MEDIA_TYPE_JSON);
-		Request request = new Request.Builder().url(xrayCloudAuthenticateUrl).post(body).build();
-        CommonUtils.logRequest(logger, request);
+        String authToken = authenticateXrayAPIKeyCredentials(logger, verbose, client, clientId, clientSecret);
+        String credentials = BEARER_HEADER_PREFIX + authToken;
 
-		Response response = null;
-		String authToken = null;
-		try {
-			response = client.newCall(request).execute();
-            CommonUtils.logResponse(logger, response, false);
-			String responseBody = response.body().string();
-			if (response.isSuccessful()){
-				authToken = responseBody.replace("\"", "");	
-			} else {
-				throw new IOException("failed to authenticate " + response);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-            throw e;
-		}
-        String credentials = "Bearer " + authToken;
-
-        String supportedFormats[] = new String [] { XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT, BEHAVE_FORMAT }; 
-        if (!Arrays.asList(supportedFormats).contains(format)) {
-            throw new Exception("unsupported report format: " + format);
-        }
-
-        MediaType mediaType;
-        String xmlBasedFormats[] = new String [] { JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT}; 
-        if (Arrays.asList(xmlBasedFormats).contains(format)) {
-            mediaType = MEDIA_TYPE_XML;
-        } else {
-            mediaType = MEDIA_TYPE_JSON;
-        }
+        MediaType mediaType = getMediaTypeForFormat(format);
 
         String endpointUrl;
         if ("xray".equals(format)) {
-            endpointUrl =  xrayCloudApiBaseUrl + "/import/execution/multipart";
+            endpointUrl =  XRAY_CLOUD_API_BASE_URL + "/import/execution/multipart";
         } else {
-            endpointUrl =  xrayCloudApiBaseUrl + "/import/execution/" + format + "/multipart";
+            endpointUrl =  XRAY_CLOUD_API_BASE_URL + "/import/execution/" + format + "/multipart";
         }
 
         HttpUrl url = HttpUrl.get(endpointUrl);
         HttpUrl.Builder builder = url.newBuilder();
         MultipartBody requestBody = null;
-        try {
-            okhttp3.MultipartBody.Builder requestBodyBuilder = new MultipartBody.Builder()
-                    .setType(MultipartBody.FORM)
-                    .addFormDataPart("results", reportFile, RequestBody.create(new File(reportFile), mediaType))
-                    .addFormDataPart("info", "info.json", RequestBody.create(testExecInfo.toString(), MEDIA_TYPE_JSON));
-            if (testInfo != null) {
-                requestBodyBuilder.addFormDataPart("testInfo", "testInfo.json", RequestBody.create(testInfo.toString(), MEDIA_TYPE_JSON));
-            }
-            requestBody = requestBodyBuilder.build();
-        } catch (Exception e1) {
-            e1.printStackTrace();
-            throw e1;
+        okhttp3.MultipartBody.Builder requestBodyBuilder = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("results", reportFile, RequestBody.create(new File(reportFile), mediaType))
+                .addFormDataPart("info", "info.json", RequestBody.create(testExecInfo.toString(), MEDIA_TYPE_JSON));
+        if (testInfo != null) {
+            requestBodyBuilder.addFormDataPart("testInfo", "testInfo.json", RequestBody.create(testInfo.toString(), MEDIA_TYPE_JSON));
         }
+        requestBody = requestBodyBuilder.build();
 
-        request = new Request.Builder().url(builder.build()).post(requestBody).addHeader("Authorization", credentials).build();
-        CommonUtils.logRequest(logger, request);
-        response = null;
-        try {
-            response = client.newCall(request).execute();
-            CommonUtils.logResponse(logger, response);
-            String responseBody = response.body().string();
-            if (response.isSuccessful()){
-                JSONObject responseObj = new JSONObject(responseBody);
-                // System.out.println("Test Execution: "+responseObj.get("key"));
-                return responseBody;
-            } else {
-                //System.err.println(responseBody);
-                throw new IOException("Unexpected HTTP code " + response);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw e;
-        }
-
+        return makeHttpRequest(client, credentials, builder, requestBody);
     }
 
-    public String submitStandardServerDC(String format, String reportFile) throws Exception {        
-        OkHttpClient client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
-
-        String credentials;
+    public String generateDCAuthorizationHeaderContent() {
         if (jiraPersonalAccessToken!= null) {
-            credentials = "Bearer " + jiraPersonalAccessToken;
+            return BEARER_HEADER_PREFIX + jiraPersonalAccessToken;
         } else {
-            credentials = Credentials.basic(jiraUsername, jiraPassword);
-        } 
-       
-        String supportedFormats[] = new String [] { XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT, BEHAVE_FORMAT }; 
-        if (!Arrays.asList(supportedFormats).contains(format)) {
-            throw new Exception("unsupported report format: " + format);
+            return Credentials.basic(jiraUsername, jiraPassword);
         }
+    }
 
-        MediaType mediaType;
-        String xmlBasedFormats[] = new String [] { JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT}; 
-        if (Arrays.asList(xmlBasedFormats).contains(format)) {
-            mediaType = MEDIA_TYPE_XML;
-        } else {
-            mediaType = MEDIA_TYPE_JSON;
-        }
+
+    public String submitStandardServerDC(String format, String reportFile) throws IOException, XrayResultsImporterException {        
+        OkHttpClient client = createHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
+
+        String credentials = generateDCAuthorizationHeaderContent();
+    
+        MediaType mediaType = getMediaTypeForFormat(format);
 
         String endpointUrl;
         if (XRAY_FORMAT.equals(format)) {
@@ -463,164 +404,96 @@ public class XrayResultsImporter {
             endpointUrl = jiraBaseUrl + "/rest/raven/2.0/import/execution/" + format;
         }
 
-        Request request;
         HttpUrl url = HttpUrl.get(endpointUrl);
         HttpUrl.Builder builder = url.newBuilder();
         // for cucumber and behave reports send the report directly on the body
-        try {
-            if (XRAY_FORMAT.equals(format) || CUCUMBER_FORMAT.equals(format) || BEHAVE_FORMAT.equals(format) ) {
-                String reportContent = new String ( Files.readAllBytes( Paths.get(reportFile) ) );
-                RequestBody requestBody = RequestBody.create(reportContent, mediaType);
-                request = new Request.Builder().url(builder.build()).post(requestBody).addHeader("Authorization", credentials).build();
-            } else {
-                MultipartBody requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("file", reportFile, RequestBody.create(new File(reportFile), mediaType))
-                .build();
 
-                // for cucumber and behave formats, these URL parameters are not yet available
-                if (projectKey != null) {
-                    builder.addQueryParameter("projectKey", this.projectKey);
+        RequestBody requestBody = null;
+        if (XRAY_FORMAT.equals(format) || CUCUMBER_FORMAT.equals(format) || BEHAVE_FORMAT.equals(format) ) {
+            String reportContent = new String ( Files.readAllBytes( Paths.get(reportFile) ) );
+            requestBody = RequestBody.create(reportContent, mediaType);
+        } else {
+            requestBody = new MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("file", reportFile, RequestBody.create(new File(reportFile), mediaType))
+            .build();
+
+            // for cucumber and behave formats, these URL parameters are not yet available
+            Map<String, String> parameters = new HashMap<>();
+            parameters.put("projectKey", projectKey);
+            parameters.put("fixVersion", fixVersion);
+            parameters.put("revision", revision);
+            parameters.put("testPlanKey", testPlanKey);
+            parameters.put("testExecKey", testExecKey);
+            parameters.put("testEnvironments", testEnvironment);
+
+            // Iterate over the parameters and add query parameters
+            for (Map.Entry<String, String> entry : parameters.entrySet()) {
+                String value = entry.getValue();
+                if (value != null) {
+                    builder.addQueryParameter(entry.getKey(), value);
                 }
-                if (fixVersion != null) {
-                    builder.addQueryParameter("fixVersion", this.fixVersion);
-                }
-                if (revision != null) {
-                    builder.addQueryParameter("revision", this.revision);
-                }
-                if (testPlanKey != null) {
-                    builder.addQueryParameter("testPlanKey", this.testPlanKey);
-                }
-                if (testExecKey != null) {
-                    builder.addQueryParameter("testExecKey", this.testExecKey);
-                }
-                if (testEnvironment != null) {
-                    builder.addQueryParameter("testEnvironments", this.testEnvironment);
-                }
-                request = new Request.Builder().url(builder.build()).post(requestBody).addHeader("Authorization", credentials).build();
             }
-            CommonUtils.logRequest(logger, request);
-        } catch (Exception e1) {
-            e1.printStackTrace();
-            throw e1;
         }
 
-        Response response = null;
-        try {
-            response = client.newCall(request).execute();
-            CommonUtils.logResponse(logger, response);
-            String responseBody = response.body().string();
-            if (response.isSuccessful()){
-                JSONObject responseObj = new JSONObject(responseBody);
-                // System.out.println("Test Execution: "+((JSONObject)(responseObj.get("testExecIssue"))).get("key"));
-                return(responseBody);
-            } else {
-                //System.err.println(responseBody);
-                throw new IOException("Unexpected HTTP code " + response);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw e;
-        }
+        return makeHttpRequest(client, credentials, builder, requestBody);
     }
 
-    public String submitStandardCloud(String format, String reportFile) throws Exception {
-        OkHttpClient client = CommonUtils.getHttpClient(useInternalTestProxy, ignoreSslErrors, this.timeout);
-
-        String authenticationPayload = "{ \"client_id\": \"" + clientId +"\", \"client_secret\": \"" + clientSecret +"\" }";
-        RequestBody body = RequestBody.create(authenticationPayload, MEDIA_TYPE_JSON);
-        Request request = new Request.Builder().url(xrayCloudAuthenticateUrl).post(body).build();
-        CommonUtils.logRequest(logger, request);
-
-        Response response = null;
-        String authToken = null;
-        try {
-            response = client.newCall(request).execute();
-            CommonUtils.logResponse(logger, response, false);
-            String responseBody = response.body().string();
-            if (response.isSuccessful()){
-                authToken = responseBody.replace("\"", "");	
-            } else {
-                throw new IOException("failed to authenticate " + response);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw e;
-        }
-        String credentials = "Bearer " + authToken;
-
-        String supportedFormats[] = new String [] { XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT, BEHAVE_FORMAT };
+    private MediaType getMediaTypeForFormat(String format) {
+        String[] supportedFormats = new String [] { XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT, BEHAVE_FORMAT };
         if (!Arrays.asList(supportedFormats).contains(format)) {
-            throw new Exception("unsupported report format: " + format);
+            throw new IllegalArgumentException(UNSUPPORTED_REPORT_FORMAT + format);
         }
 
         MediaType mediaType;
-        String xmlBasedFormats[] = new String [] { JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT}; 
+        String[] xmlBasedFormats = new String [] { JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT}; 
         if (Arrays.asList(xmlBasedFormats).contains(format)) {
             mediaType = MEDIA_TYPE_XML;
         } else {
             mediaType = MEDIA_TYPE_JSON;
         }
+        return mediaType;
+    }
     
+    public String submitStandardCloud(String format, String reportFile) throws IOException, XrayResultsImporterException {
+        OkHttpClient client = createHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
+
+        String authToken = authenticateXrayAPIKeyCredentials(logger, verbose, client, clientId, clientSecret);
+        String credentials = BEARER_HEADER_PREFIX + authToken;
+
+        MediaType mediaType = getMediaTypeForFormat(format);
 
         String endpointUrl;
         if (XRAY_FORMAT.equals(format)) {
-            endpointUrl = xrayCloudApiBaseUrl + "/import/execution";
+            endpointUrl = XRAY_CLOUD_API_BASE_URL + "/import/execution";
         } else {
-            endpointUrl = xrayCloudApiBaseUrl + "/import/execution/" + format;
+            endpointUrl = XRAY_CLOUD_API_BASE_URL + "/import/execution/" + format;
         }
-        RequestBody requestBody = null;
-        try {
-            String reportContent = new String ( Files.readAllBytes( Paths.get(reportFile) ) );
-            requestBody = RequestBody.create(reportContent, mediaType);
-        } catch (Exception e1) {
-            e1.printStackTrace();
-            throw e1;
-        }
+        String reportContent = new String ( Files.readAllBytes( Paths.get(reportFile) ) );
+        RequestBody requestBody = RequestBody.create(reportContent, mediaType);
+
 
         HttpUrl url = HttpUrl.get(endpointUrl);
         HttpUrl.Builder builder = url.newBuilder();
 
         // cucumber, behave and xray endpoints dont support these URL parameters
-
-        if (projectKey != null) {
-            builder.addQueryParameter("projectKey", this.projectKey);
-        }
-        if (fixVersion != null) {
-            builder.addQueryParameter("fixVersion", this.fixVersion);
-        }
-        if (revision != null) {
-            builder.addQueryParameter("revision", this.revision);
-        }
-        if (testPlanKey != null) {
-            builder.addQueryParameter("testPlanKey", this.testPlanKey);
-        }
-        if (testExecKey != null) {
-            builder.addQueryParameter("testExecKey", this.testExecKey);
-        }
-        if (testEnvironment != null) {
-            builder.addQueryParameter("testEnvironments", this.testEnvironment);
-        }
-
-        request = new Request.Builder().url(builder.build()).post(requestBody).addHeader("Authorization", credentials).build();
-        CommonUtils.logRequest(logger, request);
-        try {
-            response = client.newCall(request).execute();
-            CommonUtils.logResponse(logger, response);
-            String responseBody = response.body().string();            
-            if (response.isSuccessful()){
-                JSONObject responseObj = new JSONObject(responseBody);
-                // System.out.println("Test Execution: "+((JSONObject)(responseObj.get("testExecIssue"))).get("key"));
-                return(responseBody);
-            } else {
-                //System.err.println(responseBody);
-                throw new IOException("Unexpected HTTP code " + response);
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("projectKey", projectKey);
+        parameters.put("fixVersion", fixVersion);
+        parameters.put("revision", revision);
+        parameters.put("testPlanKey", testPlanKey);
+        parameters.put("testExecKey", testExecKey);
+        parameters.put("testEnvironments", testEnvironment);
+        
+        // Iterate over the parameters and add query parameters
+        for (Map.Entry<String, String> entry : parameters.entrySet()) {
+            String value = entry.getValue();
+            if (value != null) {
+                builder.addQueryParameter(entry.getKey(), value);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw e;
         }
 
+        return makeHttpRequest(client, credentials, builder, requestBody);
     }
 
 }

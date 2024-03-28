@@ -1,38 +1,42 @@
 package app.getxray.xray.it.export_features;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static com.soebes.itf.extension.assertj.MavenITAssertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayNameGeneration;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
-import com.github.tomakehurst.wiremock.junit5.WireMockTest;
+import com.github.tomakehurst.wiremock.client.BasicCredentials;
 import com.soebes.itf.jupiter.extension.MavenGoal;
 import com.soebes.itf.jupiter.extension.MavenJupiterExtension;
 import com.soebes.itf.jupiter.extension.MavenTest;
 import com.soebes.itf.jupiter.extension.SystemProperty;
 import com.soebes.itf.jupiter.maven.MavenExecutionResult;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-
-import app.getxray.xray.it.CommonUtils;
-
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
-import com.github.tomakehurst.wiremock.client.BasicCredentials;
+import app.getxray.xray.DCCustomDisplayNameGenerator;
+import app.getxray.xray.it.TestingUtils;
+import app.getxray.xray.junit.customjunitxml.annotations.Requirement;
 
 @MavenJupiterExtension
+@DisplayNameGeneration(DCCustomDisplayNameGenerator.class)
 public class XrayDatacenterIT {
+
+    static final int PORT_NUMBER = 18080;
 
     static WireMockServer wm;
     @BeforeAll
     public static void setup () {
-        wm = new WireMockServer(options().port(18080));
+        wm = new WireMockServer(options().port(PORT_NUMBER));
         wm.start();
         setupStub();
     }
@@ -47,7 +51,7 @@ public class XrayDatacenterIT {
 
         byte[] zippedFeature = null;
         try {
-            zippedFeature = CommonUtils.readRawResourceFile("export_features/XrayDatacenterIT/single_feature_by_issueKeys/dummy.zip");
+            zippedFeature = TestingUtils.readRawResourceFile("export_features/XrayDatacenterIT/single_feature_by_issueKeys/dummy.zip");
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(1);
@@ -67,13 +71,14 @@ public class XrayDatacenterIT {
     @MavenTest
     @MavenGoal("xray:export-features")
     @SystemProperty(value = "xray.cloud", content = "false")
-    @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:18080")
+    @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:"+PORT_NUMBER)
     @SystemProperty(value = "xray.jiraUsername", content = "username")
     @SystemProperty(value = "xray.jiraPassword", content = "password")
     @SystemProperty(value = "xray.issueKeys", content = "CALC-1")
     @SystemProperty(value = "xray.outputDir", content = "./features")
+    @Requirement("XMP-126")
     void single_feature_by_issueKeys(MavenExecutionResult result) throws IOException {
-       String feature = CommonUtils.readResourceFileForExportFeatures("XrayDatacenterIT/single_feature_by_issueKeys/dummy.feature");
+       String feature = TestingUtils.readResourceFileForExportFeatures("XrayDatacenterIT/single_feature_by_issueKeys/dummy.feature");
 
         wm.verify(
             getRequestedFor(urlPathEqualTo("/rest/raven/2.0/export/test"))
@@ -82,19 +87,43 @@ public class XrayDatacenterIT {
                 .withQueryParam("fz", equalTo("true"))
         );
        assertThat(result).isSuccessful();
-       assertThat(CommonUtils.readFile(result.getMavenProjectResult().getTargetProjectDirectory()+"/features/dummy.feature")).isEqualTo(feature);
+       assertThat(TestingUtils.readFile(result.getMavenProjectResult().getTargetProjectDirectory()+"/features/dummy.feature")).isEqualTo(feature);
     }
+
 
     @MavenTest
     @MavenGoal("xray:export-features")
     @SystemProperty(value = "xray.cloud", content = "false")
-    @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:18080")
+    @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:"+PORT_NUMBER)
+    @SystemProperty(value = "xray.jiraToken", content = "00112233445566778899")
+    @SystemProperty(value = "xray.issueKeys", content = "CALC-1")
+    @SystemProperty(value = "xray.outputDir", content = "./features")
+    @Requirement("XMP-126")
+    void single_feature_by_issueKeys_using_personal_access_token(MavenExecutionResult result) throws IOException {
+       String feature = TestingUtils.readResourceFileForExportFeatures("XrayDatacenterIT/single_feature_by_issueKeys_using_personal_access_token/dummy.feature");
+
+        wm.verify(
+            getRequestedFor(urlPathEqualTo("/rest/raven/2.0/export/test"))
+                .withHeader("Authorization", equalTo("Bearer 00112233445566778899"))
+                .withQueryParam("keys", equalTo("CALC-1"))
+                .withQueryParam("fz", equalTo("true"))
+        );
+       assertThat(result).isSuccessful();
+       assertThat(TestingUtils.readFile(result.getMavenProjectResult().getTargetProjectDirectory()+"/features/dummy.feature")).isEqualTo(feature);
+    }
+    
+
+    @MavenTest
+    @MavenGoal("xray:export-features")
+    @SystemProperty(value = "xray.cloud", content = "false")
+    @SystemProperty(value = "xray.jiraBaseUrl", content = "http://127.0.0.1:"+PORT_NUMBER)
     @SystemProperty(value = "xray.jiraUsername", content = "username")
     @SystemProperty(value = "xray.jiraPassword", content = "password")
     @SystemProperty(value = "xray.filterId", content = "12345")
     @SystemProperty(value = "xray.outputDir", content = "./features")
+    @Requirement("XMP-126")
     void single_feature_by_filterId(MavenExecutionResult result) throws IOException {
-       String feature = CommonUtils.readResourceFileForExportFeatures("XrayDatacenterIT/single_feature_by_filterId/dummy.feature");
+       String feature = TestingUtils.readResourceFileForExportFeatures("XrayDatacenterIT/single_feature_by_filterId/dummy.feature");
 
         wm.verify(
             getRequestedFor(urlPathEqualTo("/rest/raven/2.0/export/test"))
@@ -103,6 +132,6 @@ public class XrayDatacenterIT {
                 .withQueryParam("fz", equalTo("true"))
         );
        assertThat(result).isSuccessful();
-       assertThat(CommonUtils.readFile(result.getMavenProjectResult().getTargetProjectDirectory()+"/features/dummy.feature")).isEqualTo(feature);
+       assertThat(TestingUtils.readFile(result.getMavenProjectResult().getTargetProjectDirectory()+"/features/dummy.feature")).isEqualTo(feature);
     }
 }
