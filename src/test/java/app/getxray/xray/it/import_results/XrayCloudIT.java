@@ -1,14 +1,25 @@
 package app.getxray.xray.it.import_results;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aMultipart;
+import static com.github.tomakehurst.wiremock.client.WireMock.containing;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToXml;
+import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static com.soebes.itf.extension.assertj.MavenITAssertions.assertThat;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DisplayNameGeneration;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
-import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import com.soebes.itf.jupiter.extension.MavenGoal;
 import com.soebes.itf.jupiter.extension.MavenJupiterExtension;
 import com.soebes.itf.jupiter.extension.MavenOption;
@@ -16,17 +27,13 @@ import com.soebes.itf.jupiter.extension.MavenTest;
 import com.soebes.itf.jupiter.extension.SystemProperty;
 import com.soebes.itf.jupiter.maven.MavenExecutionResult;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
+import app.getxray.xray.CloudCustomDisplayNameGenerator;
+import app.getxray.xray.it.TestingUtils;
+import app.getxray.xray.junit.customjunitxml.annotations.Requirement;
 
-import app.getxray.xray.it.CommonUtils;
-
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 
 @MavenJupiterExtension
+@DisplayNameGeneration(CloudCustomDisplayNameGenerator.class)
 public class XrayCloudIT {
 
     private static final String CLIENT_ID = "32A27E69C0AC4E539C14010000000000";
@@ -34,11 +41,13 @@ public class XrayCloudIT {
     private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZW5hbnQiOiI0MjZiYzA4Yy02N2VmLTNjMjYtYWU1YS03NjczYTB1ZjIwNjkiLCJ1c2VyS2V5IjoiYW5kcmUucm9kcmlndWVzIiwiaWF0IjixNTI1ODcxODkzLCJleHAiOjE1MjU5NTgyOTMsImF1ZCI6IhMyQTI3RTY5QjBBQzRFNTM5QzE0MDE2NDM3OTlFOEU3IiwiaXNzIjoiY29tLnhwYW5kaXQueHJheSIsInN1YiI6IjMyQTI3RTY5QjBBQzRFNTM5QzE0MDE2NDM3OTlFOEU3In0.8ah2IQ9rA_zotyh_6trFgfIvhn2awdFFrOHnN2F2H7m";
 
     static WireMockServer wm;
+    static final int PORT_NUMBER = 18080;
+
     @BeforeAll
     public static void setup () {
         wm = new WireMockServer(
             options()
-            .port(18080)
+            .port(PORT_NUMBER)
             .enableBrowserProxying(true)
         );
         wm.start();
@@ -134,6 +143,7 @@ public class XrayCloudIT {
     @SystemProperty(value = "xray.useInternalTestProxy", content = "true")
     @SystemProperty(value = "xray.verbose", content = "true")
     @MavenOption("--debug")
+    @Requirement("XMP-132")
     void xray_standard_with_verbose_mode(MavenExecutionResult result) throws IOException {
         /*
         String report = CommonUtils.readResourceFileForImportResults("XrayCloudIT/xray_standard/xray.json");
@@ -171,8 +181,9 @@ public class XrayCloudIT {
     @SystemProperty(value = "xray.reportFormat", content = "xray")
     @SystemProperty(value = "xray.reportFile", content = "xray.json")
     @SystemProperty(value = "xray.useInternalTestProxy", content = "true")
+    @Requirement("XMP-132")
     void xray_standard(MavenExecutionResult result) throws IOException {
-       String report = CommonUtils.readResourceFileForImportResults("XrayCloudIT/xray_standard/xray.json");
+       String report = TestingUtils.readResourceFileForImportResults("XrayCloudIT/xray_standard/xray.json");
 
        wm.verify(
            postRequestedFor(urlPathEqualTo("/api/v2/import/execution"))
@@ -191,9 +202,10 @@ public class XrayCloudIT {
     @SystemProperty(value = "xray.reportFile", content = "xray.json")
     @SystemProperty(value = "xray.testExecInfoJson", content = "testExecInfo.json")
     @SystemProperty(value = "xray.useInternalTestProxy", content = "true")
+    @Requirement("XMP-140")
     void xray_multipart(MavenExecutionResult result) throws IOException {
-       String testExecInfo = CommonUtils.readResourceFileForImportResults("XrayCloudIT/xray_multipart/testExecInfo.json");
-       String report = CommonUtils.readResourceFileForImportResults("XrayCloudIT/xray_multipart/xray.json");
+       String testExecInfo = TestingUtils.readResourceFileForImportResults("XrayCloudIT/xray_multipart/testExecInfo.json");
+       String report = TestingUtils.readResourceFileForImportResults("XrayCloudIT/xray_multipart/xray.json");
 
        wm.verify(
            postRequestedFor(urlPathEqualTo("/api/v2/import/execution/multipart"))
@@ -229,8 +241,9 @@ public class XrayCloudIT {
  @SystemProperty(value = "xray.revision", content = "123")
  @SystemProperty(value = "xray.testEnvironment", content = "chrome")
  @SystemProperty(value = "xray.useInternalTestProxy", content = "true")
+ @Requirement("XMP-2")
  void junit_standard(MavenExecutionResult result) throws IOException {
-    String report = CommonUtils.readResourceFileForImportResults("XrayCloudIT/junit_standard/junit.xml");
+    String report = TestingUtils.readResourceFileForImportResults("XrayCloudIT/junit_standard/junit.xml");
 
     wm.verify(
         postRequestedFor(urlPathEqualTo("/api/v2/import/execution/junit"))
@@ -255,9 +268,10 @@ public class XrayCloudIT {
  @SystemProperty(value = "xray.reportFile", content = "junit.xml")
  @SystemProperty(value = "xray.testExecInfoJson", content = "testExecInfo.json")
  @SystemProperty(value = "xray.useInternalTestProxy", content = "true")
+ @Requirement("XMP-3")
  void junit_multipart(MavenExecutionResult result) throws IOException {
-    String testExecInfo = CommonUtils.readResourceFileForImportResults("XrayCloudIT/junit_multipart/testExecInfo.json");
-    String report = CommonUtils.readResourceFileForImportResults("XrayCloudIT/junit_multipart/junit.xml");
+    String testExecInfo = TestingUtils.readResourceFileForImportResults("XrayCloudIT/junit_multipart/testExecInfo.json");
+    String report = TestingUtils.readResourceFileForImportResults("XrayCloudIT/junit_multipart/junit.xml");
 
     wm.verify(
         postRequestedFor(urlPathEqualTo("/api/v2/import/execution/junit/multipart"))
@@ -288,10 +302,11 @@ public class XrayCloudIT {
  @SystemProperty(value = "xray.testExecInfoJson", content = "testExecInfo.json")
  @SystemProperty(value = "xray.testInfoJson", content = "testInfo.json")
  @SystemProperty(value = "xray.useInternalTestProxy", content = "true")
+ @Requirement("XMP-3")
  void junit_multipart_customize_test_issues(MavenExecutionResult result) throws IOException {
-    String testExecInfo = CommonUtils.readResourceFileForImportResults("XrayCloudIT/junit_multipart_customize_test_issues/testExecInfo.json");
-    String testInfo = CommonUtils.readResourceFileForImportResults("XrayCloudIT/junit_multipart_customize_test_issues/testInfo.json");
-    String report = CommonUtils.readResourceFileForImportResults("XrayCloudIT/junit_multipart_customize_test_issues/junit.xml");
+    String testExecInfo = TestingUtils.readResourceFileForImportResults("XrayCloudIT/junit_multipart_customize_test_issues/testExecInfo.json");
+    String testInfo = TestingUtils.readResourceFileForImportResults("XrayCloudIT/junit_multipart_customize_test_issues/testInfo.json");
+    String report = TestingUtils.readResourceFileForImportResults("XrayCloudIT/junit_multipart_customize_test_issues/junit.xml");
 
     wm.verify(
         postRequestedFor(urlPathEqualTo("/api/v2/import/execution/junit/multipart"))
@@ -328,8 +343,9 @@ public class XrayCloudIT {
  @SystemProperty(value = "xray.reportFile", content = "testng.xml")
  @SystemProperty(value = "xray.projectKey", content = "CALC")
  @SystemProperty(value = "xray.useInternalTestProxy", content = "true")
+ @Requirement("XMP-4")
  void testng_standard(MavenExecutionResult result) throws IOException {
-    String report = CommonUtils.readResourceFileForImportResults("XrayCloudIT/testng_standard/testng.xml");
+    String report = TestingUtils.readResourceFileForImportResults("XrayCloudIT/testng_standard/testng.xml");
 
     wm.verify(
         postRequestedFor(urlPathEqualTo("/api/v2/import/execution/testng"))
@@ -349,9 +365,10 @@ public class XrayCloudIT {
  @SystemProperty(value = "xray.reportFile", content = "testng.xml")
  @SystemProperty(value = "xray.testExecInfoJson", content = "testExecInfo.json")
  @SystemProperty(value = "xray.useInternalTestProxy", content = "true")
+ @Requirement("XMP-139")
  void testng_multipart(MavenExecutionResult result) throws IOException {
-    String testExecInfo = CommonUtils.readResourceFileForImportResults("XrayCloudIT/testng_multipart/testExecInfo.json");
-    String report = CommonUtils.readResourceFileForImportResults("XrayCloudIT/testng_multipart/testng.xml");
+    String testExecInfo = TestingUtils.readResourceFileForImportResults("XrayCloudIT/testng_multipart/testExecInfo.json");
+    String report = TestingUtils.readResourceFileForImportResults("XrayCloudIT/testng_multipart/testng.xml");
 
     wm.verify(
         postRequestedFor(urlPathEqualTo("/api/v2/import/execution/testng/multipart"))
@@ -383,8 +400,9 @@ public class XrayCloudIT {
  @SystemProperty(value = "xray.reportFile", content = "nunit.xml")
  @SystemProperty(value = "xray.projectKey", content = "CALC")
  @SystemProperty(value = "xray.useInternalTestProxy", content = "true")
+ @Requirement("XMP-133")
  void nunit_standard(MavenExecutionResult result) throws IOException {
-    String report = CommonUtils.readResourceFileForImportResults("XrayCloudIT/nunit_standard/nunit.xml");
+    String report = TestingUtils.readResourceFileForImportResults("XrayCloudIT/nunit_standard/nunit.xml");
 
     wm.verify(
         postRequestedFor(urlPathEqualTo("/api/v2/import/execution/nunit"))
@@ -404,9 +422,10 @@ public class XrayCloudIT {
  @SystemProperty(value = "xray.reportFile", content = "nunit.xml")
  @SystemProperty(value = "xray.testExecInfoJson", content = "testExecInfo.json")
  @SystemProperty(value = "xray.useInternalTestProxy", content = "true")
+ @Requirement("XMP-134")
  void nunit_multipart(MavenExecutionResult result) throws IOException {
-    String testExecInfo = CommonUtils.readResourceFileForImportResults("XrayCloudIT/nunit_multipart/testExecInfo.json");
-    String report = CommonUtils.readResourceFileForImportResults("XrayCloudIT/nunit_multipart/nunit.xml");
+    String testExecInfo = TestingUtils.readResourceFileForImportResults("XrayCloudIT/nunit_multipart/testExecInfo.json");
+    String report = TestingUtils.readResourceFileForImportResults("XrayCloudIT/nunit_multipart/nunit.xml");
 
     wm.verify(
         postRequestedFor(urlPathEqualTo("/api/v2/import/execution/nunit/multipart"))
@@ -438,8 +457,9 @@ public class XrayCloudIT {
  @SystemProperty(value = "xray.reportFile", content = "xunit.xml")
  @SystemProperty(value = "xray.projectKey", content = "CALC")
  @SystemProperty(value = "xray.useInternalTestProxy", content = "true")
+ @Requirement("XMP-128")
  void xunit_standard(MavenExecutionResult result) throws IOException {
-    String report = CommonUtils.readResourceFileForImportResults("XrayCloudIT/xunit_standard/xunit.xml");
+    String report = TestingUtils.readResourceFileForImportResults("XrayCloudIT/xunit_standard/xunit.xml");
 
     wm.verify(
         postRequestedFor(urlPathEqualTo("/api/v2/import/execution/xunit"))
@@ -459,9 +479,10 @@ public class XrayCloudIT {
  @SystemProperty(value = "xray.reportFile", content = "xunit.xml")
  @SystemProperty(value = "xray.testExecInfoJson", content = "testExecInfo.json")
  @SystemProperty(value = "xray.useInternalTestProxy", content = "true")
+ @Requirement("XMP-129")
  void xunit_multipart(MavenExecutionResult result) throws IOException {
-    String testExecInfo = CommonUtils.readResourceFileForImportResults("XrayCloudIT/xunit_multipart/testExecInfo.json");
-    String report = CommonUtils.readResourceFileForImportResults("XrayCloudIT/xunit_multipart/xunit.xml");
+    String testExecInfo = TestingUtils.readResourceFileForImportResults("XrayCloudIT/xunit_multipart/testExecInfo.json");
+    String report = TestingUtils.readResourceFileForImportResults("XrayCloudIT/xunit_multipart/xunit.xml");
 
     wm.verify(
         postRequestedFor(urlPathEqualTo("/api/v2/import/execution/xunit/multipart"))
@@ -493,8 +514,9 @@ public class XrayCloudIT {
  @SystemProperty(value = "xray.reportFile", content = "robot.xml")
  @SystemProperty(value = "xray.projectKey", content = "CALC")
  @SystemProperty(value = "xray.useInternalTestProxy", content = "true")
+ @Requirement("XMP-137")
  void robot_standard(MavenExecutionResult result) throws IOException {
-    String report = CommonUtils.readResourceFileForImportResults("XrayCloudIT/robot_standard/robot.xml");
+    String report = TestingUtils.readResourceFileForImportResults("XrayCloudIT/robot_standard/robot.xml");
 
     wm.verify(
         postRequestedFor(urlPathEqualTo("/api/v2/import/execution/robot"))
@@ -514,9 +536,10 @@ public class XrayCloudIT {
  @SystemProperty(value = "xray.reportFile", content = "robot.xml")
  @SystemProperty(value = "xray.testExecInfoJson", content = "testExecInfo.json")
  @SystemProperty(value = "xray.useInternalTestProxy", content = "true")
+ @Requirement("XMP-138")
  void robot_multipart(MavenExecutionResult result) throws IOException {
-    String testExecInfo = CommonUtils.readResourceFileForImportResults("XrayCloudIT/robot_multipart/testExecInfo.json");
-    String report = CommonUtils.readResourceFileForImportResults("XrayCloudIT/robot_multipart/robot.xml");
+    String testExecInfo = TestingUtils.readResourceFileForImportResults("XrayCloudIT/robot_multipart/testExecInfo.json");
+    String report = TestingUtils.readResourceFileForImportResults("XrayCloudIT/robot_multipart/robot.xml");
 
     wm.verify(
         postRequestedFor(urlPathEqualTo("/api/v2/import/execution/robot/multipart"))
@@ -546,8 +569,9 @@ public class XrayCloudIT {
  @SystemProperty(value = "xray.reportFormat", content = "cucumber")
  @SystemProperty(value = "xray.reportFile", content = "cucumber.json")
  @SystemProperty(value = "xray.useInternalTestProxy", content = "true")
+ @Requirement("XMP-130")
  void cucumber_standard(MavenExecutionResult result) throws IOException {
-    String report = CommonUtils.readResourceFileForImportResults("XrayCloudIT/cucumber_standard/cucumber.json");
+    String report = TestingUtils.readResourceFileForImportResults("XrayCloudIT/cucumber_standard/cucumber.json");
 
     wm.verify(
         postRequestedFor(urlPathEqualTo("/api/v2/import/execution/cucumber"))
@@ -566,9 +590,10 @@ public class XrayCloudIT {
  @SystemProperty(value = "xray.reportFile", content = "cucumber.json")
  @SystemProperty(value = "xray.testExecInfoJson", content = "testExecInfo.json")
  @SystemProperty(value = "xray.useInternalTestProxy", content = "true")
+ @Requirement("XMP-131")
  void cucumber_multipart(MavenExecutionResult result) throws IOException {
-    String testExecInfo = CommonUtils.readResourceFileForImportResults("XrayCloudIT/cucumber_multipart/testExecInfo.json");
-    String report = CommonUtils.readResourceFileForImportResults("XrayCloudIT/cucumber_multipart/cucumber.json");
+    String testExecInfo = TestingUtils.readResourceFileForImportResults("XrayCloudIT/cucumber_multipart/testExecInfo.json");
+    String report = TestingUtils.readResourceFileForImportResults("XrayCloudIT/cucumber_multipart/cucumber.json");
 
     wm.verify(
         postRequestedFor(urlPathEqualTo("/api/v2/import/execution/cucumber/multipart"))
@@ -598,8 +623,9 @@ public class XrayCloudIT {
  @SystemProperty(value = "xray.reportFormat", content = "behave")
  @SystemProperty(value = "xray.reportFile", content = "behave.json")
  @SystemProperty(value = "xray.useInternalTestProxy", content = "true")
+ @Requirement("XMP-135")
  void behave_standard(MavenExecutionResult result) throws IOException {
-    String report = CommonUtils.readResourceFileForImportResults("XrayCloudIT/behave_standard/behave.json");
+    String report = TestingUtils.readResourceFileForImportResults("XrayCloudIT/behave_standard/behave.json");
 
     wm.verify(
         postRequestedFor(urlPathEqualTo("/api/v2/import/execution/behave"))
@@ -618,9 +644,10 @@ public class XrayCloudIT {
  @SystemProperty(value = "xray.reportFile", content = "behave.json")
  @SystemProperty(value = "xray.testExecInfoJson", content = "testExecInfo.json")
  @SystemProperty(value = "xray.useInternalTestProxy", content = "true")
+ @Requirement("XMP-136")
  void behave_multipart(MavenExecutionResult result) throws IOException {
-    String testExecInfo = CommonUtils.readResourceFileForImportResults("XrayCloudIT/behave_multipart/testExecInfo.json");
-    String report = CommonUtils.readResourceFileForImportResults("XrayCloudIT/behave_multipart/behave.json");
+    String testExecInfo = TestingUtils.readResourceFileForImportResults("XrayCloudIT/behave_multipart/testExecInfo.json");
+    String report = TestingUtils.readResourceFileForImportResults("XrayCloudIT/behave_multipart/behave.json");
 
     wm.verify(
         postRequestedFor(urlPathEqualTo("/api/v2/import/execution/behave/multipart"))

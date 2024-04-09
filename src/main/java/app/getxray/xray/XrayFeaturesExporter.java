@@ -1,32 +1,32 @@
 package app.getxray.xray;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+import static app.getxray.xray.CommonCloud.XRAY_CLOUD_API_BASE_URL;
+import static app.getxray.xray.CommonCloud.authenticateXrayAPIKeyCredentials;
+import static app.getxray.xray.CommonUtils.createHttpClient;
+import static app.getxray.xray.CommonUtils.unzipContentsToFolder;
 
-import app.getxray.xray.CommonUtils;
+import java.io.IOException;
+import org.apache.maven.plugin.logging.Log;
+
 import okhttp3.Credentials;
 import okhttp3.HttpUrl;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
-
-import org.apache.maven.plugin.logging.Log;
 
 // https://docs.getxray.app/display/XRAYCLOUD/Exporting+Cucumber+Tests+-+REST+v2
 // https://docs.getxray.app/display/XRAY/Exporting+Cucumber+Tests+-+REST
 
-public class XrayFeaturesExporter {
-    private final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json");
+// define a custom exception for import errors
+class XrayFeaturesExporterException extends Exception {
+    public XrayFeaturesExporterException(String message) {
+        super(message);
+    }
+}
 
-    private final String xrayCloudApiBaseUrl = "https://xray.cloud.getxray.app/api/v2";
-    private final String xrayCloudAuthenticateUrl = xrayCloudApiBaseUrl + "/authenticate";
+public class XrayFeaturesExporter {
+    private static final String AUTHORIZATION_HEADER = "Authorization";
+    private static final String BEARER_HEADER_PREFIX = "Bearer ";
 
     private String jiraBaseUrl;
     private String jiraUsername;
@@ -203,7 +203,7 @@ public class XrayFeaturesExporter {
 
     }
 
-    public String submit(String outputPath) throws Exception {
+    public String submit(String outputPath) throws XrayFeaturesExporterException, IOException {
         if (clientId != null) {
             return submitStandardCloud(outputPath);
         } else {
@@ -211,12 +211,12 @@ public class XrayFeaturesExporter {
         }
     }
 
-    public String submitStandardServerDC(String outputPath) throws Exception {
-        OkHttpClient client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
+    public String submitStandardServerDC(String outputPath) throws XrayFeaturesExporterException, IOException {
+        OkHttpClient client = createHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
 
         String credentials;
         if (jiraPersonalAccessToken!= null) {
-            credentials = "Bearer " + jiraPersonalAccessToken;
+            credentials = BEARER_HEADER_PREFIX + jiraPersonalAccessToken;
         } else {
             credentials = Credentials.basic(jiraUsername, jiraPassword);
         }
@@ -235,11 +235,11 @@ public class XrayFeaturesExporter {
             builder.addQueryParameter("filter", this.filterId);
         }
 
-        request = new Request.Builder().url(builder.build()).get().addHeader("Authorization", credentials).build();
-        CommonUtils.logRequest(logger, request);
+        request = new Request.Builder().url(builder.build()).get().addHeader(AUTHORIZATION_HEADER, credentials).build();
+        CommonUtils.logRequest(logger, request, this.verbose);
         try {
             response = client.newCall(request).execute();
-            CommonUtils.logResponse(logger, response);
+            CommonUtils.logResponse(logger, response, this.verbose);
             if (response.isSuccessful()) {
                 unzipContentsToFolder(response.body().byteStream(), outputPath);
                 return ("ok");
@@ -247,54 +247,33 @@ public class XrayFeaturesExporter {
                 throw new IOException("Unexpected HTTP code " + response);
             }
         } catch (IOException e) {
-            e.printStackTrace();
-            throw (e);
+            logger.error(e);
+            throw new XrayFeaturesExporterException(e.getMessage());
         }
     }
 
-    public String submitStandardCloud(String outputPath) throws Exception {
-        OkHttpClient client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
-
-        String authenticationPayload = "{ \"client_id\": \"" + clientId + "\", \"client_secret\": \"" + clientSecret
-                + "\" }";
-        RequestBody body = RequestBody.create(authenticationPayload, MEDIA_TYPE_JSON);
-        Request request = new Request.Builder().url(xrayCloudAuthenticateUrl).post(body).build();
-        CommonUtils.logRequest(logger, request);
-    
-        Response response = null;
-        String authToken = null;
+    public String submitStandardCloud(String outputPath) throws XrayFeaturesExporterException, IOException {
+        OkHttpClient client = createHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
         try {
-            response = client.newCall(request).execute();
-            CommonUtils.logResponse(logger, response, false);
-            String responseBody = response.body().string();
-            if (response.isSuccessful()) {
-                authToken = responseBody.replace("\"", "");
-            } else {
-                throw new IOException("failed to authenticate " + response);
+            String authToken = authenticateXrayAPIKeyCredentials(logger, verbose, client, clientId, clientSecret);
+            String credentials = BEARER_HEADER_PREFIX + authToken;
+
+            String endpointUrl = XRAY_CLOUD_API_BASE_URL + "/export/cucumber";
+            HttpUrl url = HttpUrl.get(endpointUrl);
+            HttpUrl.Builder builder = url.newBuilder();
+
+            if (issueKeys != null) {
+                builder.addQueryParameter("keys", this.issueKeys);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw e;
-        }
-        String credentials = "Bearer " + authToken;
+            if (filterId != null) {
+                builder.addQueryParameter("filter", this.filterId);
+            }
 
-        String endpointUrl = xrayCloudApiBaseUrl + "/export/cucumber";
-        HttpUrl url = HttpUrl.get(endpointUrl);
-        HttpUrl.Builder builder = url.newBuilder();
+            Request request = new Request.Builder().url(builder.build()).get().addHeader(AUTHORIZATION_HEADER, credentials).build();
+            CommonUtils.logRequest(logger, request, this.verbose);
 
-        // builder.addQueryParameter("fz", "false");
-        if (issueKeys != null) {
-            builder.addQueryParameter("keys", this.issueKeys);
-        }
-        if (filterId != null) {
-            builder.addQueryParameter("filter", this.filterId);
-        }
-
-        request = new Request.Builder().url(builder.build()).get().addHeader("Authorization", credentials).build();
-        CommonUtils.logRequest(logger, request);
-        try {
-            response = client.newCall(request).execute();
-            CommonUtils.logResponse(logger, response);
+            Response response = client.newCall(request).execute();
+            CommonUtils.logResponse(logger, response, this.verbose);
             if (response.isSuccessful()) {
                 unzipContentsToFolder(response.body().byteStream(), outputPath);
                 return ("ok");
@@ -302,53 +281,9 @@ public class XrayFeaturesExporter {
                 throw new IOException("Unexpected HTTP code " + response);
             }
         } catch (IOException e) {
-            e.printStackTrace();
-            throw (e);
+            logger.error(e);
+            throw new XrayFeaturesExporterException(e.getMessage());
         }
-    }
-
-    private void unzipContentsToFolder(InputStream zippedContents, String outputFolder) throws Exception {
-        File destDir = new File(outputFolder);
-        byte[] buffer = new byte[1024];
-        ZipInputStream zis = new ZipInputStream(new BufferedInputStream(zippedContents));
-        ZipEntry zipEntry;
-        while ((zipEntry = zis.getNextEntry()) != null) {
-            File newFile = newFile(destDir, zipEntry);
-
-            if (zipEntry.isDirectory()) {
-                if (!newFile.isDirectory() && !newFile.mkdirs()) {
-                    throw new IOException("Failed to create directory " + newFile);
-                }
-            } else {
-                // fix for Windows-created archives
-                File parent = newFile.getParentFile();
-                if (!parent.isDirectory() && !parent.mkdirs()) {
-                    throw new IOException("Failed to create directory " + parent);
-                }
-
-                try (
-                FileOutputStream fos = new FileOutputStream(newFile)) {
-                    int len;
-                    while ((len = zis.read(buffer)) > 0) {
-                        fos.write(buffer, 0, len);
-                    }
-                }
-            }
-        }
-        zis.closeEntry();
-        zis.close();
-    }
-
-    private static File newFile(File destinationDir, ZipEntry zipEntry) throws IOException {
-        File destFile = new File(destinationDir, zipEntry.getName());
-        String destDirPath = destinationDir.getCanonicalPath();
-        String destFilePath = destFile.getCanonicalPath();
-
-        if (!destFilePath.startsWith(destDirPath + File.separator)) {
-            throw new IOException("Entry is outside of the target dir: " + zipEntry.getName());
-        }
-
-        return destFile;
     }
 
 }

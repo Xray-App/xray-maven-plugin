@@ -1,5 +1,7 @@
 package app.getxray.maven.plugin.xray;
 
+import static app.getxray.xray.CommonUtils.isTrue;
+
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -86,7 +88,7 @@ public class ExportFeaturesMojo extends AbstractMojo {
             getLog().debug("issueKeys from config: " + issueKeys);
             getLog().debug("filterId from config: " + filterId);
 
-            if (cloud) {
+            if (isTrue(cloud)) {
                 xrayFeaturesExporter = new XrayFeaturesExporter.CloudBuilder(clientId, clientSecret)
                     .withInternalTestProxy(useInternalTestProxy)
                     .withIgnoreSslErrors(ignoreSslErrors)
@@ -126,7 +128,7 @@ public class ExportFeaturesMojo extends AbstractMojo {
             getLog().info("response: " + response);
         } catch (Exception ex) {
             getLog().error(ex.getMessage());
-            if (abortOnError)
+            if (isTrue(abortOnError))
                 System.exit(1);
         }
 

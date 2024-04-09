@@ -1,43 +1,58 @@
 package app.getxray.xray.it.import_features;
 
+import static app.getxray.xray.CommonUtils.unzipContentsToFolder;
+import static com.github.tomakehurst.wiremock.client.WireMock.aMultipart;
+import static com.github.tomakehurst.wiremock.client.WireMock.binaryEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.containing;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static com.soebes.itf.extension.assertj.MavenITAssertions.assertThat;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.util.List;
+
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayNameGeneration;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
-import com.github.tomakehurst.wiremock.junit5.WireMockTest;
+import com.github.tomakehurst.wiremock.client.BasicCredentials;
+import com.github.tomakehurst.wiremock.stubbing.ServeEvent;
 import com.soebes.itf.jupiter.extension.MavenGoal;
 import com.soebes.itf.jupiter.extension.MavenJupiterExtension;
+import com.soebes.itf.jupiter.extension.MavenOption;
 import com.soebes.itf.jupiter.extension.MavenTest;
 import com.soebes.itf.jupiter.extension.SystemProperty;
 import com.soebes.itf.jupiter.maven.MavenExecutionResult;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-
-import app.getxray.xray.it.CommonUtils;
-
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
+import app.getxray.xray.CloudCustomDisplayNameGenerator;
+import app.getxray.xray.it.TestingUtils;
+import app.getxray.xray.junit.customjunitxml.annotations.Requirement;
 
 @MavenJupiterExtension
+@DisplayNameGeneration(CloudCustomDisplayNameGenerator.class)
 public class XrayCloudIT {
 
     private static final String CLIENT_ID = "32A27E69C0AC4E539C14010000000000";
     private static final String CLIENT_SECRET = "d62f81eb9ed859e22e54356dd8a00e4a5f0d0c2b2b52340776f6c70000000000";
     private static final String TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZW5hbnQiOiI0MjZiYzA4Yy02N2VmLTNjMjYtYWU1YS03NjczYTB1ZjIwNjkiLCJ1c2VyS2V5IjoiYW5kcmUucm9kcmlndWVzIiwiaWF0IjixNTI1ODcxODkzLCJleHAiOjE1MjU5NTgyOTMsImF1ZCI6IhMyQTI3RTY5QjBBQzRFNTM5QzE0MDE2NDM3OTlFOEU3IiwiaXNzIjoiY29tLnhwYW5kaXQueHJheSIsInN1YiI6IjMyQTI3RTY5QjBBQzRFNTM5QzE0MDE2NDM3OTlFOEU3In0.8ah2IQ9rA_zotyh_6trFgfIvhn2awdFFrOHnN2F2H7m";
+    static final int PORT_NUMBER = 18080;
 
     static WireMockServer wm;
     @BeforeAll
     public static void setup () {
         wm = new WireMockServer(
             options()
-            .port(18080)
+            .port(PORT_NUMBER)
             .enableBrowserProxying(true)
         );
         wm.start();
@@ -71,8 +86,9 @@ public class XrayCloudIT {
     @SystemProperty(value = "xray.useInternalTestProxy", content = "true")
     @SystemProperty(value = "xray.projectKey", content = "CALC")
     @SystemProperty(value = "xray.inputFeatures", content = "dummy.feature")
+    @Requirement("XMP-125")
     void single_feature(MavenExecutionResult result) throws IOException {
-       String feature = CommonUtils.readResourceFileForImportFeatures("XrayCloudIT/single_feature/dummy.feature");
+       String feature = TestingUtils.readResourceFileForImportFeatures("XrayCloudIT/single_feature/dummy.feature");
 
         wm.verify(
             postRequestedFor(urlPathEqualTo("/api/v2/import/feature"))
@@ -99,10 +115,11 @@ public class XrayCloudIT {
     @SystemProperty(value = "xray.inputFeatures", content = "dummy.feature")
     @SystemProperty(value = "xray.precondInfoJson", content = "precondInfo.json")
     @SystemProperty(value = "xray.testInfoJson", content = "testInfo.json")
+    @Requirement("XMP-125")
     void single_feature_custom_test_precondition_info(MavenExecutionResult result) throws IOException {
-       String feature = CommonUtils.readResourceFileForImportFeatures("XrayCloudIT/single_feature_custom_test_precondition_info/dummy.feature");
-       String precondInfo = CommonUtils.readResourceFileForImportFeatures("XrayCloudIT/single_feature_custom_test_precondition_info/precondInfo.json");
-       String testInfo = CommonUtils.readResourceFileForImportFeatures("XrayCloudIT/single_feature_custom_test_precondition_info/testInfo.json");
+       String feature = TestingUtils.readResourceFileForImportFeatures("XrayCloudIT/single_feature_custom_test_precondition_info/dummy.feature");
+       String precondInfo = TestingUtils.readResourceFileForImportFeatures("XrayCloudIT/single_feature_custom_test_precondition_info/precondInfo.json");
+       String testInfo = TestingUtils.readResourceFileForImportFeatures("XrayCloudIT/single_feature_custom_test_precondition_info/testInfo.json");
 
         wm.verify(
             postRequestedFor(urlPathEqualTo("/api/v2/import/feature"))
@@ -140,8 +157,9 @@ public class XrayCloudIT {
     @SystemProperty(value = "xray.useInternalTestProxy", content = "true")
     @SystemProperty(value = "xray.projectKey", content = "CALC")
     @SystemProperty(value = "xray.inputFeatures", content = "features.zip")
+    @Requirement("XMP-125")
     void multiple_features(MavenExecutionResult result) throws IOException {
-       byte[] zippedContent = CommonUtils.readRawResourceFile("import_features/XrayCloudIT/multiple_features/features.zip");
+       byte[] zippedContent = TestingUtils.readRawResourceFile("import_features/XrayCloudIT/multiple_features/features.zip");
 
         wm.verify(
             postRequestedFor(urlPathEqualTo("/api/v2/import/feature"))
@@ -158,4 +176,41 @@ public class XrayCloudIT {
        assertThat(result).isSuccessful();
     }
 
+
+    @MavenTest
+    @MavenGoal("xray:import-features")
+    @SystemProperty(value = "xray.cloud", content = "true")
+    @SystemProperty(value = "xray.clientId", content = CLIENT_ID)
+    @SystemProperty(value = "xray.clientSecret", content = CLIENT_SECRET)
+    @SystemProperty(value = "xray.useInternalTestProxy", content = "true")
+    @SystemProperty(value = "xray.projectKey", content = "CALC")
+    @SystemProperty(value = "xray.inputFeatures", content = "./features")
+    @Requirement("XMP-125")
+    @SystemProperty(value = "xray.verbose", content = "true")
+    @MavenOption("--debug")
+    void multiple_features_from_directory(MavenExecutionResult result) throws IOException {
+        wm.verify(
+            postRequestedFor(urlPathEqualTo("/api/v2/import/feature"))
+                .withHeader("Authorization", equalTo("Bearer " + TOKEN))
+                .withHeader("Content-Type", containing("multipart/form-data;"))
+                .withQueryParam("projectKey", equalTo("CALC"))
+                .withAnyRequestBodyPart(
+                    aMultipart()
+                        .withName("file")
+                        .withHeader("Content-Type", containing("application/zip"))
+                )
+        );
+
+        List<ServeEvent> allServeEvents = wm.getAllServeEvents();
+        File tempDir = Files.createTempDirectory("features").toFile();
+        ServeEvent request = allServeEvents.get(0);
+        byte[] zippedContent = request.getRequest().getPart("file").getBody().asBytes();
+        InputStream zippedContentStream = new ByteArrayInputStream(zippedContent);
+        unzipContentsToFolder(zippedContentStream, tempDir.getAbsolutePath().toString());
+        assertThat(tempDir.listFiles()).hasSize(2);
+        assertThat(tempDir.listFiles()).extracting(File::getName).containsExactly("core", "other");
+        assertThat(tempDir.listFiles()[0].listFiles()).extracting(File::getName).containsExactlyInAnyOrder("positive_sum.feature");
+        assertThat(tempDir.listFiles()[1].listFiles()).extracting(File::getName).containsExactlyInAnyOrder("negative_sum.feature");
+        assertThat(result).isSuccessful();
+    }
 }

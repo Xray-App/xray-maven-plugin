@@ -1,41 +1,54 @@
 package app.getxray.xray;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import static app.getxray.xray.CommonCloud.XRAY_CLOUD_API_BASE_URL;
+import static app.getxray.xray.CommonCloud.authenticateXrayAPIKeyCredentials;
+import static app.getxray.xray.CommonUtils.createHttpClient;
+
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.attribute.FileTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.maven.plugin.logging.Log;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import app.getxray.xray.CommonUtils;
 import okhttp3.Credentials;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
+import okhttp3.MultipartBody.Builder;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.MultipartBody.Builder;
-
-import org.apache.maven.plugin.logging.Log;
 
 // https://docs.getxray.app/display/XRAYCLOUD/Importing+Cucumber+Tests+-+REST+v2
 // https://docs.getxray.app/display/XRAY/Importing+Cucumber+Tests+-+REST
 
+// define a custom exception for import errors
+class XrayFeaturesImporterException extends Exception {
+    public XrayFeaturesImporterException(String message) {
+        super(message);
+    }
+}
+
 public class XrayFeaturesImporter {
     private static final String FEATURE_EXTENSION = ".feature";
-    private final MediaType MEDIA_TYPE_ZIP = MediaType.parse("application/zip");
-    private final MediaType MEDIA_TYPE_FOR_FEATURE_FILES = MediaType.parse("text/plain");
-    private final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json");
+    private static final MediaType MEDIA_TYPE_ZIP = MediaType.parse("application/zip");
+    private static final MediaType MEDIA_TYPE_FOR_FEATURE_FILES = MediaType.parse("text/plain");
+    private static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json");
 
-    private final String xrayCloudApiBaseUrl = "https://xray.cloud.getxray.app/api/v2";
-    private final String xrayCloudAuthenticateUrl = xrayCloudApiBaseUrl + "/authenticate";
+    private static final String AUTHORIZATION_HEADER = "Authorization";
+    private static final String BEARER_HEADER_PREFIX = "Bearer ";
+    private static final String TEMP_DIR_PREFIX = "import_features";
 
     private String jiraBaseUrl;
     private String jiraUsername;
@@ -225,7 +238,7 @@ public class XrayFeaturesImporter {
 
     }
 
-    public JSONArray importFrom(String inputPath) throws Exception {
+    public JSONArray importFrom(String inputPath) throws IOException, XrayFeaturesImporterException {
         if (clientId != null) {
             return importCloud(inputPath, null, null);
         } else {
@@ -233,7 +246,7 @@ public class XrayFeaturesImporter {
         }
     }
 
-    public JSONArray importFrom(String inputPath, JSONObject testInfo) throws Exception {
+    public JSONArray importFrom(String inputPath, JSONObject testInfo) throws IOException, XrayFeaturesImporterException{
         if (clientId != null) {
             return importCloud(inputPath, testInfo, null);
         } else {
@@ -241,7 +254,7 @@ public class XrayFeaturesImporter {
         }
     }
 
-    public JSONArray importFrom(String inputPath, JSONObject testInfo, JSONObject precondInfo) throws Exception {
+    public JSONArray importFrom(String inputPath, JSONObject testInfo, JSONObject precondInfo) throws IOException, XrayFeaturesImporterException{
         if (clientId != null) {
             return importCloud(inputPath, testInfo, precondInfo);
         } else {
@@ -249,13 +262,13 @@ public class XrayFeaturesImporter {
         }
     }
 
-    public JSONArray importServerDC(String inputPath, JSONObject testInfo, JSONObject precondInfo) throws Exception {
-        OkHttpClient client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
+    public JSONArray importServerDC(String inputPath, JSONObject testInfo, JSONObject precondInfo) throws XrayFeaturesImporterException, IOException {
+        OkHttpClient client = createHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
 
         File inputFile = new File(inputPath);
         String credentials;
         if (jiraPersonalAccessToken!= null) {
-            credentials = "Bearer " + jiraPersonalAccessToken;
+            credentials = BEARER_HEADER_PREFIX + jiraPersonalAccessToken;
         } else {
             credentials = Credentials.basic(jiraUsername, jiraPassword);
         }
@@ -280,90 +293,69 @@ public class XrayFeaturesImporter {
             mediaType = MEDIA_TYPE_FOR_FEATURE_FILES;
         } else {
             // it may be a directory; check it, and if so zip it before sending it
-            mediaType = MEDIA_TYPE_ZIP;
             if (inputFile.isDirectory()) {
-                Path tempZip = Files.createTempFile("dummy", ".zip");
-                //System.out.println(tempZip.toFile().getAbsolutePath());
-                zipDirectory(inputPath, tempZip.toFile().getAbsolutePath());
-                inputFile = tempZip.toFile();
+                mediaType = MEDIA_TYPE_ZIP;
+                File tempDir = Files.createTempDirectory(TEMP_DIR_PREFIX).toFile();
+                File tempZip = File.createTempFile("dummy", ".zip", tempDir);
+                zipDirectory(inputPath, tempZip.getAbsolutePath());
+                inputFile = tempZip;
+            } else {
+                throw new XrayFeaturesImporterException("Unsupported file format");
             }
         }
 
         String partName = "file";
-        try {
-            Builder requestBodyBuilder = new MultipartBody.Builder()
-                    .setType(MultipartBody.FORM)
-                    .addFormDataPart(partName, inputFile.getName(), RequestBody.create(inputFile, mediaType));
-            if (testInfo != null) {
-                requestBodyBuilder =  requestBodyBuilder.addFormDataPart("testInfo", "testinfo.json", RequestBody.create(testInfo.toString(), MEDIA_TYPE_JSON));
-            }
-            if (precondInfo != null) {
-                requestBodyBuilder = requestBodyBuilder.addFormDataPart("preCondInfo", "precondinfo.json", RequestBody.create(precondInfo.toString(), MEDIA_TYPE_JSON));
-            }
-            requestBody = requestBodyBuilder.build();
-        } catch (Exception e1) {
-            e1.printStackTrace();
-            throw e1;
+        Builder requestBodyBuilder = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart(partName, inputFile.getName(), RequestBody.create(inputFile, mediaType));
+        if (testInfo != null) {
+            requestBodyBuilder = requestBodyBuilder.addFormDataPart("testInfo", "testinfo.json", RequestBody.create(testInfo.toString(), MEDIA_TYPE_JSON));
         }
+        if (precondInfo != null) {
+            requestBodyBuilder = requestBodyBuilder.addFormDataPart("preCondInfo", "precondinfo.json", RequestBody.create(precondInfo.toString(), MEDIA_TYPE_JSON));
+        }
+        requestBody = requestBodyBuilder.build();
 
-        Request request = new Request.Builder().url(builder.build()).post(requestBody).addHeader("Authorization", credentials).build();
-        CommonUtils.logRequest(logger, request);
+        Request request = new Request.Builder().url(builder.build()).post(requestBody).addHeader(AUTHORIZATION_HEADER, credentials).build();
+        CommonUtils.logRequest(logger, request, this.verbose);
         try {
             response = client.newCall(request).execute();
-            CommonUtils.logResponse(logger, response);
+            CommonUtils.logResponse(logger, response, this.verbose);
             String responseBody = response.body().string();
             if (response.isSuccessful()){
-                JSONArray responseObj = new JSONArray(responseBody);
-                return responseObj;
+                return new JSONArray(responseBody);
             } else {
-                //System.err.println(responseBody);
                 throw new IOException("Unexpected HTTP code " + response);
             }
         } catch (IOException e) {
-            e.printStackTrace();
-            throw e;
+            logger.error(e);
+            throw new XrayFeaturesImporterException(e.getMessage());
         }
     }
 
-    public JSONArray importCloud(String inputPath, JSONObject testInfo, JSONObject precondInfo) throws Exception {
-        OkHttpClient client = CommonUtils.getHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
+    public JSONArray importCloud(String inputPath, JSONObject testInfo, JSONObject precondInfo) throws XrayFeaturesImporterException, IOException {
+        OkHttpClient client = createHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
+
+        String authToken = authenticateXrayAPIKeyCredentials(logger, verbose, client, clientId, clientSecret);
+        String credentials = BEARER_HEADER_PREFIX + authToken;
         
         File inputFile = new File(inputPath);
-        String authenticationPayload = "{ \"client_id\": \"" + clientId +"\", \"client_secret\": \"" + clientSecret +"\" }";
-        RequestBody body = RequestBody.create(authenticationPayload, MEDIA_TYPE_JSON);
-        Request request = new Request.Builder().url(xrayCloudAuthenticateUrl).post(body).build();
-        CommonUtils.logRequest(logger, request);
-    
-        Response response = null;
-        String authToken = null;
-        try {
-            response = client.newCall(request).execute();
-            CommonUtils.logResponse(logger, response, false);
-            String responseBody = response.body().string();
-            if (response.isSuccessful()){
-                authToken = responseBody.replace("\"", "");	
-            } else {
-                throw new IOException("failed to authenticate " + response);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw e;
-        }
-        String credentials = "Bearer " + authToken;
 
-        String endpointUrl =  xrayCloudApiBaseUrl + "/import/feature";
+        String endpointUrl = XRAY_CLOUD_API_BASE_URL + "/import/feature";
         HttpUrl url = HttpUrl.get(endpointUrl);
         HttpUrl.Builder builder = url.newBuilder();
         MultipartBody requestBody = null;
 
-        if (projectKey != null) {
-            builder.addQueryParameter("projectKey", this.projectKey);
-        }
-        if (projectId != null) {
-            builder.addQueryParameter("projectId", this.projectId);
-        }
-        if (source != null) {
-            builder.addQueryParameter("source", this.source);
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("projectKey", projectKey);
+        parameters.put("projectId", projectId);
+        parameters.put("source", source);
+
+        for (Map.Entry<String, String> entry : parameters.entrySet()) {
+            String value = entry.getValue();
+            if (value != null) {
+                builder.addQueryParameter(entry.getKey(), value);
+            }
         }
 
         MediaType mediaType;
@@ -375,10 +367,10 @@ public class XrayFeaturesImporter {
             // it may be a directory; check it, and if so zip it before sending it
             mediaType = MEDIA_TYPE_ZIP;
             if (inputFile.isDirectory()) {
-                Path tempZip = Files.createTempFile("dummy", ".zip");
-                //System.out.println(tempZip.toFile().getAbsolutePath());
-                zipDirectory(inputPath, tempZip.toFile().getAbsolutePath());
-                inputFile = tempZip.toFile();
+                File tempDir = Files.createTempDirectory(TEMP_DIR_PREFIX).toFile();
+                File tempZip = File.createTempFile("dummy", ".zip", tempDir);
+                zipDirectory(inputPath, tempZip.getAbsolutePath());
+                inputFile = tempZip;
             }
         }
 
@@ -395,37 +387,40 @@ public class XrayFeaturesImporter {
             }
             requestBody = requestBodyBuilder.build();
         } catch (Exception e1) {
-            e1.printStackTrace();
-            throw e1;
+            logger.error(e1);
+            throw new XrayFeaturesImporterException(e1.getMessage());
         }
 
-        request = new Request.Builder().url(builder.build()).post(requestBody).addHeader("Authorization", credentials).build();
-        CommonUtils.logRequest(logger, request);
+        Request request = new Request.Builder().url(builder.build()).post(requestBody).addHeader(AUTHORIZATION_HEADER, credentials).build();
+        CommonUtils.logRequest(logger, request, this.verbose);
         try {
-            response = client.newCall(request).execute();
-            CommonUtils.logResponse(logger, response);
+            Response response = client.newCall(request).execute();
+            CommonUtils.logResponse(logger, response, this.verbose);
             String responseBody = response.body().string();
             if (response.isSuccessful()){
                 JSONArray responseObj = new JSONArray();
                 responseObj.put(new JSONObject(responseBody));
                 return responseObj;
             } else {
-                // System.err.println(responseBody);
                 throw new IOException("Unexpected HTTP code " + response);
             }
         } catch (IOException e) {
-            e.printStackTrace();
-            throw e;
+            logger.error(e);
+            throw new XrayFeaturesImporterException(e.getMessage());
         }
     }
 
 
     public static void zipDirectory(String sourceDir, String outputZip) throws IOException {
         FileOutputStream fos = new FileOutputStream(outputZip);
-        ZipOutputStream zipOut = new ZipOutputStream(fos);
+        BufferedOutputStream bos = new BufferedOutputStream(fos);
+        ZipOutputStream zipOut = new ZipOutputStream(bos);
+        zipOut.setMethod(ZipOutputStream.DEFLATED);
+        zipOut.setLevel(0);
         File fileToZip = new File(sourceDir);
 
         zipFile(fileToZip, fileToZip.getName(), zipOut, false);
+        zipOut.finish();
         zipOut.close();
         fos.close();
     }
@@ -436,17 +431,22 @@ public class XrayFeaturesImporter {
         }
         if (fileToZip.isDirectory()) {
             if (createDir) {
+                ZipEntry zipEntry;
                 if (fileName.endsWith("/")) {
-                    zipOut.putNextEntry(new ZipEntry(fileName));
+                    zipEntry = new ZipEntry(fileName);
                 } else {
-                    zipOut.putNextEntry(new ZipEntry(fileName + "/"));
+                    zipEntry = new ZipEntry(fileName + "/");
                 }
+                FileTime time=FileTime.fromMillis(System.currentTimeMillis());
+                zipEntry.setCreationTime(time);
+                zipEntry.setLastAccessTime(time);
+                zipEntry.setLastModifiedTime(time);
+                zipOut.putNextEntry(zipEntry);
                 zipOut.closeEntry();
             }
 
             File[] children = fileToZip.listFiles();
             for (File childFile : children) {
-
                 // zip only .feature files and subdirs
                 if (!(childFile.isDirectory() || childFile.getName().toLowerCase().endsWith(FEATURE_EXTENSION)))
                     continue;
@@ -462,12 +462,19 @@ public class XrayFeaturesImporter {
         }
         try (FileInputStream fis = new FileInputStream(fileToZip)) {
             ZipEntry zipEntry = new ZipEntry(fileName);
+            zipEntry.setSize(fileToZip.length());
+            FileTime time=FileTime.fromMillis(System.currentTimeMillis());
+            zipEntry.setCreationTime(time);
+            zipEntry.setLastAccessTime(time);
+            zipEntry.setLastModifiedTime(time);
             zipOut.putNextEntry(zipEntry);
             byte[] bytes = new byte[1024];
             int length;
-            while ((length = fis.read(bytes)) >= 0) {
+            while ((length = fis.read(bytes)) > 0) {
                 zipOut.write(bytes, 0, length);
             }
+            zipOut.flush();
+            zipOut.closeEntry();
         }
     }
 }
