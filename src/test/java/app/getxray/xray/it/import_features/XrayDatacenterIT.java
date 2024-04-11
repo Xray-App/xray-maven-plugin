@@ -253,8 +253,8 @@ public class XrayDatacenterIT {
         unzipContentsToFolder(zippedContentStream, tempDir.getAbsolutePath().toString());
         assertThat(tempDir.listFiles()).hasSize(2);
         assertThat(tempDir.listFiles()).extracting(File::getName).containsExactlyInAnyOrder("core", "other");
-        assertThat(tempDir.listFiles()[0].listFiles()).extracting(File::getName).containsExactlyInAnyOrder("positive_sum.feature");
-        assertThat(tempDir.listFiles()[1].listFiles()).extracting(File::getName).containsExactlyInAnyOrder("negative_sum.feature");
+        assertThat((new File(tempDir, "core")).listFiles()).extracting(File::getName).containsExactlyInAnyOrder("positive_sum.feature");
+        assertThat((new File(tempDir, "other")).listFiles()).extracting(File::getName).containsExactlyInAnyOrder("negative_sum.feature");
         assertThat(result).isSuccessful();
     }
 
