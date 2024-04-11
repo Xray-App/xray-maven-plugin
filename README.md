@@ -3,6 +3,8 @@
 [![build workflow](https://github.com/Xray-App/xray-maven-plugin/actions/workflows/CI.yml/badge.svg)](https://github.com/Xray-App/xray-maven-plugin/actions/workflows/CI.yml)
 [![license](https://img.shields.io/badge/License-BSD%203--Clause-green.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/Xray-App/community)
+[![Maven Central Version](https://img.shields.io/maven-central/v/app.getxray/xray-maven-plugin)](https://central.sonatype.com/artifact/app.getxray/xray-maven-plugin/)
+
 
 This is an open-source maven plugin for interacting with Xray (server/datacenter and cloud), used in CI/CD for assisting in test automation flows, such as reporting test results back to Xray and, by consequence, Jira.
 
@@ -31,7 +33,7 @@ Add the following dependency to your pom.xml, where the `<configuration>` is opt
         <plugin>
             <groupId>app.getxray</groupId>
             <artifactId>xray-maven-plugin</artifactId>
-            <version>0.7.3</version>
+            <version>0.7.5</version>
             <scope>test</scope>
             <configuration>
                 <clientId>215FFD69FE46447280000000000</clientId>
