@@ -306,7 +306,7 @@
             <exclude>**/*IT.java</exclude>
           </excludes>
 
-          <testFailureIgnore>true</testFailureIgnore>
+          <testFailureIgnore>false</testFailureIgnore>
           <disableXmlReport>true</disableXmlReport>
           <useFile>false</useFile>
         </configuration>
