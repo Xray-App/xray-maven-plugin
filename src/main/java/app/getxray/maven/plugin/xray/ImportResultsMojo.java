@@ -132,6 +132,7 @@ public class ImportResultsMojo extends AbstractMojo {
             scanner.setIncludes(new String[]{"*.xml"});
             scanner.setBasedir(reportFile);
             scanner.setCaseSensitive(false);
+            scanner.setFilenameComparator(String::compareTo);
             scanner.scan();
             reportFiles = scanner.getIncludedFiles();
             for (int i = 0; i < reportFiles.length; i++) {
@@ -144,6 +145,7 @@ public class ImportResultsMojo extends AbstractMojo {
             scanner.setIncludes(new String[]{reportFile});
             scanner.setBasedir(".");
             scanner.setCaseSensitive(false);
+            scanner.setFilenameComparator(String::compareTo);
             scanner.scan();
             reportFiles = scanner.getIncludedFiles();
             for (int i = 0; i < reportFiles.length; i++) {
