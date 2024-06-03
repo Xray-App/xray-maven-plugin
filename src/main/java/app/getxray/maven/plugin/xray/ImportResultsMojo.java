@@ -157,16 +157,17 @@ public class ImportResultsMojo extends AbstractMojo {
         }
         String response = null;
 
+        getLog().debug("cloud from config: " + cloud);
+        getLog().debug("jiraBaseUrl from config: " + jiraBaseUrl);
+        getLog().debug("testInfoJson from config: " + testInfoJson);
+        getLog().debug("useInternalTestProxy from config: " + useInternalTestProxy);
+
         // submit one or more report files
         for (int i = 0; i < reportFiles.length; i++) {
             String currentReportFile = reportFiles[i];
 
             try {
-                getLog().debug("cloud from config: " + cloud);
-                getLog().debug("jiraBaseUrl from config: " + jiraBaseUrl);
-                getLog().debug("reportFile: " + currentReportFile);
-                getLog().debug("testInfoJson from config: " + testInfoJson);
-                getLog().debug("useInternalTestProxy from config: " + useInternalTestProxy);
+                getLog().info("reportFile: " + currentReportFile);
 
                 if (Boolean.TRUE.equals(cloud)) {
 
