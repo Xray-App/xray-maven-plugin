@@ -45,6 +45,7 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # Generate a token on Sonarcloud.io, add it to the secrets of this repo with the name SONAR_TOKEN (Settings > Secrets > Actions > add new repository secret)
       run: mvn sonar:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.projectKey=Xray-App_xray-maven-plugin -Dsonar.organization=xray-app -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco-merged-test-coverage-report/jacoco.xml
     - name: Push results to Xray Cloud
+      continue-on-error: true
       env:
         XRAYCLOUD_CLIENT_ID: ${{ secrets.XRAYCLOUD_CLIENT_ID }}
         XRAYCLOUD_CLIENT_SECRET: ${{ secrets.XRAYCLOUD_CLIENT_SECRET }}
