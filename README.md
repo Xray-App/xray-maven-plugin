@@ -145,6 +145,75 @@ Xray server/DC and Xray cloud support mostly the same formats, but not exactly f
 This task makes use of different REST APIs for importing test automation results (see reference at the bottom).
 Related to each report format (e.g., junit, testng, etc) there are usually 2 endpoints for submiting test results: the so called "standard" and the "multipart" one. Whenever importing results, for a given report format, the plugin will use one of these endpoints based on whether `testInfoJson` or `testExecInfoJson` are provided; if none of them are provided, the "standard" endpoint, otherwise the "multipart" endpoint will be used.
 
+#### Importing Cucumber results and associating to Test Plan/Test Environment/other
+
+As detailed before, and not like happens with other formats, whenever importing cucumber/behave results it's not possible to use the parameters `projectKey`, `version`, `revision`, `testPlanKey`, `testExecKey`, `testEnvironment` parameters.
+This is due to the way the Cucumber endpoints work (as of July 2024). The "standard" Cucumber/Behave REST API endpoints dont' support these parameters; as this plugin is mostly an wrapper around the available REST API endpoints, it also inherits their limitations. However, Xray provides slightly different endpoints, also known as the "multipart" endpoints; these endpoints are more flexible and allow you to customize the fields you wish on the target Test Execution that will be created (yes, using these endpoints will *always* lead to the creation of new Test Executions). 
+
+To make this maven plugin use the underlying multipart endpoint and therefore be able to customize the target Test Execution, we just have to define the `testExecInfoJson` parameter with a filename containing the customization JSON. We'll show 2 examples: one for Xray Cloud and an equivalent for Xray Datacenter (the syntax is slightly different). So, don't specify any of the parameters `projectKey`, `version`, `revision`, `testPlanKey`, `testExecKey`, `testEnvironment` as they will be simply ignored.
+
+Example follows ahead of `testExecInfoJson` content for **Xray Cloud**. In this case we're going to create the Test Execution with the results on the Jira project having the key `CALC`, on the version `v3.0`, and associate it with the Test Plan having key `CALC-15`. The Test Execution will also be associated with the Test Environment named `chrome`. 
+
+```json
+{
+    "fields": {
+        "project": {
+            "key": "CALC"
+        },
+        "summary": "Brand new Test execution",
+        "issuetype": {
+            "name": "Test Execution"
+        },
+        "fixVersions" : 
+                [
+                 {
+                        "name": "v3.0"
+                 }
+                ]
+
+    },
+    "xrayFields": {
+        "testPlanKey": "CALC-15",
+        "environments": ["chrome"]
+    }
+}
+```
+
+Example follows of `testExecInfo` content for **Xray Datacenter**. In this case we're going to create the Test Execution with the results on the Jira project having the key `CALC`, on the version `v3.0`, and associate it with the Test Plan having key `CALC-15`. The Test Execution will also be associated with the Test Environment named `chrome`. 
+Note that the syntax is different from the one for Xray Cloud; in this case, to be able to set the Test Plan or the Test Environment(s), you'll need to find out the corresponding custom field ids; to do that, check with your Jira administrator (info can be obtained from `Issues > Custom fields`). Also, a more simple way would be to invoke the REST API to figure it out (e.g., https://yourjiraserver/rest/api/2/field as mentioned [here](https://docs.atlassian.com/software/jira/docs/api/REST/7.4.1/#api/2/field-getFields)).. and that info is visible on the response. Anwyway, the following example assumes Test Plan custom field has an id "11807" and the Test Environments has an id "11805"; adjust it for your case.
+
+```json
+{
+    "fields": {
+        "project": {
+            "key": "CALC"
+        },
+        "summary": "Brand new Test execution",
+        "issuetype": {
+            "name": "Test Execution"
+        },
+        "customfield_11805" : [
+            "chrome"
+        ],
+        "customfield_11807" : [
+            "CALC-15"
+        ],
+        "fixVersions" : 
+                [
+                 {
+                        "name": "v3.0"
+                 }
+                ]
+    }
+}
+```
+
+For more information, please read the following Cucumber related documentation (or the corresponding one for Behave):
+
+- [Xray Cloud documentation on the Cucumber multipart REST API endpoint](https://docs.getxray.app/display/XRAYCLOUD/Import+Execution+Results+-+REST+v2#ImportExecutionResultsRESTv2-CucumberJSONresultsMultipart)
+- [Xray Datacenter documentation on the Cucumber multipart REST API endpoint](https://docs.getxray.app/display/XRAY/Import+Execution+Results+-+REST#ImportExecutionResultsREST-CucumberJSONresultsMultipart)
+
+
 ### Importing/synchronizing Cucumber .feature files to Xray
 
 One of the possible workflows for using Gherkin-based frameworks is to use git (or other versioning control system) as the master to store the corresponding .feature files (more info [here](https://docs.getxray.app/pages/viewpage.action?pageId=31622264#TestinginBDDwithGherkinbasedframeworks(e.g.Cucumber)-PureVCSbasedworkflow)).
