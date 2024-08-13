@@ -15,7 +15,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.json.JSONObject;
-
+import static app.getxray.xray.CommonCloud.XRAY_CLOUD_API_BASE_URL;
 import app.getxray.xray.XrayResultsImporter;
 
 /**
@@ -48,6 +48,9 @@ public class ImportResultsMojo extends AbstractMojo {
 
     @Parameter(property = "xray.clientSecret", required = false)
     private String clientSecret;
+
+    @Parameter(property = "xray.cloudApiBaseUrl", required = false, defaultValue = XRAY_CLOUD_API_BASE_URL)
+    private String cloudApiBaseUrl;
     
     @Parameter(property = "xray.cloud", required = true,  defaultValue = "false")
     private Boolean cloud;
@@ -176,7 +179,7 @@ public class ImportResultsMojo extends AbstractMojo {
                     // if testInfo and testExecInfo are not present, then use the standard endpoint
                     // all formats support params, except for cucumber
                     
-                    app.getxray.xray.XrayResultsImporter.CloudBuilder xrayImporterBuilder = new XrayResultsImporter.CloudBuilder(clientId, clientSecret)
+                    app.getxray.xray.XrayResultsImporter.CloudBuilder xrayImporterBuilder = new XrayResultsImporter.CloudBuilder(clientId, clientSecret, cloudApiBaseUrl)
                         .withInternalTestProxy(useInternalTestProxy)
                         .withIgnoreSslErrors(ignoreSslErrors)
                         .withTimeout(timeout)

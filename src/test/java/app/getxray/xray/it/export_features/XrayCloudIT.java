@@ -2,10 +2,12 @@ package app.getxray.xray.it.export_features;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static com.soebes.itf.extension.assertj.MavenITAssertions.assertThat;
@@ -75,8 +77,50 @@ public class XrayCloudIT {
             .willReturn(aResponse()
             .withHeader("Content-Type", "application/octet-stream")
             .withBody(zippedFeature)
-
         ));
+
+        System.out.println("setting up stubs for custom, region-based, Xray Cloud REST API endpoint...");
+        wm.stubFor(post(urlPathEqualTo("/api/v2/authenticate"))
+            .withHost(equalTo("eu.xray.cloud.getxray.app"))
+            .willReturn(okJson(TOKEN))
+            .atPriority(1)
+        );
+        wm.stubFor(get(urlPathEqualTo("/api/v2/export/cucumber"))
+            .withHost(equalTo("eu.xray.cloud.getxray.app"))
+            .willReturn(aResponse()
+            .withHeader("Content-Type", "application/octet-stream")
+            .withBody(zippedFeature)
+        ));
+    }
+
+    @MavenTest
+    @MavenGoal("xray:export-features")
+    @SystemProperty(value = "xray.cloud", content = "true")
+    @SystemProperty(value = "xray.clientId", content = CLIENT_ID)
+    @SystemProperty(value = "xray.clientSecret", content = CLIENT_SECRET)
+    @SystemProperty(value = "xray.cloudApiBaseUrl", content = "https://eu.xray.cloud.getxray.app/api/v2")
+    @SystemProperty(value = "xray.useInternalTestProxy", content = "true")
+    @SystemProperty(value = "xray.issueKeys", content = "CALC-1")
+    @SystemProperty(value = "xray.outputDir", content = "./features")
+    @Requirement("XMP-126")
+    void single_feature_by_issueKeys_eu_region(MavenExecutionResult result) throws IOException {
+       String feature = TestingUtils.readResourceFileForExportFeatures("XrayCloudIT/single_feature_by_issueKeys_eu_region/dummy.feature");
+
+       wm.verify(
+        postRequestedFor(null)
+            .withHost(equalTo("eu.xray.cloud.getxray.app"))
+            .withUrl("/api/v2/authenticate")
+            .withHeader("Content-Type", containing("application/json"))
+        );
+
+        wm.verify(
+            getRequestedFor(urlPathEqualTo("/api/v2/export/cucumber"))
+                .withHost(equalTo("eu.xray.cloud.getxray.app"))
+                .withHeader("Authorization", equalTo("Bearer " + TOKEN))
+                .withQueryParam("keys", equalTo("CALC-1"))
+        );
+       assertThat(result).isSuccessful();
+       assertThat(TestingUtils.readFile(result.getMavenProjectResult().getTargetProjectDirectory()+"/features/dummy.feature")).isEqualTo(feature);
     }
 
     @MavenTest

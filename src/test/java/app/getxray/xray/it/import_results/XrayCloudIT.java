@@ -16,7 +16,6 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DisplayNameGeneration;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -62,9 +61,9 @@ public class XrayCloudIT {
         System.out.println("setting up stubs...");
 
         wm.stubFor(post(urlPathEqualTo("/api/v2/authenticate"))
-        .withHost(equalTo("xray.cloud.getxray.app"))
-        .willReturn(okJson(TOKEN))
-        .atPriority(1)
+            .withHost(equalTo("xray.cloud.getxray.app"))
+            .willReturn(okJson(TOKEN))
+            .atPriority(1)
         );
 
         // xray
@@ -131,6 +130,20 @@ public class XrayCloudIT {
         wm.stubFor(post(urlPathEqualTo("/api/v2/import/execution/behave/multipart"))
             .withHost(equalTo("xray.cloud.getxray.app"))
             .willReturn(okJson("{ \"id\": \"10200\", \"key\": \"CALC-1\", \"self\": \"http://127.0.0.1/jira/rest/api/2/issue/10200\" }")));
+    
+
+        System.out.println("setting up stubs for custom, region-based, Xray Cloud REST API endpoint...");
+        wm.stubFor(post(urlPathEqualTo("/api/v2/authenticate"))
+            .withHost(equalTo("eu.xray.cloud.getxray.app"))
+            .willReturn(okJson(TOKEN))
+            .atPriority(1)
+        );
+        wm.stubFor(post(urlPathEqualTo("/api/v2/import/execution"))
+            .withHost(equalTo("eu.xray.cloud.getxray.app"))
+            .willReturn(okJson("{ \"id\": \"10200\", \"key\": \"CALC-1\", \"self\": \"http://127.0.0.1/jira/rest/api/2/issue/10200\" }")));
+        wm.stubFor(post(urlPathEqualTo("/api/v2/import/execution/multipart"))
+            .withHost(equalTo("eu.xray.cloud.getxray.app"))
+            .willReturn(okJson("{ \"id\": \"10200\", \"key\": \"CALC-1\", \"self\": \"http://127.0.0.1/jira/rest/api/2/issue/10200\" }")));
     }
 
     @MavenTest
@@ -145,15 +158,6 @@ public class XrayCloudIT {
     @MavenOption("--debug")
     @Requirement("XMP-132")
     void xray_standard_with_verbose_mode(MavenExecutionResult result) throws IOException {
-        /*
-        String report = CommonUtils.readResourceFileForImportResults("XrayCloudIT/xray_standard/xray.json");
-
-        wm.verify(
-            postRequestedFor(urlPathEqualTo("/api/v2/import/execution"))
-                .withHeader("Content-Type", containing("application/json"))
-                .withRequestBody(equalToJson(report))
-        );
-       */
         assertThat(result).isSuccessful();
         assertThat(result)
             .out()
@@ -171,6 +175,37 @@ public class XrayCloudIT {
             .out()
             .debug()
             .contains("REQUEST_CONTENT_TYPE: application/json; charset=utf-8");
+    }
+
+
+    @MavenTest
+    @MavenGoal("xray:import-results")
+    @SystemProperty(value = "xray.cloud", content = "true")
+    @SystemProperty(value = "xray.clientId", content = CLIENT_ID)
+    @SystemProperty(value = "xray.clientSecret", content = CLIENT_SECRET)
+    @SystemProperty(value = "xray.cloudApiBaseUrl", content = "https://eu.xray.cloud.getxray.app/api/v2")
+    @SystemProperty(value = "xray.reportFormat", content = "xray")
+    @SystemProperty(value = "xray.reportFile", content = "xray.json")
+    @SystemProperty(value = "xray.useInternalTestProxy", content = "true")
+    @Requirement("XMP-132")
+    void xray_standard_eu_region(MavenExecutionResult result) throws IOException {
+       String report = TestingUtils.readResourceFileForImportResults("XrayCloudIT/xray_standard_eu_region/xray.json");
+
+        wm.verify(
+            postRequestedFor(null)
+                .withHost(equalTo("eu.xray.cloud.getxray.app"))
+                .withUrl("/api/v2/authenticate")
+                .withHeader("Content-Type", containing("application/json"))
+        );
+        wm.verify(
+            postRequestedFor(urlPathEqualTo("/api/v2/import/execution"))
+                .withHost(equalTo("eu.xray.cloud.getxray.app"))
+                .withUrl("/api/v2/import/execution")
+                .withHeader("Content-Type", containing("application/json"))
+                .withRequestBody(equalToJson(report))
+        );
+
+       assertThat(result).isSuccessful();
     }
 
     @MavenTest

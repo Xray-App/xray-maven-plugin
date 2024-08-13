@@ -12,6 +12,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static com.soebes.itf.extension.assertj.MavenITAssertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -67,17 +68,64 @@ public class XrayCloudIT {
         System.out.println("setting up stubs...");
 
         wm.stubFor(post(urlPathEqualTo("/api/v2/authenticate"))
-        .withHost(equalTo("xray.cloud.getxray.app"))
-        .willReturn(okJson(TOKEN))
-        .atPriority(1)
+            .withHost(equalTo("xray.cloud.getxray.app"))
+            .willReturn(okJson(TOKEN))
+            .atPriority(1)
         );
 
         // cucumber
         wm.stubFor(post(urlPathEqualTo("/api/v2/import/feature"))
             .withHost(equalTo("xray.cloud.getxray.app"))
             .willReturn(okJson("{ \"updatedOrCreatedTests\": [ { \"id\": \"32495\", \"key\": \"DEMO-15119\", \"self\": \"https://devxray3.atlassian.net/rest/api/2/issue/32495\" }, { \"id\": \"32493\", \"key\": \"DEMO-15117\", \"self\": \"https://devxray3.atlassian.net/rest/api/2/issue/32493\" }], \"updatedOrCreatedPreconditions\": [ { \"id\": \"12345\", \"key\": \"DEMO-12345\", \"self\": \"https://devxray3.atlassian.net/rest/api/2/issue/12345\"} ] }")));
+
+
+        System.out.println("setting up stubs for custom, region-based, Xray Cloud REST API endpoint...");
+        wm.stubFor(post(urlPathEqualTo("/api/v2/authenticate"))
+            .withHost(equalTo("eu.xray.cloud.getxray.app"))
+            .willReturn(okJson(TOKEN))
+            .atPriority(1)
+        );
+        wm.stubFor(post(urlPathEqualTo("/api/v2/import/feature"))
+            .withHost(equalTo("eu.xray.cloud.getxray.app"))
+            .willReturn(okJson("{ \"updatedOrCreatedTests\": [ { \"id\": \"32495\", \"key\": \"DEMO-15119\", \"self\": \"https://devxray3.atlassian.net/rest/api/2/issue/32495\" }, { \"id\": \"32493\", \"key\": \"DEMO-15117\", \"self\": \"https://devxray3.atlassian.net/rest/api/2/issue/32493\" }], \"updatedOrCreatedPreconditions\": [ { \"id\": \"12345\", \"key\": \"DEMO-12345\", \"self\": \"https://devxray3.atlassian.net/rest/api/2/issue/12345\"} ] }")));
     }
  
+    @MavenTest
+    @MavenGoal("xray:import-features")
+    @SystemProperty(value = "xray.cloud", content = "true")
+    @SystemProperty(value = "xray.clientId", content = CLIENT_ID)
+    @SystemProperty(value = "xray.clientSecret", content = CLIENT_SECRET)
+    @SystemProperty(value = "xray.cloudApiBaseUrl", content = "https://eu.xray.cloud.getxray.app/api/v2")
+    @SystemProperty(value = "xray.useInternalTestProxy", content = "true")
+    @SystemProperty(value = "xray.projectKey", content = "CALC")
+    @SystemProperty(value = "xray.inputFeatures", content = "dummy.feature")
+    @Requirement("XMP-125")
+    void single_feature_eu_region(MavenExecutionResult result) throws IOException {
+       String feature = TestingUtils.readResourceFileForImportFeatures("XrayCloudIT/single_feature_eu_region/dummy.feature");
+
+       wm.verify(
+        postRequestedFor(null)
+            .withHost(equalTo("eu.xray.cloud.getxray.app"))
+            .withUrl("/api/v2/authenticate")
+            .withHeader("Content-Type", containing("application/json"))
+        );
+
+        wm.verify(
+            postRequestedFor(urlPathEqualTo("/api/v2/import/feature"))
+                .withHost(equalTo("eu.xray.cloud.getxray.app"))
+                .withHeader("Authorization", equalTo("Bearer " + TOKEN))
+                .withHeader("Content-Type", containing("multipart/form-data;"))
+                .withQueryParam("projectKey", equalTo("CALC"))
+                .withAnyRequestBodyPart(
+                    aMultipart()
+                        .withName("file")
+                        .withHeader("Content-Type", containing("text/plain"))
+                        .withBody(equalTo(feature)))
+
+        );
+       assertThat(result).isSuccessful();
+    }
+
     @MavenTest
     @MavenGoal("xray:import-features")
     @SystemProperty(value = "xray.cloud", content = "true")

@@ -8,7 +8,7 @@ class ExportFeaturesTest {
     
     @Test
     void exportFeaturesCloudBuilderTest() {
-        XrayFeaturesExporter.CloudBuilder xrayBuilder = new XrayFeaturesExporter.CloudBuilder("clientId", "clientSecret")
+        XrayFeaturesExporter.CloudBuilder xrayBuilder = new XrayFeaturesExporter.CloudBuilder("clientId", "clientSecret", "https://xray.cloud.getxray.app/api/v2")
             .withIssueKeys("CALC-1")
             .withFilterId("1234")
             .withIgnoreSslErrors(true)

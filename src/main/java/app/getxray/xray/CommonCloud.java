@@ -13,8 +13,8 @@ import okhttp3.Response;
 public class CommonCloud {
    
     private static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json");
-    static final String XRAY_CLOUD_API_BASE_URL = "https://xray.cloud.getxray.app/api/v2";
-	static final String XRAY_CLOUD_AUTHENTICATE_URL = XRAY_CLOUD_API_BASE_URL + "/authenticate";
+    public static final String XRAY_CLOUD_API_BASE_URL = "https://xray.cloud.getxray.app/api/v2";
+	// static final String XRAY_CLOUD_AUTHENTICATE_URL = XRAY_CLOUD_API_BASE_URL + "/authenticate";
 
 
     private CommonCloud() {
@@ -22,10 +22,11 @@ public class CommonCloud {
     }
 
 
-    public static String authenticateXrayAPIKeyCredentials(Log logger,boolean verbose, OkHttpClient client, String clientId, String clientSecret) throws IOException {
+    public static String authenticateXrayAPIKeyCredentials(Log logger,boolean verbose, OkHttpClient client, String clientId, String clientSecret, String cloudApiBaseUrl) throws IOException {
         String authenticationPayload = "{ \"client_id\": \"" + clientId +"\", \"client_secret\": \"" + clientSecret +"\" }";
         RequestBody body = RequestBody.create(authenticationPayload, MEDIA_TYPE_JSON);
-        Request request = new Request.Builder().url(XRAY_CLOUD_AUTHENTICATE_URL).post(body).build();
+        String xrayCloudAuthenticateUrl = cloudApiBaseUrl + "/authenticate";
+        Request request = new Request.Builder().url(xrayCloudAuthenticateUrl).post(body).build();
         CommonUtils.logRequest(logger, request, verbose);
         try (Response response = client.newCall(request).execute()) {
             CommonUtils.logResponse(logger, response, false);

@@ -1,6 +1,5 @@
 package app.getxray.xray;
 
-import static app.getxray.xray.CommonCloud.XRAY_CLOUD_API_BASE_URL;
 import static app.getxray.xray.CommonCloud.authenticateXrayAPIKeyCredentials;
 import static app.getxray.xray.CommonUtils.createHttpClient;
 
@@ -57,6 +56,7 @@ public class XrayFeaturesImporter {
 
     private String clientId;
     private String clientSecret;
+    private String cloudApiBaseUrl;
 
     private String projectKey;
     private String projectId;
@@ -90,6 +90,7 @@ public class XrayFeaturesImporter {
     private XrayFeaturesImporter(CloudBuilder builder) {
         this.clientId = builder.clientId;
         this.clientSecret = builder.clientSecret;
+        this.cloudApiBaseUrl = builder.cloudApiBaseUrl;
 
         this.projectKey = builder.projectKey;
         this.projectId = builder.projectId;
@@ -176,6 +177,7 @@ public class XrayFeaturesImporter {
 
         private final String clientId;
         private final String clientSecret;
+        private String cloudApiBaseUrl = CommonCloud.XRAY_CLOUD_API_BASE_URL;
 
         private String projectKey;
         private String projectId;
@@ -187,9 +189,10 @@ public class XrayFeaturesImporter {
         private Boolean verbose = false;
         private Log logger;
 
-        public CloudBuilder(String clientId, String clientSecret) {
+        public CloudBuilder(String clientId, String clientSecret, String cloudApiBaseUrl) {
             this.clientId = clientId;
             this.clientSecret = clientSecret;
+            this.cloudApiBaseUrl = cloudApiBaseUrl;
         }
 
         public CloudBuilder withIgnoreSslErrors(Boolean ignoreSslErrors) {
@@ -336,12 +339,12 @@ public class XrayFeaturesImporter {
     public JSONArray importCloud(String inputPath, JSONObject testInfo, JSONObject precondInfo) throws XrayFeaturesImporterException, IOException {
         OkHttpClient client = createHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
 
-        String authToken = authenticateXrayAPIKeyCredentials(logger, verbose, client, clientId, clientSecret);
+        String authToken = authenticateXrayAPIKeyCredentials(logger, verbose, client, clientId, clientSecret, cloudApiBaseUrl);
         String credentials = BEARER_HEADER_PREFIX + authToken;
         
         File inputFile = new File(inputPath);
 
-        String endpointUrl = XRAY_CLOUD_API_BASE_URL + "/import/feature";
+        String endpointUrl = cloudApiBaseUrl + "/import/feature";
         HttpUrl url = HttpUrl.get(endpointUrl);
         HttpUrl.Builder builder = url.newBuilder();
         MultipartBody requestBody = null;

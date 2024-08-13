@@ -14,7 +14,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
+import static app.getxray.xray.CommonCloud.XRAY_CLOUD_API_BASE_URL;
 import app.getxray.xray.XrayFeaturesImporter;
 
 /**
@@ -47,6 +47,9 @@ public class ImportFeaturesMojo extends AbstractMojo {
     @Parameter(property = "xray.clientSecret", required = false)
     private String clientSecret;
     
+    @Parameter(property = "xray.cloudApiBaseUrl", required = false, defaultValue = XRAY_CLOUD_API_BASE_URL)
+    private String cloudApiBaseUrl;
+
     @Parameter(property = "xray.cloud", required = true, defaultValue = "false")
     private Boolean cloud;
 
@@ -122,7 +125,7 @@ public class ImportFeaturesMojo extends AbstractMojo {
             }
 
             if (isTrue(cloud)) {
-                xrayFeaturesImporter = new XrayFeaturesImporter.CloudBuilder(clientId, clientSecret)
+                xrayFeaturesImporter = new XrayFeaturesImporter.CloudBuilder(clientId, clientSecret, cloudApiBaseUrl)
                     .withInternalTestProxy(useInternalTestProxy)
                     .withIgnoreSslErrors(ignoreSslErrors)
                     .withTimeout(timeout)
