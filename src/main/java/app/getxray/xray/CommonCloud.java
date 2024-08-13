@@ -14,7 +14,6 @@ public class CommonCloud {
    
     private static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json");
     public static final String XRAY_CLOUD_API_BASE_URL = "https://xray.cloud.getxray.app/api/v2";
-	// static final String XRAY_CLOUD_AUTHENTICATE_URL = XRAY_CLOUD_API_BASE_URL + "/authenticate";
 
 
     private CommonCloud() {

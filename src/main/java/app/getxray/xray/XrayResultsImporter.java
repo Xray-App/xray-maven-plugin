@@ -224,12 +224,7 @@ public class XrayResultsImporter {
             this.clientSecret = clientSecret;
             this.cloudApiBaseUrl = cloudApiBaseUrl;
         }
-/*
-        public CloudBuilder withCloudApiBaseUrl(String cloudApiBaseUrl) {
-            this.cloudApiBaseUrl = cloudApiBaseUrl;
-            return this;
-        }
-*/
+
         public CloudBuilder withIgnoreSslErrors(Boolean ignoreSslErrors) {
             this.ignoreSslErrors = ignoreSslErrors;
             return this;
