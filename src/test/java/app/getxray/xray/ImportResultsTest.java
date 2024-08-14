@@ -10,7 +10,7 @@ class ImportResultsTest {
     
     @Test
     void resultsImporterCloudBuilderTest() {
-        CloudBuilder xrayImporterBuilder = new XrayResultsImporter.CloudBuilder("clientId", "clientSecret")
+        CloudBuilder xrayImporterBuilder = new XrayResultsImporter.CloudBuilder("clientId", "clientSecret", "https://xray.cloud.getxray.app/api/v2")
             .withProjectKey("CALC")
             .withVersion("1.0")
             .withRevision("1234")

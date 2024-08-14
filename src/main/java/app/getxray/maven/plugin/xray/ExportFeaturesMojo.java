@@ -10,6 +10,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import app.getxray.xray.XrayFeaturesExporter;
+import static app.getxray.xray.CommonCloud.XRAY_CLOUD_API_BASE_URL;
 
 /**
  * Counts the number of maven dependencies of a project.
@@ -40,6 +41,9 @@ public class ExportFeaturesMojo extends AbstractMojo {
 
     @Parameter(property = "xray.clientSecret", required = false)
     private String clientSecret;
+
+    @Parameter(property = "xray.cloudApiBaseUrl", required = false, defaultValue = XRAY_CLOUD_API_BASE_URL)
+    private String cloudApiBaseUrl;
     
     @Parameter(property = "xray.cloud", required = true, defaultValue = "false")
     private Boolean cloud;
@@ -89,7 +93,7 @@ public class ExportFeaturesMojo extends AbstractMojo {
             getLog().debug("filterId from config: " + filterId);
 
             if (isTrue(cloud)) {
-                xrayFeaturesExporter = new XrayFeaturesExporter.CloudBuilder(clientId, clientSecret)
+                xrayFeaturesExporter = new XrayFeaturesExporter.CloudBuilder(clientId, clientSecret, cloudApiBaseUrl)
                     .withInternalTestProxy(useInternalTestProxy)
                     .withIgnoreSslErrors(ignoreSslErrors)
                     .withTimeout(timeout)

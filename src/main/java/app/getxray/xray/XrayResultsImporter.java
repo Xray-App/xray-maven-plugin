@@ -21,7 +21,6 @@ import okhttp3.Response;
 
 import org.apache.maven.plugin.logging.Log;
 
-import static app.getxray.xray.CommonCloud.XRAY_CLOUD_API_BASE_URL;
 import static app.getxray.xray.CommonCloud.authenticateXrayAPIKeyCredentials;
 import static app.getxray.xray.CommonUtils.createHttpClient;
 
@@ -56,6 +55,7 @@ public class XrayResultsImporter {
 
     private String clientId;
     private String clientSecret;
+    private String cloudApiBaseUrl;
 
     private String projectKey;
     private String fixVersion;
@@ -92,6 +92,8 @@ public class XrayResultsImporter {
     private XrayResultsImporter(CloudBuilder builder){
         this.clientId = builder.clientId;
         this.clientSecret = builder.clientSecret;
+        this.cloudApiBaseUrl = builder.cloudApiBaseUrl;
+
         this.projectKey = builder.projectKey;
         this.fixVersion = builder.fixVersion;
         this.revision = builder.revision;
@@ -202,6 +204,7 @@ public class XrayResultsImporter {
 
         private final String clientId;
         private final String clientSecret;
+        private String cloudApiBaseUrl = CommonCloud.XRAY_CLOUD_API_BASE_URL;
 
         private String projectKey;
         private String fixVersion;
@@ -216,9 +219,10 @@ public class XrayResultsImporter {
         private Boolean verbose = false;
         private Log logger;
 
-        public CloudBuilder(String clientId, String clientSecret) {
+        public CloudBuilder(String clientId, String clientSecret, String cloudApiBaseUrl) {
             this.clientId = clientId;
             this.clientSecret = clientSecret;
+            this.cloudApiBaseUrl = cloudApiBaseUrl;
         }
 
         public CloudBuilder withIgnoreSslErrors(Boolean ignoreSslErrors) {
@@ -354,16 +358,16 @@ public class XrayResultsImporter {
     public String submitMultipartCloud(String format, String reportFile, JSONObject testExecInfo, JSONObject testInfo) throws IOException, XrayResultsImporterException {  	
         OkHttpClient client = createHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
 
-        String authToken = authenticateXrayAPIKeyCredentials(logger, verbose, client, clientId, clientSecret);
+        String authToken = authenticateXrayAPIKeyCredentials(logger, verbose, client, clientId, clientSecret, cloudApiBaseUrl);
         String credentials = BEARER_HEADER_PREFIX + authToken;
 
         MediaType mediaType = getMediaTypeForFormat(format);
 
         String endpointUrl;
         if ("xray".equals(format)) {
-            endpointUrl =  XRAY_CLOUD_API_BASE_URL + "/import/execution/multipart";
+            endpointUrl =  cloudApiBaseUrl + "/import/execution/multipart";
         } else {
-            endpointUrl =  XRAY_CLOUD_API_BASE_URL + "/import/execution/" + format + "/multipart";
+            endpointUrl =  cloudApiBaseUrl + "/import/execution/" + format + "/multipart";
         }
 
         HttpUrl url = HttpUrl.get(endpointUrl);
@@ -458,16 +462,16 @@ public class XrayResultsImporter {
     public String submitStandardCloud(String format, String reportFile) throws IOException, XrayResultsImporterException {
         OkHttpClient client = createHttpClient(this.useInternalTestProxy, this.ignoreSslErrors, this.timeout);
 
-        String authToken = authenticateXrayAPIKeyCredentials(logger, verbose, client, clientId, clientSecret);
+        String authToken = authenticateXrayAPIKeyCredentials(logger, verbose, client, clientId, clientSecret, cloudApiBaseUrl);
         String credentials = BEARER_HEADER_PREFIX + authToken;
 
         MediaType mediaType = getMediaTypeForFormat(format);
 
         String endpointUrl;
         if (XRAY_FORMAT.equals(format)) {
-            endpointUrl = XRAY_CLOUD_API_BASE_URL + "/import/execution";
+            endpointUrl = cloudApiBaseUrl + "/import/execution";
         } else {
-            endpointUrl = XRAY_CLOUD_API_BASE_URL + "/import/execution/" + format;
+            endpointUrl = cloudApiBaseUrl + "/import/execution/" + format;
         }
         String reportContent = new String ( Files.readAllBytes( Paths.get(reportFile) ) );
         RequestBody requestBody = RequestBody.create(reportContent, mediaType);

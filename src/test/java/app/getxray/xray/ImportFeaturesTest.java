@@ -8,7 +8,7 @@ class ImportFeaturesTest {
     
     @Test
     void importFeaturesCloudBuilderTest() {
-        XrayFeaturesImporter.CloudBuilder xrayBuilder = new XrayFeaturesImporter.CloudBuilder("clientId", "clientSecret")
+        XrayFeaturesImporter.CloudBuilder xrayBuilder = new XrayFeaturesImporter.CloudBuilder("clientId", "clientSecret", "https://xray.cloud.getxray.app/api/v2")
             .withProjectKey("CALC")
             .withSource("dummySource")
             .withIgnoreSslErrors(true)

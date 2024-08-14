@@ -25,6 +25,7 @@ class CommonCloudTest {
     void authenticateXrayAPIKeyCredentialsTest() throws Exception{
         String clientId = "22334455";
         String clientSecret = "998877665544";
+        String cloudApiBaseUrl = "https://xray.cloud.getxray.app/api/v2";
         String authenticationPayload = "{ \"client_id\": \"" + clientId +"\", \"client_secret\": \"" + clientSecret +"\" }";
         String expectedToken = "00000000000000000000000000111111111111111111111111222222222222222222222223333333333333";
 
@@ -32,7 +33,7 @@ class CommonCloudTest {
         OkHttpClient client = Mockito.mock(OkHttpClient.class);
         Builder responseBuilder = new Response.Builder();
         responseBuilder.protocol(okhttp3.Protocol.HTTP_1_1);
-        responseBuilder.request(new Request.Builder().url("https://xray.cloud.getxray.app/api/v2/authenticate").build());
+        responseBuilder.request(new Request.Builder().url(cloudApiBaseUrl + "/authenticate").build());
         responseBuilder.code(200);
         responseBuilder.message("OK");
         responseBuilder.header("Content-Type", "application/json");
@@ -44,12 +45,12 @@ class CommonCloudTest {
         when(client.newCall(any())).thenReturn(remoteCall);
         
         // OkHttpClient client2 = mockHttpClient("\""+expectedToken+"\"");
-        String authToken = CommonCloud.authenticateXrayAPIKeyCredentials(log, true, client, clientId, clientSecret);
+        String authToken = CommonCloud.authenticateXrayAPIKeyCredentials(log, true, client, clientId, clientSecret, cloudApiBaseUrl);
         assertEquals(expectedToken, authToken);
 
         ArgumentCaptor<Request> req = ArgumentCaptor.forClass(Request.class);
         verify(client).newCall(req.capture());
-        assertEquals("https://xray.cloud.getxray.app/api/v2/authenticate", req.getValue().url().toString());
+        assertEquals(cloudApiBaseUrl + "/authenticate", req.getValue().url().toString());
         assertEquals("POST", req.getValue().method());
         assertEquals("application/json; charset=utf-8", req.getValue().body().contentType().toString());
         final Buffer buffer = new Buffer();
@@ -61,12 +62,13 @@ class CommonCloudTest {
     void authenticateXrayAPIKeyCredentialsTestFailure() throws Exception{
         String clientId = "22334455";
         String clientSecret = "998877665544";
+        String cloudApiBaseUrl = "https://xray.cloud.getxray.app/api/v2";
 
         Log log = Mockito.mock(Log.class);
         OkHttpClient client = Mockito.mock(OkHttpClient.class);
         Builder responseBuilder = new Response.Builder();
         responseBuilder.protocol(okhttp3.Protocol.HTTP_1_1);
-        responseBuilder.request(new Request.Builder().url("https://xray.cloud.getxray.app/api/v2/authenticate").build());
+        responseBuilder.request(new Request.Builder().url(cloudApiBaseUrl + "/authenticate").build());
         responseBuilder.code(403);
         responseBuilder.message("Forbidden");
         responseBuilder.header("Content-Type", "application/json");
@@ -78,7 +80,7 @@ class CommonCloudTest {
         when(client.newCall(any())).thenReturn(remoteCall);
 
         Exception exception = assertThrows(Exception.class, () -> {
-            CommonCloud.authenticateXrayAPIKeyCredentials(log, true, client, clientId, clientSecret);
+            CommonCloud.authenticateXrayAPIKeyCredentials(log, true, client, clientId, clientSecret, cloudApiBaseUrl);
         });
         assertTrue(exception.getMessage().startsWith("failed to authenticate"));
     }

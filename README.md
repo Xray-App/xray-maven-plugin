@@ -33,7 +33,7 @@ Add the following dependency to your pom.xml, where the `<configuration>` is opt
         <plugin>
             <groupId>app.getxray</groupId>
             <artifactId>xray-maven-plugin</artifactId>
-            <version>0.7.6</version>
+            <version>0.8.0</version>
             <scope>test</scope>
             <configuration>
                 <clientId>215FFD69FE46447280000000000</clientId>
@@ -75,6 +75,7 @@ For Xray cloud users (i.e., using Xray on Jira cloud):
 | `cloud` | `xray.cloud` | set to true if using Xray cloud (default: false) | true |
 | `clientId` | `xray.clientId` | client id of the API key configured on Xray Cloud | xxxx... |
 | `clientSecret` | `xray.clientSecret` | client id of the API key configured on Xray Cloud | xxxx... |
+| `cloudApiBaseUrl` | `xray.cloudApiBaseUrl` | Xray Cloud REST API base URL (default: https://xray.cloud.getxray.app/api/v2); useful for deployments having data residency. Check [possible values](https://docs.getxray.app/display/XRAYCLOUD/REST+API) in the docs |  https://eu.xray.cloud.getxray.app/api/v2 |
 | `timeout` | `xray.timeout` | connection timeout in seconds (default: 50) | 50 |
 | `verbose` | `xray.verbose` | set to true to enable verbose mode (default: false); information will be visible if running mvn with debug output by using `-X` or `--debug` | true |
 
