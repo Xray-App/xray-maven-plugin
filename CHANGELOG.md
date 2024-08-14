@@ -11,6 +11,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.8.0] - 20234-08-14
+
+### Added
+
+- fixes #84 by adding support to region based Xray Cloud API endpoints by @bitcoder in #85
+
+### Fixed
+
+- check broken links on the local docs by @bitcoder in #83
+
+## [0.7.6] - 2024-06-11
+
+### Fixed
+
+- feat(log) : reorder log and log level for reportFiles by @dgautier in #79
+- Import test results always in the same order by @mk868 in #78
+
+## [0.7.5] - 2024-04-11
+
+### Fixed
+
+- clean code and refactoring by @bitcoder in #73
+
+## [0.7.4] - 2024-03-19
+
+### Fixed
+
+- add deployment using nexus-staging-maven-plugin by @bitcoder in #74
+
 ## [0.7.3] - 2023-05-02
 
 ### Fixed
