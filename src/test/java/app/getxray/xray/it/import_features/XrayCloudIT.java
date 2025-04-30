@@ -31,6 +31,7 @@ import com.github.tomakehurst.wiremock.stubbing.ServeEvent;
 import com.soebes.itf.jupiter.extension.MavenGoal;
 import com.soebes.itf.jupiter.extension.MavenJupiterExtension;
 import com.soebes.itf.jupiter.extension.MavenOption;
+import com.soebes.itf.jupiter.extension.MavenRepository;
 import com.soebes.itf.jupiter.extension.MavenTest;
 import com.soebes.itf.jupiter.extension.SystemProperty;
 import com.soebes.itf.jupiter.maven.MavenExecutionResult;
@@ -41,6 +42,7 @@ import app.getxray.xray.junit.customjunitxml.annotations.Requirement;
 
 @MavenJupiterExtension
 @DisplayNameGeneration(CloudCustomDisplayNameGenerator.class)
+@MavenRepository
 public class XrayCloudIT {
 
     private static final String CLIENT_ID = "32A27E69C0AC4E539C14010000000000";

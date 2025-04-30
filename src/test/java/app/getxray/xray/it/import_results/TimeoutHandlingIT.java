@@ -21,6 +21,7 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.BasicCredentials;
 import com.soebes.itf.jupiter.extension.MavenGoal;
 import com.soebes.itf.jupiter.extension.MavenJupiterExtension;
+import com.soebes.itf.jupiter.extension.MavenRepository;
 import com.soebes.itf.jupiter.extension.MavenTest;
 import com.soebes.itf.jupiter.extension.SystemProperty;
 import com.soebes.itf.jupiter.maven.MavenExecutionResult;
@@ -28,6 +29,7 @@ import com.soebes.itf.jupiter.maven.MavenExecutionResult;
 import app.getxray.xray.it.TestingUtils;
 
 @MavenJupiterExtension
+@MavenRepository
 public class TimeoutHandlingIT {
 
     private static final String CLIENT_ID = "32A27E69C0AC4E539C14010000000000";
