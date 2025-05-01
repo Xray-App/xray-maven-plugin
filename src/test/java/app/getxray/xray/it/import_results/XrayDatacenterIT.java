@@ -116,6 +116,7 @@ public class XrayDatacenterIT {
     @SystemProperty(value = "xray.reportFile", content = "xray.json")
     @SystemProperty(value = "xray.verbose", content = "true")
     @MavenOption("--debug")
+    @Requirement("XMP-231")
     void xray_standard_with_verbose_mode(MavenExecutionResult result) {
         assertThat(result).isSuccessful();
         assertThat(result)
@@ -140,6 +141,7 @@ public class XrayDatacenterIT {
     @SystemProperty(value = "xray.jiraPassword", content = "password")
     @SystemProperty(value = "xray.reportFormat", content = "xray")
     @SystemProperty(value = "xray.reportFile", content = "xray.json")
+    @Requirement("XMP-132")
     void xray_standard(MavenExecutionResult result) throws IOException {
        String report = TestingUtils.readResourceFileForImportResults("XrayDatacenterIT/xray_standard/xray.json");
 
@@ -161,6 +163,7 @@ public class XrayDatacenterIT {
     @SystemProperty(value = "xray.reportFormat", content = "xray")
     @SystemProperty(value = "xray.reportFile", content = "xray.json")
     @SystemProperty(value = "xray.testExecInfoJson", content = "testExecInfo.json")
+    @Requirement("XMP-140")
     void xray_multipart(MavenExecutionResult result) throws IOException {
        String testExecInfo = TestingUtils.readResourceFileForImportResults("XrayDatacenterIT/testng_multipart/testExecInfo.json");
        String report = TestingUtils.readResourceFileForImportResults("XrayDatacenterIT/xray_multipart/xray.json");
