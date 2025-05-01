@@ -41,14 +41,14 @@ public class XrayDatacenterIT {
     static final int PORT_NUMBER = 18080;
 
     @BeforeAll
-    public static void setup () {
+    static void setup () {
         wm = new WireMockServer(options().port(PORT_NUMBER));
         wm.start();
         setupStub();
     }
 
     @AfterAll
-    public static void teardown () {
+    static void teardown () {
         wm.stop();
     }
 
@@ -116,17 +116,7 @@ public class XrayDatacenterIT {
     @SystemProperty(value = "xray.reportFile", content = "xray.json")
     @SystemProperty(value = "xray.verbose", content = "true")
     @MavenOption("--debug")
-    void xray_standard_with_verbose_mode(MavenExecutionResult result) throws IOException {
-       /*
-        String report = CommonUtils.readResourceFileForImportResults("XrayDatacenterIT/xray_standard/xray.json");
-
-        wm.verify(
-           postRequestedFor(urlPathEqualTo("/rest/raven/2.0/import/execution"))
-               .withBasicAuth(new BasicCredentials("username", "password"))
-               .withHeader("Content-Type", containing("application/json"))
-               .withRequestBody(equalToJson(report))
-        );
-        */
+    void xray_standard_with_verbose_mode(MavenExecutionResult result) {
         assertThat(result).isSuccessful();
         assertThat(result)
             .out()

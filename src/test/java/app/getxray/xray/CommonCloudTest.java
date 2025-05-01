@@ -44,7 +44,6 @@ class CommonCloudTest {
         when(remoteCall.execute()).thenReturn(response);
         when(client.newCall(any())).thenReturn(remoteCall);
         
-        // OkHttpClient client2 = mockHttpClient("\""+expectedToken+"\"");
         String authToken = CommonCloud.authenticateXrayAPIKeyCredentials(log, true, client, clientId, clientSecret, cloudApiBaseUrl);
         assertEquals(expectedToken, authToken);
 

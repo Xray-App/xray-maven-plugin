@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import app.getxray.xray.it.TestingUtils;
-import junit.framework.Assert;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -81,7 +80,7 @@ class CommonUtilsTest {
         File tempDir = Files.createTempDirectory("dummy").toFile();
         byte[] zippedContent = TestingUtils.readRawResourceFile("import_features/XrayDatacenterIT/multiple_features/features.zip");
         InputStream zippedContentStream = new ByteArrayInputStream(zippedContent);
-        unzipContentsToFolder(zippedContentStream, tempDir.getAbsolutePath().toString());
+        unzipContentsToFolder(zippedContentStream, tempDir.getAbsolutePath());
         assertThat(tempDir.listFiles()).hasSize(2);
         assertThat(tempDir.listFiles()).extracting(File::getName).containsExactlyInAnyOrder("core", "other");
         assertThat((new File(tempDir, "core")).listFiles()).extracting(File::getName).containsExactlyInAnyOrder("positive_sum.feature");
