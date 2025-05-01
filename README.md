@@ -7,6 +7,7 @@
 ![code coverage](https://raw.githubusercontent.com/Xray-App/xray-maven-plugin/main/.github/badges/jacoco.svg)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Xray-App_xray-maven-plugin&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Xray-App_xray-maven-plugin)
 ![CodeQL](https://github.com/Xray-App/xray-maven-plugin/actions/workflows/codeql-analysis.yml/badge.svg)
+[![Jira](https://img.shields.io/badge/jira-%230A0FFF.svg?style=for-the-badge&logo=jira&logoColor=white)](https://xraytutorials.atlassian.net/browse/XMP)
 
 This is an open-source maven plugin for interacting with Xray (server/datacenter and cloud), used in CI/CD for assisting in test automation flows, such as reporting test results back to Xray and, by consequence, Jira.
 
