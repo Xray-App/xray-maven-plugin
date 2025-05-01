@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.9.0] - 2025-05-06
+
+### Added
+
+- fixes #92 (code quality issues) by @bitcoder in #91
+
 ## [0.8.0] - 2024-08-14
 
 ### Added
