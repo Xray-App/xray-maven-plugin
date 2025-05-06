@@ -45,7 +45,7 @@ public class XrayCloudIT {
     static final int PORT_NUMBER = 18080;
 
     @BeforeAll
-    public static void setup () {
+    static void setup () {
         wm = new WireMockServer(
             options()
             .port(PORT_NUMBER)
@@ -55,7 +55,7 @@ public class XrayCloudIT {
         setupStub();
     }
     @AfterAll
-    public static void teardown () {
+    static void teardown () {
         wm.stop();
     }
 

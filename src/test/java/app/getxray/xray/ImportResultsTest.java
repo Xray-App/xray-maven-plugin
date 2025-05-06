@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Test;
 import app.getxray.xray.XrayResultsImporter.CloudBuilder;
-import app.getxray.xray.XrayResultsImporter.ServerDCBuilder;;
+import app.getxray.xray.XrayResultsImporter.ServerDCBuilder;
 
 class ImportResultsTest {
     

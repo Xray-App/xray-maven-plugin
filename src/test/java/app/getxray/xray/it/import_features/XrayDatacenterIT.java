@@ -49,14 +49,14 @@ public class XrayDatacenterIT {
     static final int PORT_NUMBER = 18080;
 
     @BeforeAll
-    public static void setup () {
+    static void setup () {
         wm = new WireMockServer(options().port(PORT_NUMBER));
         wm.start();
         setupStub();
     }
 
     @AfterAll
-    public static void teardown () {
+    static void teardown () {
         wm.stop();
     }
 
@@ -252,7 +252,7 @@ public class XrayDatacenterIT {
         ServeEvent request = allServeEvents.get(0);
         byte[] zippedContent = request.getRequest().getPart("file").getBody().asBytes();
         InputStream zippedContentStream = new ByteArrayInputStream(zippedContent);
-        unzipContentsToFolder(zippedContentStream, tempDir.getAbsolutePath().toString());
+        unzipContentsToFolder(zippedContentStream, tempDir.getAbsolutePath());
         assertThat(tempDir.listFiles()).hasSize(2);
         assertThat(tempDir.listFiles()).extracting(File::getName).containsExactlyInAnyOrder("core", "other");
         assertThat((new File(tempDir, "core")).listFiles()).extracting(File::getName).containsExactlyInAnyOrder("positive_sum.feature");

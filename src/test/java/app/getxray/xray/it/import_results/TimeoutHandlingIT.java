@@ -40,7 +40,7 @@ public class TimeoutHandlingIT {
     static final int PORT_NUMBER = 18080;
 
     @BeforeAll
-    public static void setup () {
+    static void setup () {
         wm = new WireMockServer(
             options()
             .port(PORT_NUMBER)
@@ -51,7 +51,7 @@ public class TimeoutHandlingIT {
     }
 
     @AfterAll
-    public static void teardown () {
+    static void teardown () {
         wm.stop();
     }
 
@@ -180,7 +180,7 @@ public class TimeoutHandlingIT {
     @SystemProperty(value = "xray.reportFile", content = "junit.xml")
     @SystemProperty(value = "xray.projectKey", content = "DELAY3")
     @SystemProperty(value = "xray.timeout", content = "2")
-    void exceed_configured_timeout(MavenExecutionResult result) throws IOException {
+    void exceed_configured_timeout(MavenExecutionResult result) {
         assertThat(result.getMavenLog().getStdout().toString()).contains("timeout");
         assertThat(result).isFailure();
     }
@@ -219,7 +219,7 @@ public class TimeoutHandlingIT {
     @SystemProperty(value = "xray.reportFormat", content = "junit")
     @SystemProperty(value = "xray.reportFile", content = "junit.xml")
     @SystemProperty(value = "xray.projectKey", content = "DELAY51")
-    void exceed_default_timeout(MavenExecutionResult result) throws IOException {
+    void exceed_default_timeout(MavenExecutionResult result) {
         assertThat(result.getMavenLog().getStdout().toString()).contains("timeout");
         assertThat(result).isFailure();
     }
@@ -258,7 +258,7 @@ public class TimeoutHandlingIT {
     @SystemProperty(value = "xray.projectKey", content = "DELAY3")
     @SystemProperty(value = "xray.timeout", content = "2")
     @SystemProperty(value = "xray.useInternalTestProxy", content = "true")
-    void exceed_configured_timeout_cloud(MavenExecutionResult result) throws IOException {
+    void exceed_configured_timeout_cloud(MavenExecutionResult result) {
         assertThat(result.getMavenLog().getStdout().toString()).contains("timeout");
         assertThat(result).isFailure();
     }
@@ -298,7 +298,7 @@ public class TimeoutHandlingIT {
     @SystemProperty(value = "xray.reportFile", content = "junit.xml")
     @SystemProperty(value = "xray.projectKey", content = "DELAY51")
     @SystemProperty(value = "xray.useInternalTestProxy", content = "true")
-    void exceed_default_timeout_cloud(MavenExecutionResult result) throws IOException {
+    void exceed_default_timeout_cloud(MavenExecutionResult result) {
         assertThat(result.getMavenLog().getStdout().toString()).contains("timeout");
         assertThat(result).isFailure();
     }
