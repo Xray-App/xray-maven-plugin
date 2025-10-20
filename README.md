@@ -1,6 +1,7 @@
 # Xray Maven Plugin
 
 [![build workflow](https://github.com/Xray-App/xray-maven-plugin/actions/workflows/CI.yml/badge.svg)](https://github.com/Xray-App/xray-maven-plugin/actions/workflows/CI.yml)
+[![Known Vulnerabilities](https://snyk.io/test/github/Xray-App/xray-maven-plugin/badge.svg)](https://snyk.io/test/github/Xray-App/xray-maven-plugin)
 [![license](https://img.shields.io/badge/License-BSD%203--Clause-green.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/Xray-App/community)
 [![Maven Central Version](https://img.shields.io/maven-central/v/app.getxray/xray-maven-plugin)](https://central.sonatype.com/artifact/app.getxray/xray-maven-plugin/)
