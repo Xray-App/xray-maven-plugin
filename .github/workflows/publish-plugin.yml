@@ -17,13 +17,13 @@ jobs:
     runs-on: ubuntu-latest
         
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - name: Set up Java and Maven Central Repository
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5
       with:
         java-version: '17'
         distribution: 'temurin'
-        server-id: ossrh
+        server-id: central-portal
         server-username: MAVEN_USERNAME
         server-password: MAVEN_PASSWORD
         cache: maven
@@ -36,13 +36,12 @@ jobs:
       name: Install gpg secret key
       run: |
         # Install gpg secret key
-        cat <(echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}") | gpg --batch --import
+        cat <(echo -e "${{ secrets.GPG_SECRET_KEY }}") | gpg --batch --import
         # Verify gpg secret key
         gpg --list-secret-keys --keyid-format LONG
     - name: Build and deploy with Maven
       env:
         MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
         MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
-        # MAVEN_GPG_PASSPHRASE: ${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}
       run: |
-        mvn --batch-mode -Dgpg.passphrase=${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }} -DskipTests=true clean compile verify package gpg:sign deploy
+        mvn --batch-mode -Dgpg.passphrase="" -DskipTests=true clean compile verify package gpg:sign deploy
