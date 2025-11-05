@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.10.0] - 2025-11-12
+
+### Added
+
+- fixes #94 (bump deps) by @bitcoder in #95
+
 ## [0.9.0] - 2025-05-06
 
 ### Added
