@@ -37,14 +37,14 @@ public class XrayDatacenterIT {
 
     static WireMockServer wm;
     @BeforeAll
-    public static void setup () {
+    static void setup () {
         wm = new WireMockServer(options().port(PORT_NUMBER));
         wm.start();
         setupStub();
     }
 
     @AfterAll
-    public static void teardown () {
+    static void teardown () {
         wm.stop();
     }
 
