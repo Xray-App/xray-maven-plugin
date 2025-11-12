@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>app.getxray</groupId>
   <artifactId>xray-maven-plugin</artifactId>
-  <version>0.9.0</version>
+  <version>0.10.0</version>
   <packaging>maven-plugin</packaging>
   <name>xray-maven-plugin</name>
   <description>Maven plugin for interacting with Xray (server/datacenter and cloud), used in CI/CD for assisting in test automation flows, such as reporting test results back to Xray and, by consequence, Jira.</description>
@@ -38,23 +38,23 @@
   </scm>
 
   <properties>
-    <maven.compiler.target>1.8</maven.compiler.target>
-    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.release>17</maven.compiler.release>
+    <maven.compiler.target>17</maven.compiler.target>
+    <maven.compiler.source>17</maven.compiler.source>
     <maven-plugin-api.version>3.8.5</maven-plugin-api.version>
     <maven-plugin-annotations.version>3.6.4</maven-plugin-annotations.version>
     <maven-project.version>2.2.1</maven-project.version>
     <maven-plugin-plugin.version>3.6.4</maven-plugin-plugin.version>
     <maven-site-plugin.version>3.12.0</maven-site-plugin.version>
-    <maven-failsafe-plugin.version>3.2.5</maven-failsafe-plugin.version>
-    <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
+    <maven-failsafe-plugin.version>3.5.4</maven-failsafe-plugin.version>
+    <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
     <maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
     <mockito.version>4.11.0</mockito.version>
     <nexus-staging-maven-plugin.version>1.6.13</nexus-staging-maven-plugin.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <itf.version>0.13.1</itf.version>
-    <junit.version>5.12.2</junit.version>
-    <junit-platform.version>1.12.2</junit-platform.version>
-    <jacoco.version>0.8.13</jacoco.version>
+    <junit.version>5.14.1</junit.version>
+    <jacoco.version>0.8.14</jacoco.version>
     <internal.xray-maven-plugin.version>0.8.0</internal.xray-maven-plugin.version>
     <unit.coverage.file>${project.build.directory}/jacoco-output/jacoco-unit-tests.exec</unit.coverage.file>
     <it.coverage.file>${project.build.directory}/jacoco-output/jacoco-it-tests.exec</it.coverage.file>
@@ -97,7 +97,7 @@
     <dependency>
       <groupId>com.squareup.okhttp3</groupId>
       <artifactId>okhttp</artifactId>
-      <version>4.9.3</version>
+      <version>4.12.0</version>
     </dependency>
 
     <dependency>
@@ -161,7 +161,7 @@
     <dependency>
       <groupId>app.getxray</groupId>
       <artifactId>xray-junit-extensions</artifactId>
-      <version>0.7.2</version>
+      <version>1.0.0</version>
       <scope>test</scope>
     </dependency>
 
@@ -290,7 +290,9 @@
           </excludes>
 
           <testFailureIgnore>false</testFailureIgnore>
-          <disableXmlReport>true</disableXmlReport>
+          <statelessTestsetReporter implementation="org.apache.maven.plugin.surefire.extensions.junit5.JUnit5Xml30StatelessReporter">
+              <disable>true</disable>
+          </statelessTestsetReporter>
           <useFile>false</useFile>
         </configuration>
       </plugin>
@@ -345,10 +347,10 @@
           <!--
             check if the following ones are actually needed or not to run the integration tests
             -->
-          <systemProperties>
+          <systemPropertyVariables>
             <maven.version>${maven.version}</maven.version>
             <maven.home>${maven.home}</maven.home>
-          </systemProperties>
+          </systemPropertyVariables>
 
           <argLine>${failsafe.jacoco.args}</argLine>
           <includes>

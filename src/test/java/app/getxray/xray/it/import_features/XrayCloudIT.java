@@ -26,7 +26,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayNameGeneration;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.client.BasicCredentials;
 import com.github.tomakehurst.wiremock.stubbing.ServeEvent;
 import com.soebes.itf.jupiter.extension.MavenGoal;
 import com.soebes.itf.jupiter.extension.MavenJupiterExtension;
@@ -256,7 +255,7 @@ public class XrayCloudIT {
         ServeEvent request = allServeEvents.get(0);
         byte[] zippedContent = request.getRequest().getPart("file").getBody().asBytes();
         InputStream zippedContentStream = new ByteArrayInputStream(zippedContent);
-        unzipContentsToFolder(zippedContentStream, tempDir.getAbsolutePath().toString());
+        unzipContentsToFolder(zippedContentStream, tempDir.getAbsolutePath());
         assertThat(tempDir.listFiles()).hasSize(2);
         assertThat(tempDir.listFiles()).extracting(File::getName).containsExactlyInAnyOrder("core", "other");
         assertThat((new File(tempDir, "core")).listFiles()).extracting(File::getName).containsExactlyInAnyOrder("positive_sum.feature");

@@ -159,7 +159,7 @@ public class XrayCloudIT {
     @SystemProperty(value = "xray.verbose", content = "true")
     @MavenOption("--debug")
     @Requirement("XMP-132")
-    void xray_standard_with_verbose_mode(MavenExecutionResult result) throws IOException {
+    void xray_standard_with_verbose_mode(MavenExecutionResult result) {
         assertThat(result).isSuccessful();
         assertThat(result)
             .out()

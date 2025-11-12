@@ -29,9 +29,6 @@ jobs:
         cache: maven
         # gpg-private-key: ${{ secrets.OSSRH_GPG_SECRET_KEY }} # Value of the GPG private key to import
         # gpg-passphrase: MAVEN_GPG_PASSPHRASE # env variable for GPG private key passphrase
-    - name: debug maven settings
-      run: |
-        cat ~/.m2/settings.xml
     - id: install-secret-key
       name: Install gpg secret key
       run: |
