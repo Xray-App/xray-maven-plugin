@@ -41,4 +41,4 @@ jobs:
         MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
         MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
       run: |
-        mvn --batch-mode -Dgpg.passphrase="" -DskipTests=true clean compile verify package javadoc:aggregate-jar deploy
+        mvn --batch-mode -Dgpg.passphrase="" -DskipTests=true clean compile verify javadoc:aggregate-jar deploy

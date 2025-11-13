@@ -67,10 +67,11 @@ Your gpg keyname can be found with `gpg --list-signatures --keyid-format 0xshort
 Then build, run the integration tests, and deploy.
 
 ```bash
-mvn clean compile verify package gpg:sign deploy
+mvn clean compile verify gpg:sign deploy
 ```
 
-Note that the `gpg:sign` goal should be called implicitly by the `package` goal.
+`verify` phase automatically executes the prior phases, including the `package`pahse.
+Note also that the `gpg:sign` goal should be called implicitly by the `package` goal.
 
 If we want to manually validate the signed artifact before calling the `deploy` goal, we can use gpg tool:
 
