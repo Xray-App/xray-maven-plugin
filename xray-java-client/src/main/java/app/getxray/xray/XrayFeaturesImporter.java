@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.maven.plugin.logging.Log;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

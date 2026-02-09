@@ -5,7 +5,6 @@ import static app.getxray.xray.CommonUtils.createHttpClient;
 import static app.getxray.xray.CommonUtils.unzipContentsToFolder;
 
 import java.io.IOException;
-import org.apache.maven.plugin.logging.Log;
 
 import okhttp3.Credentials;
 import okhttp3.HttpUrl;

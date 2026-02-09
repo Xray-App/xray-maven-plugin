@@ -2,7 +2,6 @@ package app.getxray.xray;
 
 import java.io.IOException;
 
-import org.apache.maven.plugin.logging.Log;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;

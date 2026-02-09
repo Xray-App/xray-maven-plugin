@@ -1,10 +1,9 @@
 package app.getxray.xray;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import org.junit.jupiter.api.Test;
 import app.getxray.xray.XrayResultsImporter.CloudBuilder;
 import app.getxray.xray.XrayResultsImporter.ServerDCBuilder;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 class ImportResultsTest {
     
@@ -20,7 +19,7 @@ class ImportResultsTest {
             .withIgnoreSslErrors(true)
             .withVerbose(true)
             .withTimeout(5);
-        assertNotNull(xrayImporterBuilder.build());
+        Assertions.assertNotNull(xrayImporterBuilder.build());
     }
 
     @Test
@@ -35,7 +34,7 @@ class ImportResultsTest {
             .withIgnoreSslErrors(true)
             .withVerbose(true)
             .withTimeout(5);
-        assertNotNull(xrayImporterBuilder.build());
+        Assertions.assertNotNull(xrayImporterBuilder.build());
     }
 
     @Test
@@ -50,20 +49,20 @@ class ImportResultsTest {
             .withIgnoreSslErrors(true)
             .withVerbose(true)
             .withTimeout(5);
-        assertNotNull(xrayImporterBuilder.build());
+        Assertions.assertNotNull(xrayImporterBuilder.build());
     }
 
     @Test
     void generateDCAuthorizationHeaderContentTest() {
         ServerDCBuilder xrayImporterBuilder = new XrayResultsImporter.ServerDCBuilder("https://jira.example.com", "jiraUsername", "jiraPassword");
 
-        assertEquals("Basic amlyYVVzZXJuYW1lOmppcmFQYXNzd29yZA==", xrayImporterBuilder.build().generateDCAuthorizationHeaderContent());
+        Assertions.assertEquals("Basic amlyYVVzZXJuYW1lOmppcmFQYXNzd29yZA==", xrayImporterBuilder.build().generateDCAuthorizationHeaderContent());
     }
 
     @Test
     void importResultsExceptionTest() {
         XrayResultsImporterException exception = new XrayResultsImporterException("message");
-        assertEquals("message", exception.getMessage());
+        Assertions.assertEquals("message", exception.getMessage());
     }   
 
 }

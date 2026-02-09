@@ -1,3 +1,4 @@
+
 package app.getxray.maven.plugin.xray;
 
 import static app.getxray.xray.CommonUtils.isTrue;
@@ -183,7 +184,7 @@ public class ImportResultsMojo extends AbstractMojo {
                         .withInternalTestProxy(useInternalTestProxy)
                         .withIgnoreSslErrors(ignoreSslErrors)
                         .withTimeout(timeout)
-                        .withLogger(getLog())
+                        .withLogger(new MavenLogger(getLog()))
                         .withVerbose(verbose);
                     if (testInfoJson==null  && testExecInfoJson==null) {
                         if (XrayResultsImporter.XRAY_FORMAT.equals(reportFormat) || XrayResultsImporter.CUCUMBER_FORMAT.equals(reportFormat) || XrayResultsImporter.BEHAVE_FORMAT.equals(reportFormat)) {
@@ -226,14 +227,14 @@ public class ImportResultsMojo extends AbstractMojo {
                             .withInternalTestProxy(useInternalTestProxy)
                             .withIgnoreSslErrors(ignoreSslErrors)
                             .withTimeout(timeout)
-                            .withLogger(getLog())
+                            .withLogger(new MavenLogger(getLog()))
                             .withVerbose(verbose);
                     } else {
                         xrayImporterBuilder = new XrayResultsImporter.ServerDCBuilder(jiraBaseUrl, jiraUsername, jiraPassword)
                             .withInternalTestProxy(useInternalTestProxy)
                             .withIgnoreSslErrors(ignoreSslErrors)
                             .withTimeout(timeout)
-                            .withLogger(getLog())
+                            .withLogger(new MavenLogger(getLog()))
                             .withVerbose(verbose);
                     }
 

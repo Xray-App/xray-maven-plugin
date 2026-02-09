@@ -8,6 +8,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -15,7 +17,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 
-import org.apache.maven.plugin.logging.Log;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -31,7 +32,7 @@ class CommonUtilsTest {
  
     @Test
     void isTrueTruethnessTest() {
-        assertAll("conditions for truethness", 
+        assertAll("conditions for truethness",
             () -> assertTrue(isTrue(Boolean.TRUE)),
             () -> assertTrue(isTrue(true))
         );
@@ -39,7 +40,7 @@ class CommonUtilsTest {
 
     @Test
     void isTrueFalseTest() {
-        assertAll("conditions for false", 
+        assertAll("conditions for false",
             () -> assertFalse(isTrue(Boolean.FALSE)),
             () -> assertFalse(isTrue(false)),
             () -> assertFalse(isTrue(null))
@@ -68,10 +69,10 @@ class CommonUtilsTest {
 
         CommonUtils.logRequest(log, request, Boolean.TRUE);
         assertAll("logRequest",
-            () -> Mockito.verify(log).debug("REQUEST_URL: " + request.url().toString()),
-            () -> Mockito.verify(log).debug("REQUEST_METHOD: " + request.method()),
-            () -> Mockito.verify(log).debug("REQUEST_CONTENT_TYPE: " + request.body().contentType().toString()),
-            () -> Mockito.verifyNoMoreInteractions(log)
+            () -> verify(log).debug("REQUEST_URL: " + request.url().toString()),
+            () -> verify(log).debug("REQUEST_METHOD: " + request.method()),
+            () -> verify(log).debug("REQUEST_CONTENT_TYPE: " + request.body().contentType().toString()),
+            () -> verifyNoMoreInteractions(log)
         );
     }
 
@@ -101,12 +102,12 @@ class CommonUtilsTest {
 
         CommonUtils.logResponse(log, response, true);
         assertAll("logResponse",
-            () -> Mockito.verify(log).debug("RESPONSE_CONTENT_TYPE:" + response.header("Content-Type")),
-            () -> Mockito.verify(log).debug("RESPONSE_HTTP_STATUS: " + response.code()),
-            () -> Mockito.verify(log).debug("RESPONSE_BODY:"),
-            () -> Mockito.verify(log).debug("======================="),
-            () -> Mockito.verify(log).debug("dummy text"),
-            () -> Mockito.verifyNoMoreInteractions(log)
+            () -> verify(log).debug("RESPONSE_CONTENT_TYPE:" + response.header("Content-Type")),
+            () -> verify(log).debug("RESPONSE_HTTP_STATUS: " + response.code()),
+            () -> verify(log).debug("RESPONSE_BODY:"),
+            () -> verify(log).debug("======================="),
+            () -> verify(log).debug("dummy text"),
+            () -> verifyNoMoreInteractions(log)
         );
     }
 

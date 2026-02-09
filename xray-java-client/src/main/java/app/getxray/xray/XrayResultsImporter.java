@@ -19,7 +19,6 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-import org.apache.maven.plugin.logging.Log;
 
 import static app.getxray.xray.CommonCloud.authenticateXrayAPIKeyCredentials;
 import static app.getxray.xray.CommonUtils.createHttpClient;
