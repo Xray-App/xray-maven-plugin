@@ -25,8 +25,8 @@ import com.soebes.itf.jupiter.extension.SystemProperty;
 import com.soebes.itf.jupiter.maven.MavenExecutionResult;
 
 import app.getxray.xray.DCCustomDisplayNameGenerator;
-import app.getxray.xray.it.TestingUtils;
 import app.getxray.xray.junit.customjunitxml.annotations.Requirement;
+import app.getxray.xray.it.TestingUtils;
 
 @MavenJupiterExtension
 @DisplayNameGeneration(DCCustomDisplayNameGenerator.class)

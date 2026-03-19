@@ -6,12 +6,19 @@
     <parent>
         <groupId>app.getxray</groupId>
         <artifactId>xray-maven-plugin-parent</artifactId>
-        <version>0.10.0</version>
+        <version>0.11.0</version>
     </parent>
 
     <artifactId>xray-maven-plugin</artifactId>
-
+    <name>xray-maven-plugin</name>
     <packaging>maven-plugin</packaging>
+
+    <properties>
+        <unit.coverage.file>${project.build.directory}/jacoco-output/jacoco-unit-tests.exec</unit.coverage.file>
+        <it.coverage.file>${project.build.directory}/jacoco-output/jacoco-it-tests.exec</it.coverage.file>
+        <merged.coverage.file>${project.build.directory}/jacoco-output/merged.exec</merged.coverage.file>
+        <jacoco.maven.opts>-javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile=${it.coverage.file},append=true</jacoco.maven.opts>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -93,14 +100,7 @@
         <dependency>
             <groupId>app.getxray</groupId>
             <artifactId>xray-junit-extensions</artifactId>
-            <version>1.0.0</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>app.getxray</groupId>
-            <artifactId>xray-maven-plugin</artifactId>
-            <version>${internal.xray-maven-plugin.version}</version>
+            <version>${xray-junit-extensions.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -108,18 +108,6 @@
 
     <build>
         <plugins>
-
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>${nexus-staging-maven-plugin.version}</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <serverId>central-portal</serverId>
-                    <nexusUrl>https://ossrh-staging-api.central.sonatype.com</nexusUrl>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                </configuration>
-            </plugin>
 
             <!-- Jacoco runner to inspect code coverage -->
             <plugin>
@@ -211,7 +199,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.0.1</version>
+                <version>${maven-source-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -225,7 +213,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.4.0</version>
+                <version>${maven-javadoc-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
@@ -350,16 +338,8 @@
             </plugin>
 
             <plugin>
-                <groupId>app.getxray</groupId>
-                <artifactId>xray-maven-plugin</artifactId>
-                <version>${internal.xray-maven-plugin.version}</version>
-                <configuration>
-                    <cloud>true</cloud>
-                    <projectKey>XMP</projectKey>
-                    <version>${project.version}</version>
-                    <reportFormat>junit</reportFormat>
-                    <reportFile>reports/custom*.xml</reportFile>
-                </configuration>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
             </plugin>
 
         </plugins>

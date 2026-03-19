@@ -46,7 +46,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # Generate a token on Sonarcloud.io, add it to the secrets of this repo with the name SONAR_TOKEN (Settings > Secrets > Actions > add new repository secret)
-      run: mvn sonar:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.projectKey=Xray-App_xray-maven-plugin -Dsonar.organization=xray-app -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco-merged-test-coverage-report/jacoco.xml
+      run: mvn sonar:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.projectKey=Xray-App_xray-maven-plugin -Dsonar.organization=xray-app -Dsonar.coverage.jacoco.xmlReportPaths=xray-maven-plugin-report/target/site/jacoco-aggregate-coverage-report/jacoco.xml
 
 
     - name: Generate JaCoCo Badge
@@ -54,7 +54,7 @@ jobs:
       uses: cicirello/jacoco-badge-generator@v2.0.1
       if: matrix.java == '17'
       with:
-        jacoco-csv-file: target/site/jacoco-merged-test-coverage-report/jacoco.csv
+        jacoco-csv-file: xray-maven-plugin-report/target/site/jacoco-aggregate-coverage-report/jacoco.csv
 
     - name: Log coverage percentage
       if: matrix.java == '17'
@@ -78,7 +78,7 @@ jobs:
       if: matrix.java == '17'
       with:
         name: jacoco-report
-        path: target/site/jacoco-merged-test-coverage-report/
+        path: xray-maven-plugin-report/target/site/jacoco-aggregate-coverage-report/
 
     - name: Add coverage to PR
       id: jacoco-pr
@@ -86,7 +86,7 @@ jobs:
       if: github.event_name == 'pull_request'
       with:
         paths: |
-          ${{ github.workspace }}/**/target/site/jacoco-merged-test-coverage-report/jacoco.xml 
+          ${{ github.workspace }}/**/target/site/jacoco-aggregate-coverage-report/jacoco.xml 
         token: ${{ secrets.GITHUB_TOKEN }}
         min-coverage-overall: 80
         min-coverage-changed-files: 80
@@ -99,4 +99,4 @@ jobs:
         XRAYCLOUD_TEST_PLAN_KEY: ${{ secrets.XRAYCLOUD_TEST_PLAN_KEY }}
         REVISON: ${{ github.ref_name}}
         TEST_ENVIRONMENT: java${{ matrix.java }}
-      run: mvn -Dxray.clientId=${{ env.XRAYCLOUD_CLIENT_ID }} -Dxray.clientSecret=${{ env.XRAYCLOUD_CLIENT_SECRET }} -Dxray.testEnvironment=${{ env.TEST_ENVIRONMENT }} -Dxray.testPlanKey=${{ env.XRAYCLOUD_TEST_PLAN_KEY }} -Dxray.revision=${{ env.REVISON }} xray:import-results
+      run: mvn -N -Dxray.clientId=${{ env.XRAYCLOUD_CLIENT_ID }} -Dxray.clientSecret=${{ env.XRAYCLOUD_CLIENT_SECRET }} -Dxray.testEnvironment=${{ env.TEST_ENVIRONMENT }} -Dxray.testPlanKey=${{ env.XRAYCLOUD_TEST_PLAN_KEY }} -Dxray.revision=${{ env.REVISON }} xray:import-results
