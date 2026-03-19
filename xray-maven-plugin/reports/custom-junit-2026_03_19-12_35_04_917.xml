@@ -1,0 +1,762 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="JUnit Jupiter" tests="64" skipped="0" failures="0" errors="0" time="473" hostname="MacBookPro.lan" timestamp="2026-03-19T12:35:05">
+<properties>
+<property name="apple.awt.application.name" value="ForkedBooter"/>
+<property name="basedir" value="/Users/sergio/exps/xray-maven-plugin/xray-maven-plugin"/>
+<property name="file.encoding" value="UTF-8"/>
+<property name="file.separator" value="/"/>
+<property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+<property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+<property name="java.class.path" value="/Users/sergio/exps/xray-maven-plugin/xray-maven-plugin/target/test-classes:/Users/sergio/exps/xray-maven-plugin/xray-maven-plugin/target/xray-maven-plugin-0.10.0.jar:/Users/sergio/exps/xray-maven-plugin/xray-java-client/target/xray-java-client-0.10.0.jar:/Users/sergio/.m2/repository/com/squareup/okhttp3/okhttp/4.12.0/okhttp-4.12.0.jar:/Users/sergio/.m2/repository/com/squareup/okio/okio/3.6.0/okio-3.6.0.jar:/Users/sergio/.m2/repository/com/squareup/okio/okio-jvm/3.6.0/okio-jvm-3.6.0.jar:/Users/sergio/.m2/repository/org/jetbrains/kotlin/kotlin-stdlib-common/1.9.10/kotlin-stdlib-common-1.9.10.jar:/Users/sergio/.m2/repository/org/jetbrains/kotlin/kotlin-stdlib-jdk8/1.8.21/kotlin-stdlib-jdk8-1.8.21.jar:/Users/sergio/.m2/repository/org/jetbrains/kotlin/kotlin-stdlib/1.8.21/kotlin-stdlib-1.8.21.jar:/Users/sergio/.m2/repository/org/jetbrains/annotations/13.0/annotations-13.0.jar:/Users/sergio/.m2/repository/org/jetbrains/kotlin/kotlin-stdlib-jdk7/1.8.21/kotlin-stdlib-jdk7-1.8.21.jar:/Users/sergio/.m2/repository/org/json/json/20231013/json-20231013.jar:/Users/sergio/.m2/repository/org/apache/maven/maven-plugin-api/3.8.5/maven-plugin-api-3.8.5.jar:/Users/sergio/.m2/repository/org/apache/maven/maven-model/3.8.5/maven-model-3.8.5.jar:/Users/sergio/.m2/repository/org/apache/maven/maven-artifact/3.8.5/maven-artifact-3.8.5.jar:/Users/sergio/.m2/repository/org/apache/commons/commons-lang3/3.8.1/commons-lang3-3.8.1.jar:/Users/sergio/.m2/repository/org/eclipse/sisu/org.eclipse.sisu.plexus/0.3.5/org.eclipse.sisu.plexus-0.3.5.jar:/Users/sergio/.m2/repository/javax/annotation/javax.annotation-api/1.2/javax.annotation-api-1.2.jar:/Users/sergio/.m2/repository/org/eclipse/sisu/org.eclipse.sisu.inject/0.3.5/org.eclipse.sisu.inject-0.3.5.jar:/Users/sergio/.m2/repository/org/codehaus/plexus/plexus-component-annotations/1.5.5/plexus-component-annotations-1.5.5.jar:/Users/sergio/.m2/repository/org/codehaus/plexus/plexus-classworlds/2.6.0/plexus-classworlds-2.6.0.jar:/Users/sergio/.m2/repository/org/apache/maven/plugin-tools/maven-plugin-annotations/3.6.4/maven-plugin-annotations-3.6.4.jar:/Users/sergio/.m2/repository/org/apache/maven/maven-project/2.2.1/maven-project-2.2.1.jar:/Users/sergio/.m2/repository/org/apache/maven/maven-settings/2.2.1/maven-settings-2.2.1.jar:/Users/sergio/.m2/repository/org/apache/maven/maven-profile/2.2.1/maven-profile-2.2.1.jar:/Users/sergio/.m2/repository/org/apache/maven/maven-artifact-manager/2.2.1/maven-artifact-manager-2.2.1.jar:/Users/sergio/.m2/repository/org/apache/maven/maven-repository-metadata/2.2.1/maven-repository-metadata-2.2.1.jar:/Users/sergio/.m2/repository/org/apache/maven/wagon/wagon-provider-api/1.0-beta-6/wagon-provider-api-1.0-beta-6.jar:/Users/sergio/.m2/repository/backport-util-concurrent/backport-util-concurrent/3.1/backport-util-concurrent-3.1.jar:/Users/sergio/.m2/repository/org/apache/maven/maven-plugin-registry/2.2.1/maven-plugin-registry-2.2.1.jar:/Users/sergio/.m2/repository/org/codehaus/plexus/plexus-interpolation/1.11/plexus-interpolation-1.11.jar:/Users/sergio/.m2/repository/org/codehaus/plexus/plexus-container-default/1.0-alpha-9-stable-1/plexus-container-default-1.0-alpha-9-stable-1.jar:/Users/sergio/.m2/repository/junit/junit/3.8.1/junit-3.8.1.jar:/Users/sergio/.m2/repository/classworlds/classworlds/1.1-alpha-2/classworlds-1.1-alpha-2.jar:/Users/sergio/.m2/repository/org/codehaus/plexus/plexus-utils/3.4.1/plexus-utils-3.4.1.jar:/Users/sergio/.m2/repository/org/mockito/mockito-core/4.11.0/mockito-core-4.11.0.jar:/Users/sergio/.m2/repository/net/bytebuddy/byte-buddy/1.12.19/byte-buddy-1.12.19.jar:/Users/sergio/.m2/repository/net/bytebuddy/byte-buddy-agent/1.12.19/byte-buddy-agent-1.12.19.jar:/Users/sergio/.m2/repository/org/objenesis/objenesis/3.3/objenesis-3.3.jar:/Users/sergio/.m2/repository/com/github/tomakehurst/wiremock-jre8-standalone/2.35.1/wiremock-jre8-standalone-2.35.1.jar:/Users/sergio/.m2/repository/org/junit/jupiter/junit-jupiter/5.14.1/junit-jupiter-5.14.1.jar:/Users/sergio/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.14.1/junit-jupiter-params-5.14.1.jar:/Users/sergio/.m2/repository/org/junit/jupiter/junit-jupiter-engine/5.14.1/junit-jupiter-engine-5.14.1.jar:/Users/sergio/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.14.1/junit-jupiter-api-5.14.1.jar:/Users/sergio/.m2/repository/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar:/Users/sergio/.m2/repository/org/junit/platform/junit-platform-commons/1.14.1/junit-platform-commons-1.14.1.jar:/Users/sergio/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/Users/sergio/.m2/repository/com/soebes/itf/jupiter/extension/itf-assertj/0.13.1/itf-assertj-0.13.1.jar:/Users/sergio/.m2/repository/com/soebes/itf/jupiter/extension/itf-extension-maven/0.13.1/itf-extension-maven-0.13.1.jar:/Users/sergio/.m2/repository/org/assertj/assertj-core/3.24.2/assertj-core-3.24.2.jar:/Users/sergio/.m2/repository/com/soebes/itf/jupiter/extension/itf-jupiter-extension/0.13.1/itf-jupiter-extension-0.13.1.jar:/Users/sergio/.m2/repository/org/apache/maven/plugin-testing/maven-plugin-testing-harness/3.3.0/maven-plugin-testing-harness-3.3.0.jar:/Users/sergio/.m2/repository/commons-io/commons-io/2.2/commons-io-2.2.jar:/Users/sergio/.m2/repository/org/codehaus/plexus/plexus-archiver/2.2/plexus-archiver-2.2.jar:/Users/sergio/.m2/repository/org/codehaus/plexus/plexus-io/2.0.4/plexus-io-2.0.4.jar:/Users/sergio/.m2/repository/app/getxray/xray-junit-extensions/1.0.0/xray-junit-extensions-1.0.0.jar:/Users/sergio/.m2/repository/org/junit/platform/junit-platform-reporting/1.14.1/junit-platform-reporting-1.14.1.jar:/Users/sergio/.m2/repository/org/opentest4j/reporting/open-test-reporting-tooling-spi/0.2.3/open-test-reporting-tooling-spi-0.2.3.jar:/Users/sergio/.m2/repository/org/junit/platform/junit-platform-launcher/1.14.1/junit-platform-launcher-1.14.1.jar:/Users/sergio/.m2/repository/org/junit/platform/junit-platform-engine/1.14.1/junit-platform-engine-1.14.1.jar:/Users/sergio/.m2/repository/app/getxray/xray-maven-plugin/0.9.0/xray-maven-plugin-0.9.0.jar:"/>
+<property name="java.class.version" value="69.0"/>
+<property name="java.home" value="/usr/local/Cellar/openjdk/25.0.2/libexec/openjdk.jdk/Contents/Home"/>
+<property name="java.io.tmpdir" value="/var/folders/2w/5zhst_816kl0dcfv4t7g3vv00000gn/T/"/>
+<property name="java.library.path" value="/Users/sergio/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:."/>
+<property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
+<property name="java.runtime.version" value="25.0.2"/>
+<property name="java.specification.name" value="Java Platform API Specification"/>
+<property name="java.specification.vendor" value="Oracle Corporation"/>
+<property name="java.specification.version" value="25"/>
+<property name="java.vendor" value="Homebrew"/>
+<property name="java.vendor.url" value="https://github.com/Homebrew/homebrew-core/issues"/>
+<property name="java.vendor.url.bug" value="https://github.com/Homebrew/homebrew-core/issues"/>
+<property name="java.vendor.version" value="Homebrew"/>
+<property name="java.version" value="25.0.2"/>
+<property name="java.version.date" value="2026-01-20"/>
+<property name="java.vm.compressedOopsMode" value="Zero based"/>
+<property name="java.vm.info" value="mixed mode, sharing"/>
+<property name="java.vm.name" value="OpenJDK 64-Bit Server VM"/>
+<property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+<property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+<property name="java.vm.specification.version" value="25"/>
+<property name="java.vm.vendor" value="Homebrew"/>
+<property name="java.vm.version" value="25.0.2"/>
+<property name="javax.xml.transform.TransformerFactory" value="com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl"/>
+<property name="javax.xml.xpath.XPathFactory:http://java.sun.com/jaxp/xpath/dom" value="com.sun.org.apache.xpath.internal.jaxp.XPathFactoryImpl"/>
+<property name="jdk.debug" value="release"/>
+<property name="jetty.git.hash" value="4231a3b2e4cb8548a412a789936d640a97b1aa0a"/>
+<property name="line.separator" value="
+"/>
+<property name="localRepository" value="/Users/sergio/.m2/repository"/>
+<property name="maven.home" value="/usr/local/Cellar/maven/3.9.9/libexec"/>
+<property name="maven.version" value="3.9.9"/>
+<property name="native.encoding" value="UTF-8"/>
+<property name="os.arch" value="x86_64"/>
+<property name="os.name" value="Mac OS X"/>
+<property name="os.version" value="26.3.1"/>
+<property name="path.separator" value=":"/>
+<property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+<property name="stderr.encoding" value="UTF-8"/>
+<property name="stdin.encoding" value="UTF-8"/>
+<property name="stdout.encoding" value="UTF-8"/>
+<property name="sun.arch.data.model" value="64"/>
+<property name="sun.boot.library.path" value="/usr/local/Cellar/openjdk/25.0.2/libexec/openjdk.jdk/Contents/Home/lib"/>
+<property name="sun.cpu.endian" value="little"/>
+<property name="sun.io.unicode.encoding" value="UnicodeBig"/>
+<property name="sun.java.command" value="/Users/sergio/exps/xray-maven-plugin/xray-maven-plugin/target/surefire/surefirebooter-20260319122708693_3.jar /Users/sergio/exps/xray-maven-plugin/xray-maven-plugin/target/surefire 2026-03-19T12-27-08_613-jvmRun1 surefire-20260319122708693_1tmp surefire_0-20260319122708693_2tmp"/>
+<property name="sun.java.launcher" value="SUN_STANDARD"/>
+<property name="sun.jnu.encoding" value="UTF-8"/>
+<property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+<property name="surefire.real.class.path" value="/Users/sergio/exps/xray-maven-plugin/xray-maven-plugin/target/surefire/surefirebooter-20260319122708693_3.jar"/>
+<property name="surefire.test.class.path" value="/Users/sergio/exps/xray-maven-plugin/xray-maven-plugin/target/test-classes:/Users/sergio/exps/xray-maven-plugin/xray-maven-plugin/target/xray-maven-plugin-0.10.0.jar:/Users/sergio/exps/xray-maven-plugin/xray-java-client/target/xray-java-client-0.10.0.jar:/Users/sergio/.m2/repository/com/squareup/okhttp3/okhttp/4.12.0/okhttp-4.12.0.jar:/Users/sergio/.m2/repository/com/squareup/okio/okio/3.6.0/okio-3.6.0.jar:/Users/sergio/.m2/repository/com/squareup/okio/okio-jvm/3.6.0/okio-jvm-3.6.0.jar:/Users/sergio/.m2/repository/org/jetbrains/kotlin/kotlin-stdlib-common/1.9.10/kotlin-stdlib-common-1.9.10.jar:/Users/sergio/.m2/repository/org/jetbrains/kotlin/kotlin-stdlib-jdk8/1.8.21/kotlin-stdlib-jdk8-1.8.21.jar:/Users/sergio/.m2/repository/org/jetbrains/kotlin/kotlin-stdlib/1.8.21/kotlin-stdlib-1.8.21.jar:/Users/sergio/.m2/repository/org/jetbrains/annotations/13.0/annotations-13.0.jar:/Users/sergio/.m2/repository/org/jetbrains/kotlin/kotlin-stdlib-jdk7/1.8.21/kotlin-stdlib-jdk7-1.8.21.jar:/Users/sergio/.m2/repository/org/json/json/20231013/json-20231013.jar:/Users/sergio/.m2/repository/org/apache/maven/maven-plugin-api/3.8.5/maven-plugin-api-3.8.5.jar:/Users/sergio/.m2/repository/org/apache/maven/maven-model/3.8.5/maven-model-3.8.5.jar:/Users/sergio/.m2/repository/org/apache/maven/maven-artifact/3.8.5/maven-artifact-3.8.5.jar:/Users/sergio/.m2/repository/org/apache/commons/commons-lang3/3.8.1/commons-lang3-3.8.1.jar:/Users/sergio/.m2/repository/org/eclipse/sisu/org.eclipse.sisu.plexus/0.3.5/org.eclipse.sisu.plexus-0.3.5.jar:/Users/sergio/.m2/repository/javax/annotation/javax.annotation-api/1.2/javax.annotation-api-1.2.jar:/Users/sergio/.m2/repository/org/eclipse/sisu/org.eclipse.sisu.inject/0.3.5/org.eclipse.sisu.inject-0.3.5.jar:/Users/sergio/.m2/repository/org/codehaus/plexus/plexus-component-annotations/1.5.5/plexus-component-annotations-1.5.5.jar:/Users/sergio/.m2/repository/org/codehaus/plexus/plexus-classworlds/2.6.0/plexus-classworlds-2.6.0.jar:/Users/sergio/.m2/repository/org/apache/maven/plugin-tools/maven-plugin-annotations/3.6.4/maven-plugin-annotations-3.6.4.jar:/Users/sergio/.m2/repository/org/apache/maven/maven-project/2.2.1/maven-project-2.2.1.jar:/Users/sergio/.m2/repository/org/apache/maven/maven-settings/2.2.1/maven-settings-2.2.1.jar:/Users/sergio/.m2/repository/org/apache/maven/maven-profile/2.2.1/maven-profile-2.2.1.jar:/Users/sergio/.m2/repository/org/apache/maven/maven-artifact-manager/2.2.1/maven-artifact-manager-2.2.1.jar:/Users/sergio/.m2/repository/org/apache/maven/maven-repository-metadata/2.2.1/maven-repository-metadata-2.2.1.jar:/Users/sergio/.m2/repository/org/apache/maven/wagon/wagon-provider-api/1.0-beta-6/wagon-provider-api-1.0-beta-6.jar:/Users/sergio/.m2/repository/backport-util-concurrent/backport-util-concurrent/3.1/backport-util-concurrent-3.1.jar:/Users/sergio/.m2/repository/org/apache/maven/maven-plugin-registry/2.2.1/maven-plugin-registry-2.2.1.jar:/Users/sergio/.m2/repository/org/codehaus/plexus/plexus-interpolation/1.11/plexus-interpolation-1.11.jar:/Users/sergio/.m2/repository/org/codehaus/plexus/plexus-container-default/1.0-alpha-9-stable-1/plexus-container-default-1.0-alpha-9-stable-1.jar:/Users/sergio/.m2/repository/junit/junit/3.8.1/junit-3.8.1.jar:/Users/sergio/.m2/repository/classworlds/classworlds/1.1-alpha-2/classworlds-1.1-alpha-2.jar:/Users/sergio/.m2/repository/org/codehaus/plexus/plexus-utils/3.4.1/plexus-utils-3.4.1.jar:/Users/sergio/.m2/repository/org/mockito/mockito-core/4.11.0/mockito-core-4.11.0.jar:/Users/sergio/.m2/repository/net/bytebuddy/byte-buddy/1.12.19/byte-buddy-1.12.19.jar:/Users/sergio/.m2/repository/net/bytebuddy/byte-buddy-agent/1.12.19/byte-buddy-agent-1.12.19.jar:/Users/sergio/.m2/repository/org/objenesis/objenesis/3.3/objenesis-3.3.jar:/Users/sergio/.m2/repository/com/github/tomakehurst/wiremock-jre8-standalone/2.35.1/wiremock-jre8-standalone-2.35.1.jar:/Users/sergio/.m2/repository/org/junit/jupiter/junit-jupiter/5.14.1/junit-jupiter-5.14.1.jar:/Users/sergio/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.14.1/junit-jupiter-params-5.14.1.jar:/Users/sergio/.m2/repository/org/junit/jupiter/junit-jupiter-engine/5.14.1/junit-jupiter-engine-5.14.1.jar:/Users/sergio/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.14.1/junit-jupiter-api-5.14.1.jar:/Users/sergio/.m2/repository/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar:/Users/sergio/.m2/repository/org/junit/platform/junit-platform-commons/1.14.1/junit-platform-commons-1.14.1.jar:/Users/sergio/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/Users/sergio/.m2/repository/com/soebes/itf/jupiter/extension/itf-assertj/0.13.1/itf-assertj-0.13.1.jar:/Users/sergio/.m2/repository/com/soebes/itf/jupiter/extension/itf-extension-maven/0.13.1/itf-extension-maven-0.13.1.jar:/Users/sergio/.m2/repository/org/assertj/assertj-core/3.24.2/assertj-core-3.24.2.jar:/Users/sergio/.m2/repository/com/soebes/itf/jupiter/extension/itf-jupiter-extension/0.13.1/itf-jupiter-extension-0.13.1.jar:/Users/sergio/.m2/repository/org/apache/maven/plugin-testing/maven-plugin-testing-harness/3.3.0/maven-plugin-testing-harness-3.3.0.jar:/Users/sergio/.m2/repository/commons-io/commons-io/2.2/commons-io-2.2.jar:/Users/sergio/.m2/repository/org/codehaus/plexus/plexus-archiver/2.2/plexus-archiver-2.2.jar:/Users/sergio/.m2/repository/org/codehaus/plexus/plexus-io/2.0.4/plexus-io-2.0.4.jar:/Users/sergio/.m2/repository/app/getxray/xray-junit-extensions/1.0.0/xray-junit-extensions-1.0.0.jar:/Users/sergio/.m2/repository/org/junit/platform/junit-platform-reporting/1.14.1/junit-platform-reporting-1.14.1.jar:/Users/sergio/.m2/repository/org/opentest4j/reporting/open-test-reporting-tooling-spi/0.2.3/open-test-reporting-tooling-spi-0.2.3.jar:/Users/sergio/.m2/repository/org/junit/platform/junit-platform-launcher/1.14.1/junit-platform-launcher-1.14.1.jar:/Users/sergio/.m2/repository/org/junit/platform/junit-platform-engine/1.14.1/junit-platform-engine-1.14.1.jar:/Users/sergio/.m2/repository/app/getxray/xray-maven-plugin/0.9.0/xray-maven-plugin-0.9.0.jar:"/>
+<property name="user.country" value="PT"/>
+<property name="user.dir" value="/Users/sergio/exps/xray-maven-plugin/xray-maven-plugin"/>
+<property name="user.home" value="/Users/sergio"/>
+<property name="user.language" value="en"/>
+<property name="user.name" value="sergio"/>
+<property name="user.timezone" value="Europe/Lisbon"/>
+<property name="wiremock.org.eclipse.jetty.http.HttpGenerator.STRICT" value="true"/>
+</properties>
+<testcase name="junit_standard" classname="app.getxray.xray.it.import_results.XrayDatacenterIT" time="4" started-at="2026-03-19T12:28:56.69001" finished-at="2026-03-19T12:29:01.212551">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayDatacenterIT]/[method:junit_standard(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: junit standard (DC)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-2"/>
+<property name="test_summary" value="junit standard (DC)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="junit_multipart_customize_test_issues" classname="app.getxray.xray.it.import_results.XrayCloudIT" time="4" started-at="2026-03-19T12:29:50.978834" finished-at="2026-03-19T12:29:55.798116">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayCloudIT]/[method:junit_multipart_customize_test_issues(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: junit multipart customize test issues (cloud)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-3"/>
+<property name="test_summary" value="junit multipart customize test issues (cloud)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="single_feature" classname="app.getxray.xray.it.import_features.XrayCloudIT" time="5" started-at="2026-03-19T12:28:08.692389" finished-at="2026-03-19T12:28:13.940269">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_features.XrayCloudIT]/[method:single_feature(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: single feature (cloud)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-125"/>
+<property name="test_summary" value="single feature (cloud)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="single_feature_by_filterId" classname="app.getxray.xray.it.export_features.XrayCloudIT" time="4" started-at="2026-03-19T12:35:00.331516" finished-at="2026-03-19T12:35:04.903842">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.export_features.XrayCloudIT]/[method:single_feature_by_filterId(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: single feature by filter id (cloud)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-126"/>
+<property name="test_summary" value="single feature by filter id (cloud)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="xray_multipart" classname="app.getxray.xray.it.import_results.XrayDatacenterIT" time="4" started-at="2026-03-19T12:28:37.378461" finished-at="2026-03-19T12:28:42.009999">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayDatacenterIT]/[method:xray_multipart(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: xray multipart (DC)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-140"/>
+<property name="test_summary" value="xray multipart (DC)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="below_default_timeout" classname="app.getxray.xray.it.import_results.TimeoutHandlingIT" time="53" started-at="2026-03-19T12:32:32.456851" finished-at="2026-03-19T12:33:25.904999">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.TimeoutHandlingIT]/[method:below_default_timeout(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: below_default_timeout(MavenExecutionResult)
+]]></system-out>
+<properties>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="junit_standard_using_personal_access_token" classname="app.getxray.xray.it.import_results.XrayDatacenterIT" time="4" started-at="2026-03-19T12:29:01.212933" finished-at="2026-03-19T12:29:05.772411">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayDatacenterIT]/[method:junit_standard_using_personal_access_token(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: junit standard using personal access token (DC)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-2"/>
+<property name="test_summary" value="junit standard using personal access token (DC)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="single_feature" classname="app.getxray.xray.it.import_features.XrayDatacenterIT" time="4" started-at="2026-03-19T12:27:40.957282" finished-at="2026-03-19T12:27:45.724011">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_features.XrayDatacenterIT]/[method:single_feature(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: single feature (DC)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-125"/>
+<property name="test_summary" value="single feature (DC)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="cucumber_standard" classname="app.getxray.xray.it.import_results.XrayDatacenterIT" time="4" started-at="2026-03-19T12:28:28.476717" finished-at="2026-03-19T12:28:32.976124">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayDatacenterIT]/[method:cucumber_standard(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: cucumber standard (DC)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-130"/>
+<property name="test_summary" value="cucumber standard (DC)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="multiple_features_update_testrepo" classname="app.getxray.xray.it.import_features.XrayDatacenterIT" time="5" started-at="2026-03-19T12:27:35.716187" finished-at="2026-03-19T12:27:40.956684">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_features.XrayDatacenterIT]/[method:multiple_features_update_testrepo(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: multiple features update testrepo (DC)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-125"/>
+<property name="test_summary" value="multiple features update testrepo (DC)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="nunit_standard" classname="app.getxray.xray.it.import_results.XrayDatacenterIT" time="4" started-at="2026-03-19T12:29:41.756566" finished-at="2026-03-19T12:29:46.197589">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayDatacenterIT]/[method:nunit_standard(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: nunit standard (DC)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-133"/>
+<property name="test_summary" value="nunit standard (DC)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="robot_standard" classname="app.getxray.xray.it.import_results.XrayCloudIT" time="4" started-at="2026-03-19T12:29:46.216886" finished-at="2026-03-19T12:29:50.978468">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayCloudIT]/[method:robot_standard(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: robot standard (cloud)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-137"/>
+<property name="test_summary" value="robot standard (cloud)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="nunit_standard" classname="app.getxray.xray.it.import_results.XrayCloudIT" time="4" started-at="2026-03-19T12:31:13.745194" finished-at="2026-03-19T12:31:18.382966">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayCloudIT]/[method:nunit_standard(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: nunit standard (cloud)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-133"/>
+<property name="test_summary" value="nunit standard (cloud)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="junit_standard" classname="app.getxray.xray.it.import_results.XrayCloudIT" time="4" started-at="2026-03-19T12:30:29.770289" finished-at="2026-03-19T12:30:34.610435">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayCloudIT]/[method:junit_standard(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: junit standard (cloud)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-2"/>
+<property name="test_summary" value="junit standard (cloud)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="robot_standard" classname="app.getxray.xray.it.import_results.XrayDatacenterIT" time="5" started-at="2026-03-19T12:28:13.956009" finished-at="2026-03-19T12:28:19.246167">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayDatacenterIT]/[method:robot_standard(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: robot standard (DC)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-137"/>
+<property name="test_summary" value="robot standard (DC)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="multiple_features_from_directory" classname="app.getxray.xray.it.import_features.XrayCloudIT" time="5" started-at="2026-03-19T12:27:51.32197" finished-at="2026-03-19T12:27:56.919798">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_features.XrayCloudIT]/[method:multiple_features_from_directory(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: multiple features from directory (cloud)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-125"/>
+<property name="test_summary" value="multiple features from directory (cloud)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="multiple_features" classname="app.getxray.xray.it.import_features.XrayDatacenterIT" time="4" started-at="2026-03-19T12:27:30.882959" finished-at="2026-03-19T12:27:35.715701">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_features.XrayDatacenterIT]/[method:multiple_features(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: multiple features (DC)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-125"/>
+<property name="test_summary" value="multiple features (DC)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="single_feature_custom_test_precondition_info" classname="app.getxray.xray.it.import_features.XrayCloudIT" time="5" started-at="2026-03-19T12:27:45.87848" finished-at="2026-03-19T12:27:51.321532">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_features.XrayCloudIT]/[method:single_feature_custom_test_precondition_info(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: single feature custom test precondition info (cloud)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-125"/>
+<property name="test_summary" value="single feature custom test precondition info (cloud)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="single_feature_using_personal_access_token" classname="app.getxray.xray.it.import_features.XrayDatacenterIT" time="4" started-at="2026-03-19T12:27:25.937067" finished-at="2026-03-19T12:27:30.882372">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_features.XrayDatacenterIT]/[method:single_feature_using_personal_access_token(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: single feature using personal access token (DC)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-125"/>
+<property name="test_summary" value="single feature using personal access token (DC)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="nunit_multipart" classname="app.getxray.xray.it.import_results.XrayCloudIT" time="5" started-at="2026-03-19T12:30:49.699217" finished-at="2026-03-19T12:30:54.744047">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayCloudIT]/[method:nunit_multipart(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: nunit multipart (cloud)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-134"/>
+<property name="test_summary" value="nunit multipart (cloud)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="xunit_standard" classname="app.getxray.xray.it.import_results.XrayCloudIT" time="4" started-at="2026-03-19T12:30:45.165661" finished-at="2026-03-19T12:30:49.698846">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayCloudIT]/[method:xunit_standard(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: xunit standard (cloud)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-128"/>
+<property name="test_summary" value="xunit standard (cloud)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="exceed_default_timeout" classname="app.getxray.xray.it.import_results.TimeoutHandlingIT" time="55" started-at="2026-03-19T12:33:25.90531" finished-at="2026-03-19T12:34:21.665959">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.TimeoutHandlingIT]/[method:exceed_default_timeout(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: exceed_default_timeout(MavenExecutionResult)
+]]></system-out>
+<properties>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="single_feature_by_issueKeys_eu_region" classname="app.getxray.xray.it.export_features.XrayCloudIT" time="4" started-at="2026-03-19T12:34:55.484621" finished-at="2026-03-19T12:35:00.331225">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.export_features.XrayCloudIT]/[method:single_feature_by_issueKeys_eu_region(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: single feature by issue keys eu region (cloud)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-126"/>
+<property name="test_summary" value="single feature by issue keys eu region (cloud)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="xunit_multipart" classname="app.getxray.xray.it.import_results.XrayCloudIT" time="4" started-at="2026-03-19T12:30:20.135105" finished-at="2026-03-19T12:30:25.013044">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayCloudIT]/[method:xunit_multipart(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: xunit multipart (cloud)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-129"/>
+<property name="test_summary" value="xunit multipart (cloud)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="robot_multipart" classname="app.getxray.xray.it.import_results.XrayCloudIT" time="4" started-at="2026-03-19T12:31:04.219809" finished-at="2026-03-19T12:31:09.00444">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayCloudIT]/[method:robot_multipart(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: robot multipart (cloud)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-138"/>
+<property name="test_summary" value="robot multipart (cloud)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="multiple_features_from_directory" classname="app.getxray.xray.it.import_features.XrayDatacenterIT" time="5" started-at="2026-03-19T12:27:20.421817" finished-at="2026-03-19T12:27:25.935713">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_features.XrayDatacenterIT]/[method:multiple_features_from_directory(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: multiple features from directory (DC)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-125"/>
+<property name="test_summary" value="multiple features from directory (DC)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="single_feature_by_filterId" classname="app.getxray.xray.it.export_features.XrayDatacenterIT" time="5" started-at="2026-03-19T12:34:40.776993" finished-at="2026-03-19T12:34:45.854087">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.export_features.XrayDatacenterIT]/[method:single_feature_by_filterId(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: single feature by filter id (DC)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-126"/>
+<property name="test_summary" value="single feature by filter id (DC)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="single_feature_by_issueKeys" classname="app.getxray.xray.it.export_features.XrayCloudIT" time="5" started-at="2026-03-19T12:34:50.302741" finished-at="2026-03-19T12:34:55.484336">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.export_features.XrayCloudIT]/[method:single_feature_by_issueKeys(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: single feature by issue keys (cloud)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-126"/>
+<property name="test_summary" value="single feature by issue keys (cloud)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="behave_multipart" classname="app.getxray.xray.it.import_results.XrayDatacenterIT" time="4" started-at="2026-03-19T12:28:24.032289" finished-at="2026-03-19T12:28:28.476355">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayDatacenterIT]/[method:behave_multipart(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: behave multipart (DC)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-136"/>
+<property name="test_summary" value="behave multipart (DC)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="junit_multipart_customize_test_issues" classname="app.getxray.xray.it.import_results.XrayDatacenterIT" time="4" started-at="2026-03-19T12:28:19.247624" finished-at="2026-03-19T12:28:24.031857">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayDatacenterIT]/[method:junit_multipart_customize_test_issues(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: junit multipart customize test issues (DC)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-3"/>
+<property name="test_summary" value="junit multipart customize test issues (DC)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="junit_standard_using_directory" classname="app.getxray.xray.it.import_results.XrayDatacenterIT" time="4" started-at="2026-03-19T12:29:28.041967" finished-at="2026-03-19T12:29:32.545243">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayDatacenterIT]/[method:junit_standard_using_directory(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: junit standard using directory (DC)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-2"/>
+<property name="test_summary" value="junit standard using directory (DC)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="single_feature_custom_test_precondition_info" classname="app.getxray.xray.it.import_features.XrayDatacenterIT" time="6" started-at="2026-03-19T12:27:13.719439" finished-at="2026-03-19T12:27:20.421144">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_features.XrayDatacenterIT]/[method:single_feature_custom_test_precondition_info(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: single feature custom test precondition info (DC)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-125"/>
+<property name="test_summary" value="single feature custom test precondition info (DC)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="junit_multipart" classname="app.getxray.xray.it.import_results.XrayDatacenterIT" time="5" started-at="2026-03-19T12:28:51.416697" finished-at="2026-03-19T12:28:56.689604">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayDatacenterIT]/[method:junit_multipart(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: junit multipart (DC)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-3"/>
+<property name="test_summary" value="junit multipart (DC)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="testng_standard" classname="app.getxray.xray.it.import_results.XrayCloudIT" time="5" started-at="2026-03-19T12:30:39.822966" finished-at="2026-03-19T12:30:45.165362">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayCloudIT]/[method:testng_standard(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: testng standard (cloud)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-4"/>
+<property name="test_summary" value="testng standard (cloud)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="behave_standard" classname="app.getxray.xray.it.import_results.XrayCloudIT" time="4" started-at="2026-03-19T12:30:05.457701" finished-at="2026-03-19T12:30:10.065848">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayCloudIT]/[method:behave_standard(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: behave standard (cloud)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-135"/>
+<property name="test_summary" value="behave standard (cloud)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="robot_multipart" classname="app.getxray.xray.it.import_results.XrayDatacenterIT" time="4" started-at="2026-03-19T12:29:32.545616" finished-at="2026-03-19T12:29:37.168713">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayDatacenterIT]/[method:robot_multipart(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: robot multipart (DC)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-138"/>
+<property name="test_summary" value="robot multipart (DC)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="xray_standard_with_verbose_mode" classname="app.getxray.xray.it.import_results.XrayCloudIT" time="5" started-at="2026-03-19T12:30:34.61073" finished-at="2026-03-19T12:30:39.822626">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayCloudIT]/[method:xray_standard_with_verbose_mode(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: xray standard with verbose mode (cloud)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-132"/>
+<property name="test_summary" value="xray standard with verbose mode (cloud)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="cucumber_multipart" classname="app.getxray.xray.it.import_results.XrayCloudIT" time="4" started-at="2026-03-19T12:30:54.744351" finished-at="2026-03-19T12:30:59.652647">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayCloudIT]/[method:cucumber_multipart(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: cucumber multipart (cloud)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-131"/>
+<property name="test_summary" value="cucumber multipart (cloud)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="testng_standard" classname="app.getxray.xray.it.import_results.XrayDatacenterIT" time="4" started-at="2026-03-19T12:29:10.229435" finished-at="2026-03-19T12:29:14.724334">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayDatacenterIT]/[method:testng_standard(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: testng standard (DC)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-4"/>
+<property name="test_summary" value="testng standard (DC)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="single_feature_eu_region" classname="app.getxray.xray.it.import_features.XrayCloudIT" time="6" started-at="2026-03-19T12:28:02.040547" finished-at="2026-03-19T12:28:08.691875">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_features.XrayCloudIT]/[method:single_feature_eu_region(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: single feature eu region (cloud)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-125"/>
+<property name="test_summary" value="single feature eu region (cloud)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="cucumber_multipart" classname="app.getxray.xray.it.import_results.XrayDatacenterIT" time="4" started-at="2026-03-19T12:29:23.623979" finished-at="2026-03-19T12:29:28.041538">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayDatacenterIT]/[method:cucumber_multipart(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: cucumber multipart (DC)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-131"/>
+<property name="test_summary" value="cucumber multipart (DC)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="below_default_timeout_cloud" classname="app.getxray.xray.it.import_results.TimeoutHandlingIT" time="7" started-at="2026-03-19T12:32:24.835081" finished-at="2026-03-19T12:32:32.45656">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.TimeoutHandlingIT]/[method:below_default_timeout_cloud(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: below_default_timeout_cloud(MavenExecutionResult)
+]]></system-out>
+<properties>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="behave_standard" classname="app.getxray.xray.it.import_results.XrayDatacenterIT" time="4" started-at="2026-03-19T12:28:32.976458" finished-at="2026-03-19T12:28:37.378097">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayDatacenterIT]/[method:behave_standard(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: behave standard (DC)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-135"/>
+<property name="test_summary" value="behave standard (DC)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="testng_multipart" classname="app.getxray.xray.it.import_results.XrayDatacenterIT" time="4" started-at="2026-03-19T12:28:42.010423" finished-at="2026-03-19T12:28:46.729891">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayDatacenterIT]/[method:testng_multipart(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: testng multipart (DC)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-139"/>
+<property name="test_summary" value="testng multipart (DC)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="xray_standard" classname="app.getxray.xray.it.import_results.XrayDatacenterIT" time="4" started-at="2026-03-19T12:29:37.169086" finished-at="2026-03-19T12:29:41.756227">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayDatacenterIT]/[method:xray_standard(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: xray standard (DC)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-132"/>
+<property name="test_summary" value="xray standard (DC)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="xray_standard" classname="app.getxray.xray.it.import_results.XrayCloudIT" time="4" started-at="2026-03-19T12:31:09.004878" finished-at="2026-03-19T12:31:13.744916">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayCloudIT]/[method:xray_standard(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: xray standard (cloud)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-132"/>
+<property name="test_summary" value="xray standard (cloud)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="exceed_default_timeout_cloud" classname="app.getxray.xray.it.import_results.TimeoutHandlingIT" time="54" started-at="2026-03-19T12:31:30.306157" finished-at="2026-03-19T12:32:24.834813">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.TimeoutHandlingIT]/[method:exceed_default_timeout_cloud(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: exceed_default_timeout_cloud(MavenExecutionResult)
+]]></system-out>
+<properties>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="testng_multipart" classname="app.getxray.xray.it.import_results.XrayCloudIT" time="4" started-at="2026-03-19T12:30:15.302964" finished-at="2026-03-19T12:30:20.134805">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayCloudIT]/[method:testng_multipart(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: testng multipart (cloud)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-139"/>
+<property name="test_summary" value="testng multipart (cloud)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="xray_standard_eu_region" classname="app.getxray.xray.it.import_results.XrayCloudIT" time="4" started-at="2026-03-19T12:30:59.652929" finished-at="2026-03-19T12:31:04.219505">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayCloudIT]/[method:xray_standard_eu_region(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: xray standard eu region (cloud)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-132"/>
+<property name="test_summary" value="xray standard eu region (cloud)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="exceed_configured_timeout_cloud" classname="app.getxray.xray.it.import_results.TimeoutHandlingIT" time="6" started-at="2026-03-19T12:34:28.325407" finished-at="2026-03-19T12:34:35.034664">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.TimeoutHandlingIT]/[method:exceed_configured_timeout_cloud(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: exceed_configured_timeout_cloud(MavenExecutionResult)
+]]></system-out>
+<properties>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="behave_multipart" classname="app.getxray.xray.it.import_results.XrayCloudIT" time="4" started-at="2026-03-19T12:29:55.79844" finished-at="2026-03-19T12:30:00.573042">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayCloudIT]/[method:behave_multipart(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: behave multipart (cloud)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-136"/>
+<property name="test_summary" value="behave multipart (cloud)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="junit_multipart" classname="app.getxray.xray.it.import_results.XrayCloudIT" time="4" started-at="2026-03-19T12:30:25.013354" finished-at="2026-03-19T12:30:29.769988">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayCloudIT]/[method:junit_multipart(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: junit multipart (cloud)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-3"/>
+<property name="test_summary" value="junit multipart (cloud)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="below_configured_timeout_cloud" classname="app.getxray.xray.it.import_results.TimeoutHandlingIT" time="6" started-at="2026-03-19T12:34:21.668134" finished-at="2026-03-19T12:34:28.325014">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.TimeoutHandlingIT]/[method:below_configured_timeout_cloud(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: below_configured_timeout_cloud(MavenExecutionResult)
+]]></system-out>
+<properties>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="multiple_features" classname="app.getxray.xray.it.import_features.XrayCloudIT" time="5" started-at="2026-03-19T12:27:56.920294" finished-at="2026-03-19T12:28:02.040082">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_features.XrayCloudIT]/[method:multiple_features(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: multiple features (cloud)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-125"/>
+<property name="test_summary" value="multiple features (cloud)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="xunit_standard" classname="app.getxray.xray.it.import_results.XrayDatacenterIT" time="4" started-at="2026-03-19T12:29:14.724686" finished-at="2026-03-19T12:29:19.187198">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayDatacenterIT]/[method:xunit_standard(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: xunit standard (DC)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-128"/>
+<property name="test_summary" value="xunit standard (DC)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="single_feature_by_issueKeys" classname="app.getxray.xray.it.export_features.XrayDatacenterIT" time="5" started-at="2026-03-19T12:34:35.567952" finished-at="2026-03-19T12:34:40.776692">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.export_features.XrayDatacenterIT]/[method:single_feature_by_issueKeys(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: single feature by issue keys (DC)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-126"/>
+<property name="test_summary" value="single feature by issue keys (DC)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="single_feature_by_issueKeys_using_personal_access_token" classname="app.getxray.xray.it.export_features.XrayDatacenterIT" time="4" started-at="2026-03-19T12:34:45.854362" finished-at="2026-03-19T12:34:50.285506">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.export_features.XrayDatacenterIT]/[method:single_feature_by_issueKeys_using_personal_access_token(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: single feature by issue keys using personal access token (DC)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-126"/>
+<property name="test_summary" value="single feature by issue keys using personal access token (DC)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="below_configured_timeout" classname="app.getxray.xray.it.import_results.TimeoutHandlingIT" time="5" started-at="2026-03-19T12:31:24.948709" finished-at="2026-03-19T12:31:30.305855">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.TimeoutHandlingIT]/[method:below_configured_timeout(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: below_configured_timeout(MavenExecutionResult)
+]]></system-out>
+<properties>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="xunit_multipart" classname="app.getxray.xray.it.import_results.XrayDatacenterIT" time="4" started-at="2026-03-19T12:28:46.730269" finished-at="2026-03-19T12:28:51.416253">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayDatacenterIT]/[method:xunit_multipart(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: xunit multipart (DC)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-129"/>
+<property name="test_summary" value="xunit multipart (DC)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="exceed_configured_timeout" classname="app.getxray.xray.it.import_results.TimeoutHandlingIT" time="6" started-at="2026-03-19T12:31:18.398726" finished-at="2026-03-19T12:31:24.948321">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.TimeoutHandlingIT]/[method:exceed_configured_timeout(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: exceed_configured_timeout(MavenExecutionResult)
+]]></system-out>
+<properties>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="nunit_multipart" classname="app.getxray.xray.it.import_results.XrayDatacenterIT" time="4" started-at="2026-03-19T12:29:19.187569" finished-at="2026-03-19T12:29:23.623591">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayDatacenterIT]/[method:nunit_multipart(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: nunit multipart (DC)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-134"/>
+<property name="test_summary" value="nunit multipart (DC)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="cucumber_standard" classname="app.getxray.xray.it.import_results.XrayCloudIT" time="4" started-at="2026-03-19T12:30:00.573343" finished-at="2026-03-19T12:30:05.457395">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayCloudIT]/[method:cucumber_standard(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: cucumber standard (cloud)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-130"/>
+<property name="test_summary" value="cucumber standard (cloud)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="xray_multipart" classname="app.getxray.xray.it.import_results.XrayCloudIT" time="5" started-at="2026-03-19T12:30:10.066146" finished-at="2026-03-19T12:30:15.302661">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayCloudIT]/[method:xray_multipart(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: xray multipart (cloud)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-140"/>
+<property name="test_summary" value="xray multipart (cloud)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<testcase name="xray_standard_with_verbose_mode" classname="app.getxray.xray.it.import_results.XrayDatacenterIT" time="4" started-at="2026-03-19T12:29:05.772967" finished-at="2026-03-19T12:29:10.229053">
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]/[class:app.getxray.xray.it.import_results.XrayDatacenterIT]/[method:xray_standard_with_verbose_mode(com.soebes.itf.jupiter.maven.MavenExecutionResult)]
+display-name: xray standard with verbose mode (DC)
+]]></system-out>
+<properties>
+<property name="requirements" value="XMP-231"/>
+<property name="test_summary" value="xray standard with verbose mode (DC)"/>
+<property name="_dummy_" value=""/>
+</properties>
+</testcase>
+<system-out><![CDATA[
+unique-id: [engine:junit-jupiter]
+display-name: JUnit Jupiter
+]]></system-out>
+</testsuite>

@@ -20,7 +20,7 @@ import java.nio.file.Files;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import app.getxray.xray.it.TestingUtils;
+import app.getxray.xray.utils.TestingUtils;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -79,7 +79,7 @@ class CommonUtilsTest {
     @Test
     void testUnzipContentsToFolder() throws Exception {
         File tempDir = Files.createTempDirectory("dummy").toFile();
-        byte[] zippedContent = TestingUtils.readRawResourceFile("import_features/XrayDatacenterIT/multiple_features/features.zip");
+        byte[] zippedContent = TestingUtils.readRawResourceFile("multiple_features/features.zip");
         InputStream zippedContentStream = new ByteArrayInputStream(zippedContent);
         unzipContentsToFolder(zippedContentStream, tempDir.getAbsolutePath());
         assertThat(tempDir.listFiles()).hasSize(2);

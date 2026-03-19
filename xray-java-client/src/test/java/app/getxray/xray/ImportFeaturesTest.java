@@ -1,7 +1,7 @@
 package app.getxray.xray;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
- import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class ImportFeaturesTest {
@@ -14,7 +14,7 @@ class ImportFeaturesTest {
             .withIgnoreSslErrors(true)
             .withVerbose(true)
             .withTimeout(5);
-        Assertions.assertNotNull(xrayBuilder.build());
+        assertNotNull(xrayBuilder.build());
     }
 
     @Test
@@ -25,7 +25,7 @@ class ImportFeaturesTest {
             .withIgnoreSslErrors(true)
             .withVerbose(true)
             .withTimeout(5);
-        Assertions.assertNotNull(xrayBuilder.build());
+        assertNotNull(xrayBuilder.build());
     }
 
     @Test
@@ -36,13 +36,13 @@ class ImportFeaturesTest {
             .withIgnoreSslErrors(true)
             .withVerbose(true)
             .withTimeout(5);
-        Assertions.assertNotNull(xrayBuilder.build());
+        assertNotNull(xrayBuilder.build());
     }
 
     @Test
     void importFeaturesExceptionTest() {
         XrayFeaturesImporterException exception = new XrayFeaturesImporterException("message");
-        Assertions.assertEquals("message", exception.getMessage());
+        assertEquals("message", exception.getMessage());
     }
 
 }
