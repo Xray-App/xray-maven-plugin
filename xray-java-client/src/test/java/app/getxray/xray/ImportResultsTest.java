@@ -2,6 +2,7 @@ package app.getxray.xray;
 
 import app.getxray.xray.XrayResultsImporter.CloudBuilder;
 import app.getxray.xray.XrayResultsImporter.ServerDCBuilder;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -63,6 +64,60 @@ class ImportResultsTest {
     void importResultsExceptionTest() {
         XrayResultsImporterException exception = new XrayResultsImporterException("message");
         Assertions.assertEquals("message", exception.getMessage());
-    }   
+    }
+
+    // ServerDCBuilder(jiraBaseUrl, jiraUsername, jiraPassword) null validation tests
+
+    @Test
+    void resultsImporterDCBuilderWithUsernameAndPasswordNullJiraBaseUrlTest() {
+        assertThrows(IllegalArgumentException.class, () ->
+            new XrayResultsImporter.ServerDCBuilder(null, "jiraUsername", "jiraPassword"));
+    }
+
+    @Test
+    void resultsImporterDCBuilderWithUsernameAndPasswordNullJiraUsernameTest() {
+        assertThrows(IllegalArgumentException.class, () ->
+            new XrayResultsImporter.ServerDCBuilder("https://jira.example.com", null, "jiraPassword"));
+    }
+
+    @Test
+    void resultsImporterDCBuilderWithUsernameAndPasswordNullJiraPasswordTest() {
+        assertThrows(IllegalArgumentException.class, () ->
+            new XrayResultsImporter.ServerDCBuilder("https://jira.example.com", "jiraUsername", null));
+    }
+
+    // ServerDCBuilder(jiraBaseUrl, jiraPersonalAccessToken) null validation tests
+
+    @Test
+    void resultsImporterDCBuilderWithPersonalAccessTokenNullJiraBaseUrlTest() {
+        assertThrows(IllegalArgumentException.class, () ->
+            new XrayResultsImporter.ServerDCBuilder(null, "000000"));
+    }
+
+    @Test
+    void resultsImporterDCBuilderWithPersonalAccessTokenNullTokenTest() {
+        assertThrows(IllegalArgumentException.class, () ->
+            new XrayResultsImporter.ServerDCBuilder("https://jira.example.com", (String) null));
+    }
+
+    // CloudBuilder(clientId, clientSecret, cloudApiBaseUrl) null validation tests
+
+    @Test
+    void resultsImporterCloudBuilderNullClientIdTest() {
+        assertThrows(IllegalArgumentException.class, () ->
+            new XrayResultsImporter.CloudBuilder(null, "clientSecret", "https://xray.cloud.getxray.app/api/v2"));
+    }
+
+    @Test
+    void resultsImporterCloudBuilderNullClientSecretTest() {
+        assertThrows(IllegalArgumentException.class, () ->
+            new XrayResultsImporter.CloudBuilder("clientId", null, "https://xray.cloud.getxray.app/api/v2"));
+    }
+
+    @Test
+    void resultsImporterCloudBuilderNullCloudApiBaseUrlTest() {
+        assertThrows(IllegalArgumentException.class, () ->
+            new XrayResultsImporter.CloudBuilder("clientId", "clientSecret", null));
+    }
 
 }
