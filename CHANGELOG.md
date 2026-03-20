@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.11.0] - 2026-03-20
+
+### Added
+
+- fixes #99 (split logic of client lib and maven plugin to multi-module project) by @dve and @bitcoder in #101
+
 ## [0.10.0] - 2025-11-12
 
 ### Added
