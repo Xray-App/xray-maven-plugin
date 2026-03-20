@@ -6,7 +6,7 @@
     <parent>
         <groupId>app.getxray</groupId>
         <artifactId>xray-maven-plugin-parent</artifactId>
-        <version>0.11.2</version>
+        <version>0.11.3</version>
     </parent>
 
     <artifactId>xray-maven-plugin</artifactId>

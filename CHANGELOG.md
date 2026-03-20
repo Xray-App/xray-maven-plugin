@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.11.3] - 2026-03-20
+
+### Fixed
+
+- fix validation of mandatory authentication related parameters #102
+
 ## [0.11.2] - 2026-03-20
 
 ### Fixed

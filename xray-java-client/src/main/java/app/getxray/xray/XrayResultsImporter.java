@@ -128,12 +128,18 @@ public class XrayResultsImporter {
         private Log logger;
 
         public ServerDCBuilder(String jiraBaseUrl, String jiraUsername, String jiraPassword) {
+            if (jiraBaseUrl == null || jiraUsername == null || jiraPassword == null) {
+                throw new IllegalArgumentException("jiraBaseUrl, jiraUsername and jiraPassword are required for ServerDCBuilder");
+            }
             this.jiraBaseUrl = jiraBaseUrl;
             this.jiraUsername = jiraUsername;
             this.jiraPassword = jiraPassword;
         }
 
         public ServerDCBuilder(String jiraBaseUrl, String jiraPersonalAccessToken) {
+            if (jiraBaseUrl == null || jiraPersonalAccessToken == null) {
+                throw new IllegalArgumentException("jiraBaseUrl and jiraPersonalAccessToken are required for ServerDCBuilder");
+            }
             this.jiraBaseUrl = jiraBaseUrl;
             this.jiraPersonalAccessToken = jiraPersonalAccessToken;
         }
@@ -219,6 +225,9 @@ public class XrayResultsImporter {
         private Log logger;
 
         public CloudBuilder(String clientId, String clientSecret, String cloudApiBaseUrl) {
+            if (clientId == null || clientSecret == null || cloudApiBaseUrl == null) {
+                throw new IllegalArgumentException("clientId, clientSecret and cloudApiBaseUrl are required for CloudBuilder");
+            }
             this.clientId = clientId;
             this.clientSecret = clientSecret;
             this.cloudApiBaseUrl = cloudApiBaseUrl;
