@@ -234,7 +234,6 @@ public class XrayFeaturesExporter {
 
         String endpointUrl = jiraBaseUrl + "/rest/raven/2.0/export/test";
         Request request;
-        Response response = null;
         HttpUrl url = HttpUrl.get(endpointUrl);
         HttpUrl.Builder builder = url.newBuilder();
 
@@ -248,8 +247,7 @@ public class XrayFeaturesExporter {
 
         request = new Request.Builder().url(builder.build()).get().addHeader(AUTHORIZATION_HEADER, credentials).build();
         CommonUtils.logRequest(logger, request, this.verbose);
-        try {
-            response = client.newCall(request).execute();
+        try (Response response = client.newCall(request).execute()) {
             CommonUtils.logResponse(logger, response, this.verbose);
             if (response.isSuccessful()) {
                 unzipContentsToFolder(response.body().byteStream(), outputPath);
@@ -283,13 +281,14 @@ public class XrayFeaturesExporter {
             Request request = new Request.Builder().url(builder.build()).get().addHeader(AUTHORIZATION_HEADER, credentials).build();
             CommonUtils.logRequest(logger, request, this.verbose);
 
-            Response response = client.newCall(request).execute();
-            CommonUtils.logResponse(logger, response, this.verbose);
-            if (response.isSuccessful()) {
-                unzipContentsToFolder(response.body().byteStream(), outputPath);
-                return ("ok");
-            } else {
-                throw new IOException("Unexpected HTTP code " + response);
+            try (Response response = client.newCall(request).execute()) {
+                CommonUtils.logResponse(logger, response, this.verbose);
+                if (response.isSuccessful()) {
+                    unzipContentsToFolder(response.body().byteStream(), outputPath);
+                    return ("ok");
+                } else {
+                    throw new IOException("Unexpected HTTP code " + response);
+                }
             }
         } catch (IOException e) {
             logger.error(e);
