@@ -8,3 +8,4 @@ examples/cloud/pom.xml
 *.exp
 .idea/
 merged.coverage.file
+xray-maven-plugin/reports/ 
