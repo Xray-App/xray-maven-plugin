@@ -4,6 +4,8 @@ package app.getxray.maven.plugin.xray;
 import static app.getxray.xray.CommonUtils.isTrue;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -15,6 +17,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.DirectoryScanner;
+import org.json.JSONException;
 import org.json.JSONObject;
 import static app.getxray.xray.CommonCloud.XRAY_CLOUD_API_BASE_URL;
 import app.getxray.xray.XrayResultsImporter;
@@ -113,9 +116,21 @@ public class ImportResultsMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project}", required = true, readonly = true)
     MavenProject project;
 
-    private void abortWithError(String message) {
+    private void fail(String message, Exception cause) throws MojoFailureException {
+        if (isTrue(abortOnError)) {
+            throw new MojoFailureException(message, cause);
+        }
         getLog().error(message);
-        System.exit(1);
+    }
+
+    private static JSONObject readJsonFile(String path) throws IOException {
+        if (path == null) {
+            return null;
+        }
+        if (!(new File(path)).isFile()) {
+            throw new FileNotFoundException(MISSING_FILE + path);
+        }
+        return new JSONObject(new String(Files.readAllBytes(Paths.get(path))));
     }
 
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -159,7 +174,16 @@ public class ImportResultsMojo extends AbstractMojo {
         }
         
         if (reportFiles.length == 0) {
-            abortWithError("no test report file(s) found: " + reportFile);
+            fail("no test report file(s) found: " + reportFile, null);
+            return;
+        }
+
+        try {
+            testInfo = readJsonFile(testInfoJson);
+            testExecInfo = readJsonFile(testExecInfoJson);
+        } catch (IOException | JSONException ex) {
+            fail(ex.getMessage(), ex);
+            return;
         }
         String response = null;
 
@@ -201,20 +225,6 @@ public class ImportResultsMojo extends AbstractMojo {
                         }
                         response = xrayImporter.submit(reportFormat, currentReportFile);
                     } else {
-                        if (testInfoJson != null) {
-                            if ((new File(testInfoJson)).isFile()) {
-                                testInfo = new JSONObject(new String(Files.readAllBytes(Paths.get(testInfoJson))));
-                            } else {
-                                abortWithError(MISSING_FILE + testInfoJson);
-                            }
-                        }
-                        if (testExecInfoJson != null) {
-                            if ((new File(testExecInfoJson)).isFile()) {
-                                testExecInfo = new JSONObject(new String(Files.readAllBytes(Paths.get(testExecInfoJson))));
-                            } else {
-                                abortWithError(MISSING_FILE + testExecInfoJson);
-                            }
-                        }
                         response = xrayImporterBuilder.build().submitMultipartCloud(reportFormat, currentReportFile, testExecInfo, testInfo);                  
                     }
 
@@ -254,20 +264,6 @@ public class ImportResultsMojo extends AbstractMojo {
 
                         response = xrayImporter.submit(reportFormat, currentReportFile);
                     } else {
-                        if (testInfoJson != null) {
-                            if ((new File(testInfoJson)).isFile()) {
-                                testInfo = new JSONObject(new String(Files.readAllBytes(Paths.get(testInfoJson))));
-                            } else {
-                                abortWithError(MISSING_FILE + testInfoJson);
-                            }
-                        }
-                        if (testExecInfoJson != null) {
-                            if ((new File(testExecInfoJson)).isFile()) {
-                                testExecInfo = new JSONObject(new String(Files.readAllBytes(Paths.get(testExecInfoJson))));
-                            } else {
-                                abortWithError(MISSING_FILE + testExecInfoJson);
-                            }
-                        }
                         response = xrayImporterBuilder.build().submitMultipartServerDC(reportFormat, currentReportFile, testExecInfo, testInfo);                  
                     }
 
@@ -275,9 +271,7 @@ public class ImportResultsMojo extends AbstractMojo {
 
                 getLog().info("response: " + response);
             } catch (Exception ex) {
-                getLog().error(ex.getMessage());
-                if (isTrue(abortOnError))
-                    System.exit(1);
+                fail(ex.getMessage(), ex);
             }
 
         }

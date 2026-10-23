@@ -164,9 +164,10 @@ public class ImportFeaturesMojo extends AbstractMojo {
 
             getLog().info("response: " + response);
         } catch (Exception ex) {
+            if (isTrue(abortOnError)) {
+                throw new MojoFailureException(ex.getMessage(), ex);
+            }
             getLog().error(ex.getMessage());
-            if (isTrue(abortOnError))
-                System.exit(1);
         }
 
     }
