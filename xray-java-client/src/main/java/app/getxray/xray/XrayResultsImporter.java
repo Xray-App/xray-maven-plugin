@@ -85,7 +85,7 @@ public class XrayResultsImporter {
         this.useInternalTestProxy = builder.useInternalTestProxy;
         this.timeout = builder.timeout;
         this.verbose = builder.verbose;
-        this.logger = builder.logger;
+        this.logger = builder.logger != null ? builder.logger : Log.NOOP;
     }
 
     private XrayResultsImporter(CloudBuilder builder){
@@ -104,7 +104,7 @@ public class XrayResultsImporter {
         this.useInternalTestProxy = builder.useInternalTestProxy;
         this.timeout = builder.timeout;
         this.verbose = builder.verbose;
-        this.logger = builder.logger;
+        this.logger = builder.logger != null ? builder.logger : Log.NOOP;
     }
 
     public static class ServerDCBuilder {
