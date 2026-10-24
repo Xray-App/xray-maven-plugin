@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.12.0] - 2026-10-26
+
+### Fixed
+
+- code cleanup
+- use JDK 25
+
 ## [0.11.3] - 2026-03-20
 
 ### Fixed
