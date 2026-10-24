@@ -118,10 +118,10 @@ public class ImportFeaturesMojo extends AbstractMojo {
             getLog().debug("updateRepository from config: " + updateRepository);
 
             if (testInfoJson != null) {
-                testInfo = new JSONObject(new String(Files.readAllBytes(Paths.get(testInfoJson))));
+                testInfo = new JSONObject(Files.readString(Paths.get(testInfoJson)));
             }
             if (precondInfoJson != null) {
-                precondInfo = new JSONObject(new String(Files.readAllBytes(Paths.get(precondInfoJson))));
+                precondInfo = new JSONObject(Files.readString(Paths.get(precondInfoJson)));
             }
 
             if (isTrue(cloud)) {

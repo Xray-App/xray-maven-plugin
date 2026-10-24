@@ -64,6 +64,7 @@
     <itf.version>0.13.1</itf.version>
     <junit.version>6.1.3</junit.version>
     <jacoco.version>0.8.15</jacoco.version>
+    <sonar.coverage.jacoco.xmlReportPaths>${maven.multiModuleProjectDirectory}/xray-maven-plugin-report/target/site/jacoco-aggregate-coverage-report/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
     <internal.xray-maven-plugin.version>0.9.0</internal.xray-maven-plugin.version>
   </properties>
 

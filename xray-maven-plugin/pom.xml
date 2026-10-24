@@ -169,9 +169,12 @@
                                     <includes>
                                         <include>*.exec</include>
                                     </includes>
+                                    <excludes>
+                                        <exclude>merged.exec</exclude>
+                                    </excludes>
                                 </fileSet>
                             </fileSets>
-                            <destFile>merged.coverage.file</destFile>
+                            <destFile>${merged.coverage.file}</destFile>
                         </configuration>
                     </execution>
                     <execution>
@@ -181,7 +184,7 @@
                             <goal>report</goal>
                         </goals>
                         <configuration>
-                            <dataFile>merged.coverage.file</dataFile>
+                            <dataFile>${merged.coverage.file}</dataFile>
                             <outputDirectory>${project.reporting.outputDirectory}/jacoco-merged-test-coverage-report</outputDirectory>
                         </configuration>
                     </execution>

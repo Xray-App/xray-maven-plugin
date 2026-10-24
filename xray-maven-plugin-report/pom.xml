@@ -33,7 +33,7 @@
                     </goals>
                     <configuration>
                         <outputDirectory>${project.reporting.outputDirectory}/jacoco-aggregate-coverage-report</outputDirectory>
-                        <dataFileIncludes>**/merged.coverage.file</dataFileIncludes>
+                        <dataFileIncludes>**/jacoco-output/merged.exec</dataFileIncludes>
                         <title>Aggregate Code Coverage Report</title>
                     </configuration>
                 </execution>

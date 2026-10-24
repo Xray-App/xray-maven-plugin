@@ -130,7 +130,7 @@ public class ImportResultsMojo extends AbstractMojo {
         if (!(new File(path)).isFile()) {
             throw new FileNotFoundException(MISSING_FILE + path);
         }
-        return new JSONObject(new String(Files.readAllBytes(Paths.get(path))));
+        return new JSONObject(Files.readString(Paths.get(path)));
     }
 
     public void execute() throws MojoExecutionException, MojoFailureException {

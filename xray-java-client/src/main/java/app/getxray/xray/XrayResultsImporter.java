@@ -421,7 +421,7 @@ public class XrayResultsImporter {
 
         RequestBody requestBody = null;
         if (XRAY_FORMAT.equals(format) || CUCUMBER_FORMAT.equals(format) || BEHAVE_FORMAT.equals(format) ) {
-            String reportContent = new String ( Files.readAllBytes( Paths.get(reportFile) ) );
+            String reportContent = Files.readString(Paths.get(reportFile));
             requestBody = RequestBody.create(reportContent, mediaType);
         } else {
             requestBody = new MultipartBody.Builder()
@@ -480,7 +480,7 @@ public class XrayResultsImporter {
         } else {
             endpointUrl = cloudApiBaseUrl + "/import/execution/" + format;
         }
-        String reportContent = new String ( Files.readAllBytes( Paths.get(reportFile) ) );
+        String reportContent = Files.readString(Paths.get(reportFile));
         RequestBody requestBody = RequestBody.create(reportContent, mediaType);
 
 
