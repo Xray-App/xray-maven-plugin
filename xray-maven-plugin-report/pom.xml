@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>app.getxray</groupId>
 		<artifactId>xray-maven-plugin-parent</artifactId>
-		<version>0.11.3</version>
+		<version>0.12.0</version>
 	</parent>
 	<artifactId>xray-maven-plugin-report</artifactId>
 
@@ -33,7 +33,7 @@
                     </goals>
                     <configuration>
                         <outputDirectory>${project.reporting.outputDirectory}/jacoco-aggregate-coverage-report</outputDirectory>
-                        <dataFileIncludes>**/merged.coverage.file</dataFileIncludes>
+                        <dataFileIncludes>**/jacoco-output/merged.exec</dataFileIncludes>
                         <title>Aggregate Code Coverage Report</title>
                     </configuration>
                 </execution>

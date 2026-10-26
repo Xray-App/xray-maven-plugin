@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>app.getxray</groupId>
   <artifactId>xray-maven-plugin-parent</artifactId>
-  <version>0.11.3</version>
+  <version>0.12.0</version>
   <packaging>pom</packaging>
   <name>xray-maven-plugin-parent</name>
   <description>Maven plugin for interacting with Xray (server/datacenter and cloud), used in CI/CD for assisting in test automation flows, such as reporting test results back to Xray and, by consequence, Jira.</description>
@@ -44,26 +44,27 @@
   </scm>
 
   <properties>
-    <maven.compiler.release>17</maven.compiler.release>
-    <maven.compiler.target>17</maven.compiler.target>
-    <maven.compiler.source>17</maven.compiler.source>
-    <maven-plugin-api.version>3.8.5</maven-plugin-api.version>
-    <maven-plugin-annotations.version>3.6.4</maven-plugin-annotations.version>
-    <maven-project.version>2.2.1</maven-project.version>
-    <maven-plugin-plugin.version>3.6.4</maven-plugin-plugin.version>
+    <maven.compiler.release>25</maven.compiler.release>
+    <maven.compiler.target>25</maven.compiler.target>
+    <maven.compiler.source>25</maven.compiler.source>
+    <maven-plugin-api.version>3.10.0</maven-plugin-api.version>
+    <maven-plugin-annotations.version>3.16.0</maven-plugin-annotations.version>
+    <maven-core.version>3.10.0</maven-core.version>
+    <maven-plugin-plugin.version>3.16.0</maven-plugin-plugin.version>
     <maven-site-plugin.version>3.12.0</maven-site-plugin.version>
-    <maven-failsafe-plugin.version>3.5.4</maven-failsafe-plugin.version>
-    <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
+    <maven-failsafe-plugin.version>3.6.0</maven-failsafe-plugin.version>
+    <maven-surefire-plugin.version>3.6.0</maven-surefire-plugin.version>
     <maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
-    <maven-javadoc-plugin.version>3.4.1</maven-javadoc-plugin.version>
+    <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
     <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
     <xray-junit-extensions.version>1.0.0</xray-junit-extensions.version>
     <mockito.version>4.11.0</mockito.version>
     <nexus-staging-maven-plugin.version>1.7.0</nexus-staging-maven-plugin.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <itf.version>0.13.1</itf.version>
-    <junit.version>5.14.1</junit.version>
-    <jacoco.version>0.8.14</jacoco.version>
+    <junit.version>6.1.3</junit.version>
+    <jacoco.version>0.8.15</jacoco.version>
+    <sonar.coverage.jacoco.xmlReportPaths>${maven.multiModuleProjectDirectory}/xray-maven-plugin-report/target/site/jacoco-aggregate-coverage-report/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
     <internal.xray-maven-plugin.version>0.9.0</internal.xray-maven-plugin.version>
   </properties>
 
@@ -103,6 +104,15 @@
                 <skipRemoteStaging>false</skipRemoteStaging>
             </configuration>
         </plugin>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>${maven-javadoc-plugin.version}</version>
+            <configuration>
+                <!-- keep doclint checks that can break the javadoc jar, but skip missing-comment warnings -->
+                <doclint>all,-missing</doclint>
+            </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
 
@@ -123,7 +133,6 @@
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
-            <version>${maven-javadoc-plugin.version}</version>
             <executions>
                 <execution>
                     <id>attach-javadocs</id>

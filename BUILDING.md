@@ -25,6 +25,12 @@ To run just some integration tests (e.g., the ones under th "app.getxray.xray.it
 
 More info [here](https://maven.apache.org/surefire/maven-failsafe-plugin/examples/single-test.html).
 
+Integration tests tagged as `slow` (i.e., the ones that wait for the default 50s timeout, in `TimeoutHandlingIT`) are skipped by default. To run them as well,
+
+```bash
+mvn -Dit.excludedGroups=none clean compile verify
+```
+
 To debug the maven integration tests and see the maven stdout/stderr, we need to look under the folder `target/maven-it`. As an example, let's say that we run the maven IT test named "single_feature_by_issueKeys" contained in the app.getxray.xray.it.XrayDatacenterIT class. In this case, we could analyze the logs and the project directory used by the maven instance inside the folder `target/maven-it/app/getxray/xray/it/export_features/XrayDatacenterIT/single_feature_by_issueKeys/`.
 
 ### Deploying/Releasing

@@ -1,0 +1,7 @@
+# Markup Link Checker (mlc) config, used by the CI link check
+# Expected redirects: dynamic badge image and links that require a login
+do-not-warn-for-redirect-to=[
+  "https://img.shields.io/maven-metadata/*",
+  "https://jira.getxray.app/servicedesk/customer/portal/2/user/login*",
+  "https://id.atlassian.com/login*",
+]

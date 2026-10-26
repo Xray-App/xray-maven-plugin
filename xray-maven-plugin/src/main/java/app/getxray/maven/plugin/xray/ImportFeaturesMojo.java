@@ -118,10 +118,10 @@ public class ImportFeaturesMojo extends AbstractMojo {
             getLog().debug("updateRepository from config: " + updateRepository);
 
             if (testInfoJson != null) {
-                testInfo = new JSONObject(new String(Files.readAllBytes(Paths.get(testInfoJson))));
+                testInfo = new JSONObject(Files.readString(Paths.get(testInfoJson)));
             }
             if (precondInfoJson != null) {
-                precondInfo = new JSONObject(new String(Files.readAllBytes(Paths.get(precondInfoJson))));
+                precondInfo = new JSONObject(Files.readString(Paths.get(precondInfoJson)));
             }
 
             if (isTrue(cloud)) {
@@ -164,9 +164,10 @@ public class ImportFeaturesMojo extends AbstractMojo {
 
             getLog().info("response: " + response);
         } catch (Exception ex) {
+            if (isTrue(abortOnError)) {
+                throw new MojoFailureException(ex.getMessage(), ex);
+            }
             getLog().error(ex.getMessage());
-            if (isTrue(abortOnError))
-                System.exit(1);
         }
 
     }

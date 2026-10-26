@@ -1,9 +1,8 @@
 # Xray Maven Plugin
 
 [![build workflow](https://github.com/Xray-App/xray-maven-plugin/actions/workflows/CI.yml/badge.svg)](https://github.com/Xray-App/xray-maven-plugin/actions/workflows/CI.yml)
-[![license](https://img.shields.io/badge/License-BSD%203--Clause-green.svg)](https://opensource.org/licenses/BSD-3-Clause)
-[![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/Xray-App/community)
-[![Maven Central Version](https://img.shields.io/maven-central/v/app.getxray/xray-maven-plugin)](https://central.sonatype.com/artifact/app.getxray/xray-maven-plugin/)
+[![license](https://img.shields.io/badge/License-BSD%203--Clause-green.svg)](https://opensource.org/license/BSD-3-Clause)
+[![Maven Central Version](https://img.shields.io/maven-central/v/app.getxray/xray-maven-plugin)](https://central.sonatype.com/artifact/app.getxray/xray-maven-plugin)
 ![code coverage](https://raw.githubusercontent.com/Xray-App/xray-maven-plugin/main/.github/badges/jacoco.svg)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Xray-App_xray-maven-plugin&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Xray-App_xray-maven-plugin)
 ![CodeQL](https://github.com/Xray-App/xray-maven-plugin/actions/workflows/codeql-analysis.yml/badge.svg)
@@ -11,7 +10,7 @@
 
 This is an open-source maven plugin for interacting with Xray (server/datacenter and cloud), used in CI/CD for assisting in test automation flows, such as reporting test results back to Xray and, by consequence, Jira.
 
-This plugin is a totally new implementation, made from scratch, and should not be mistaken with the [proprietary maven plugin originaly provided by Xray](https://docs.getxray.app/display/XRAY/Integration+with+Maven). It makes use of the public APIs provided by Xray (see references at bottom of this page), which we recommend for you to have a look as these may have some constraints that also apply to this plugin.
+This plugin is a totally new implementation, made from scratch, and should not be mistaken with the [proprietary maven plugin originaly provided by Xray](https://docs.getxray.app/space/XRAY/301469133/Integration+with+Maven). It makes use of the public APIs provided by Xray (see references at bottom of this page), which we recommend for you to have a look as these may have some constraints that also apply to this plugin.
 
 The Xray Maven Plugin is maintained by and in the open-source spirit.
 
@@ -36,7 +35,7 @@ Add the following dependency to your pom.xml, where the `<configuration>` is opt
         <plugin>
             <groupId>app.getxray</groupId>
             <artifactId>xray-maven-plugin</artifactId>
-            <version>0.11.3</version>
+            <version>0.12.0</version>
             <scope>test</scope>
             <configuration>
                 <clientId>215FFD69FE46447280000000000</clientId>
@@ -78,7 +77,7 @@ For Xray cloud users (i.e., using Xray on Jira cloud):
 | `cloud` | `xray.cloud` | set to true if using Xray cloud (default: false) | true |
 | `clientId` | `xray.clientId` | client id of the API key configured on Xray Cloud | xxxx... |
 | `clientSecret` | `xray.clientSecret` | client id of the API key configured on Xray Cloud | xxxx... |
-| `cloudApiBaseUrl` | `xray.cloudApiBaseUrl` | Xray Cloud REST API base URL (default: https://xray.cloud.getxray.app/api/v2); useful for deployments having data residency. Check [possible values](https://docs.getxray.app/display/XRAYCLOUD/REST+API) in the docs |  https://eu.xray.cloud.getxray.app/api/v2 |
+| `cloudApiBaseUrl` | `xray.cloudApiBaseUrl` | Xray Cloud REST API base URL (default: https://xray.cloud.getxray.app/api/v2); useful for deployments having data residency. Check [possible values](https://docs.getxray.app/space/XRAYCLOUD/44565892/REST+API) in the docs |  https://eu.xray.cloud.getxray.app/api/v2 |
 | `timeout` | `xray.timeout` | connection timeout in seconds (default: 50) | 50 |
 | `verbose` | `xray.verbose` | set to true to enable verbose mode (default: false); information will be visible if running mvn with debug output by using `-X` or `--debug` | true |
 
@@ -214,8 +213,8 @@ Note that the syntax is different from the one for Xray Cloud; in this case, to 
 
 For more information, please read the following Cucumber related documentation (or the corresponding one for Behave):
 
-- [Xray Cloud documentation on the Cucumber multipart REST API endpoint](https://docs.getxray.app/display/XRAYCLOUD/Import+Execution+Results+-+REST+v2#ImportExecutionResultsRESTv2-CucumberJSONresultsMultipart)
-- [Xray Datacenter documentation on the Cucumber multipart REST API endpoint](https://docs.getxray.app/display/XRAY/Import+Execution+Results+-+REST#ImportExecutionResultsREST-CucumberJSONresultsMultipart)
+- [Xray Cloud documentation on the Cucumber multipart REST API endpoint](https://docs.getxray.app/space/XRAYCLOUD/44577176/Import+Execution+Results+-+REST+v2#ImportExecutionResultsRESTv2-CucumberJSONresultsMultipart)
+- [Xray Datacenter documentation on the Cucumber multipart REST API endpoint](https://docs.getxray.app/space/XRAY/301667997/Import+Execution+Results+-+REST#ImportExecutionResultsREST-CucumberJSONresultsMultipart)
 
 
 ### Importing/synchronizing Cucumber .feature files to Xray
@@ -227,7 +226,7 @@ In order to provide visibility of test results for these tests (i.e. gherkin Sce
  mvn clean compile test xray:import-features -Dxray.inputFeatures=features/
 ```
 
-Note: how Xray relates the Scenarios/Background to the corresponding Test or Precondition issues is described in Xray technical documentation (e.g., [Xray cloud docs](https://docs.getxray.app/display/XRAYCLOUD/Importing+Cucumber+Tests+-+REST+v2)).
+Note: how Xray relates the Scenarios/Background to the corresponding Test or Precondition issues is described in Xray technical documentation (e.g., [Xray cloud docs](https://docs.getxray.app/space/XRAYCLOUD/44577091/Importing+Cucumber+Tests+-+REST+v2)).
 
 #### Configurations for importing/synchronizing Cucumber .feature files to Xray
 
@@ -257,7 +256,7 @@ This plugin provides a task for this purpose. It will download/generate .feature
 
 Files on the destination folder will be overwritten; however, if this directory contains other information (including other .feature files) you may need to remove them before generating the .feature files into this directory.
 
-Note: how Xray generates the .feature files with the Scenarios/Background from existing Test or Precondition issues is described in Xray technical documentation (e.g., [Xray cloud docs](https://docs.getxray.app/display/XRAYCLOUD/Generate+Cucumber+Features)).
+Note: how Xray generates the .feature files with the Scenarios/Background from existing Test or Precondition issues is described in Xray technical documentation (e.g., [Xray cloud docs](https://docs.getxray.app/space/XRAYCLOUD/44565307/Generate+Cucumber+Features)).
 
 #### Configurations for exporting/generating Cucumber .feature files from Xray
 
@@ -310,12 +309,12 @@ This project is in early stage; the setting names and other are subject to chang
 
 ## References
 
-- [Importing test results (Xray server/datacenter)](https://docs.getxray.app/display/XRAY/Import+Execution+Results+-+REST)
-- [Importing test results (Xray cloud)](https://docs.getxray.app/display/XRAYCLOUD/Import+Execution+Results+-+REST+v2)
-- [Import Cucumber tests (Xray server/datacenter)](https://docs.getxray.app/display/XRAY/Importing+Cucumber+Tests+-+REST)
-- [Import Cucumber tests (Xray cloud)](https://docs.getxray.app/display/XRAYCLOUD/Importing+Cucumber+Tests+-+REST+v2)
-- [Export Cucumber tests (Xray server/datacenter)](https://docs.getxray.app/display/XRAY/Exporting+Cucumber+Tests+-+REST)
-- [Export Cucumber tests (Xray cloud)](https://docs.getxray.app/display/XRAYCLOUD/Exporting+Cucumber+Tests+-+REST+v2)
+- [Importing test results (Xray server/datacenter)](https://docs.getxray.app/space/XRAY/301667997/Import+Execution+Results+-+REST)
+- [Importing test results (Xray cloud)](https://docs.getxray.app/space/XRAYCLOUD/44577176/Import+Execution+Results+-+REST+v2)
+- [Import Cucumber tests (Xray server/datacenter)](https://docs.getxray.app/space/XRAY/301698724/Importing+Cucumber+Tests+-+REST)
+- [Import Cucumber tests (Xray cloud)](https://docs.getxray.app/space/XRAYCLOUD/44577091/Importing+Cucumber+Tests+-+REST+v2)
+- [Export Cucumber tests (Xray server/datacenter)](https://docs.getxray.app/space/XRAY/301667739/Exporting+Cucumber+Tests+-+REST)
+- [Export Cucumber tests (Xray cloud)](https://docs.getxray.app/space/XRAYCLOUD/44577687/Exporting+Cucumber+Tests+-+REST+v2)
 - [Using Personal Access Tokens (Xray datacenter)](https://confluence.atlassian.com/enterprise/using-personal-access-tokens-1026032365.html)
 - [API keys (client id + client secret pair) on Xray cloud](https://docs.getxray.app/display/XRAYCLOUD/Global+Settings%3A+API+Keys)
 

@@ -6,7 +6,7 @@
     <parent>
         <groupId>app.getxray</groupId>
         <artifactId>xray-maven-plugin-parent</artifactId>
-        <version>0.11.3</version>
+        <version>0.12.0</version>
     </parent>
 
     <artifactId>xray-java-client</artifactId>
@@ -130,9 +130,12 @@
                                     <includes>
                                         <include>*.exec</include>
                                     </includes>
+                                    <excludes>
+                                        <exclude>merged.exec</exclude>
+                                    </excludes>
                                 </fileSet>
                             </fileSets>
-                            <destFile>merged.coverage.file</destFile>
+                            <destFile>${merged.coverage.file}</destFile>
                         </configuration>
                     </execution>
                     <execution>
@@ -142,7 +145,7 @@
                             <goal>report</goal>
                         </goals>
                         <configuration>
-                            <dataFile>merged.coverage.file</dataFile>
+                            <dataFile>${merged.coverage.file}</dataFile>
                             <outputDirectory>${project.reporting.outputDirectory}/jacoco-merged-test-coverage-report</outputDirectory>
                         </configuration>
                     </execution>
@@ -157,21 +160,6 @@
                 <executions>
                     <execution>
                         <id>attach-sources</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>${maven-javadoc-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <phase>package</phase>
                         <goals>
                             <goal>jar</goal>
                         </goals>

@@ -56,18 +56,18 @@ public class XrayResultsImporter {
     private String clientSecret;
     private String cloudApiBaseUrl;
 
-    private String projectKey;
-    private String fixVersion;
-    private String revision;
-    private String testPlanKey;
-    private String testExecKey;
-    private String testEnvironment;
+    private final String projectKey;
+    private final String fixVersion;
+    private final String revision;
+    private final String testPlanKey;
+    private final String testExecKey;
+    private final String testEnvironment;
 
     private Boolean ignoreSslErrors = false;
     private Boolean useInternalTestProxy = false;
     private Integer timeout = 50;
     private Boolean verbose = false;
-    private Log logger;
+    private final Log logger;
 
     private XrayResultsImporter(ServerDCBuilder builder){
         this.jiraBaseUrl = builder.jiraBaseUrl;
@@ -85,7 +85,7 @@ public class XrayResultsImporter {
         this.useInternalTestProxy = builder.useInternalTestProxy;
         this.timeout = builder.timeout;
         this.verbose = builder.verbose;
-        this.logger = builder.logger;
+        this.logger = builder.logger != null ? builder.logger : Log.NOOP;
     }
 
     private XrayResultsImporter(CloudBuilder builder){
@@ -104,7 +104,7 @@ public class XrayResultsImporter {
         this.useInternalTestProxy = builder.useInternalTestProxy;
         this.timeout = builder.timeout;
         this.verbose = builder.verbose;
-        this.logger = builder.logger;
+        this.logger = builder.logger != null ? builder.logger : Log.NOOP;
     }
 
     public static class ServerDCBuilder {
@@ -348,8 +348,7 @@ public class XrayResultsImporter {
         Request request = new Request.Builder().url(builder.build()).post(requestBody).addHeader(AUTHORIZATION_HEADER, credentials).build();
         CommonUtils.logRequest(logger, request, this.verbose);
 
-        try {
-            Response response = client.newCall(request).execute();
+        try (Response response = client.newCall(request).execute()) {
             CommonUtils.logResponse(logger, response, this.verbose);
             String responseBody = response.body().string();
             if (response.isSuccessful()){
@@ -422,7 +421,7 @@ public class XrayResultsImporter {
 
         RequestBody requestBody = null;
         if (XRAY_FORMAT.equals(format) || CUCUMBER_FORMAT.equals(format) || BEHAVE_FORMAT.equals(format) ) {
-            String reportContent = new String ( Files.readAllBytes( Paths.get(reportFile) ) );
+            String reportContent = Files.readString(Paths.get(reportFile));
             requestBody = RequestBody.create(reportContent, mediaType);
         } else {
             requestBody = new MultipartBody.Builder()
@@ -452,13 +451,13 @@ public class XrayResultsImporter {
     }
 
     private MediaType getMediaTypeForFormat(String format) {
-        String[] supportedFormats = new String [] { XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT, BEHAVE_FORMAT };
+        String[] supportedFormats = { XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT, BEHAVE_FORMAT };
         if (!Arrays.asList(supportedFormats).contains(format)) {
             throw new IllegalArgumentException(UNSUPPORTED_REPORT_FORMAT + format);
         }
 
         MediaType mediaType;
-        String[] xmlBasedFormats = new String [] { JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT}; 
+        String[] xmlBasedFormats = { JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT}; 
         if (Arrays.asList(xmlBasedFormats).contains(format)) {
             mediaType = MEDIA_TYPE_XML;
         } else {
@@ -481,7 +480,7 @@ public class XrayResultsImporter {
         } else {
             endpointUrl = cloudApiBaseUrl + "/import/execution/" + format;
         }
-        String reportContent = new String ( Files.readAllBytes( Paths.get(reportFile) ) );
+        String reportContent = Files.readString(Paths.get(reportFile));
         RequestBody requestBody = RequestBody.create(reportContent, mediaType);
 
 
