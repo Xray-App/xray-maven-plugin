@@ -27,7 +27,7 @@ jobs:
       with:
         fetch-depth: 0
     - name: Check broken links in documentation using Markup Link Checker (mlc)
-      uses: becheran/mlc@8f2df530b954bdb8df5aefd01f1beb9e0fe23c22 # v0.18.0
+      uses: becheran/mlc@d791bd6ae91ea883f02172e21f453ba8da45dfcd # v1.3.0
       if: runner.os == 'Linux'
     - name: Set up Java ${{ matrix.java }}
       uses: actions/setup-java@v6
