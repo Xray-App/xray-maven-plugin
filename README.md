@@ -2,7 +2,6 @@
 
 [![build workflow](https://github.com/Xray-App/xray-maven-plugin/actions/workflows/CI.yml/badge.svg)](https://github.com/Xray-App/xray-maven-plugin/actions/workflows/CI.yml)
 [![license](https://img.shields.io/badge/License-BSD%203--Clause-green.svg)](https://opensource.org/license/BSD-3-Clause)
-[![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/Xray-App/community)
 [![Maven Central Version](https://img.shields.io/maven-central/v/app.getxray/xray-maven-plugin)](https://central.sonatype.com/artifact/app.getxray/xray-maven-plugin)
 ![code coverage](https://raw.githubusercontent.com/Xray-App/xray-maven-plugin/main/.github/badges/jacoco.svg)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Xray-App_xray-maven-plugin&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Xray-App_xray-maven-plugin)
