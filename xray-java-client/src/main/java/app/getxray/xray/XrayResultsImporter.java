@@ -56,18 +56,18 @@ public class XrayResultsImporter {
     private String clientSecret;
     private String cloudApiBaseUrl;
 
-    private String projectKey;
-    private String fixVersion;
-    private String revision;
-    private String testPlanKey;
-    private String testExecKey;
-    private String testEnvironment;
+    private final String projectKey;
+    private final String fixVersion;
+    private final String revision;
+    private final String testPlanKey;
+    private final String testExecKey;
+    private final String testEnvironment;
 
     private Boolean ignoreSslErrors = false;
     private Boolean useInternalTestProxy = false;
     private Integer timeout = 50;
     private Boolean verbose = false;
-    private Log logger;
+    private final Log logger;
 
     private XrayResultsImporter(ServerDCBuilder builder){
         this.jiraBaseUrl = builder.jiraBaseUrl;

@@ -35,14 +35,14 @@ public class XrayFeaturesExporter {
     private String clientSecret;
     private String cloudApiBaseUrl;
 
-    private String issueKeys;
-    private String filterId;
+    private final String issueKeys;
+    private final String filterId;
 
     private Boolean ignoreSslErrors = false;
     private Boolean useInternalTestProxy = false;
     private Integer timeout = 50;
     private Boolean verbose = false;
-    private Log logger;
+    private final Log logger;
 
     private XrayFeaturesExporter(ServerDCBuilder builder) {
         this.jiraBaseUrl = builder.jiraBaseUrl;

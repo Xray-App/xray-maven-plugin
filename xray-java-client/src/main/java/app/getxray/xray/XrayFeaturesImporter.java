@@ -58,16 +58,16 @@ public class XrayFeaturesImporter {
     private String clientSecret;
     private String cloudApiBaseUrl;
 
-    private String projectKey;
-    private String projectId;
-    private String source;
+    private final String projectKey;
+    private final String projectId;
+    private final String source;
     private Boolean updateRepository = false;
 
     private Boolean ignoreSslErrors = false;
     private Boolean useInternalTestProxy = false;
     private Integer timeout = 50;
     private Boolean verbose = false;
-    private Log logger;
+    private final Log logger;
 
     private XrayFeaturesImporter(ServerDCBuilder builder) {
         this.jiraBaseUrl = builder.jiraBaseUrl;
