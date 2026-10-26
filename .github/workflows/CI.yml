@@ -36,7 +36,7 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Build with Maven
-      run: mvn -B -Dgpg.skip=true clean compile verify package --file pom.xml
+      run: mvn -B -Dgpg.skip=true clean verify --file pom.xml
     - name: Analyze with SonarCloud
       if: matrix.java == '25'
       env:
