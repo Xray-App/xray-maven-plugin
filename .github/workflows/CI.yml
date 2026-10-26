@@ -47,7 +47,7 @@ jobs:
 
     - name: Generate JaCoCo Badge
       id: jacoco
-      uses: cicirello/jacoco-badge-generator@d1bf1a14cc2a171191fb3dc5d48cd1a9f4210008 # v2.0.1
+      uses: cicirello/jacoco-badge-generator@72266185b7ee48a6fd74eaf0238395cc8b14fef8 # v2.12.1
       if: matrix.java == '25'
       with:
         jacoco-csv-file: xray-maven-plugin-report/target/site/jacoco-aggregate-coverage-report/jacoco.csv
