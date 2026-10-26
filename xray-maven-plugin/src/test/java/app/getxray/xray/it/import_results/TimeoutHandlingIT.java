@@ -16,6 +16,7 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.BasicCredentials;
@@ -185,6 +186,7 @@ public class TimeoutHandlingIT {
         assertThat(result).isFailure();
     }
 
+    @Tag("slow")
     @MavenTest
     @MavenGoal("xray:import-results")
     @SystemProperty(value = "xray.cloud", content = "false")
@@ -210,6 +212,7 @@ public class TimeoutHandlingIT {
         assertThat(result).isSuccessful();
     }
 
+    @Tag("slow")
     @MavenTest
     @MavenGoal("xray:import-results")
     @SystemProperty(value = "xray.cloud", content = "false")
@@ -289,6 +292,7 @@ public class TimeoutHandlingIT {
     }
 
     // the following request will timeout after 30s, due to WM builtin proxy though
+    @Tag("slow")
     @MavenTest
     @MavenGoal("xray:import-results")
     @SystemProperty(value = "xray.cloud", content = "true")

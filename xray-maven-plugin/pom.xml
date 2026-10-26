@@ -18,6 +18,8 @@
         <it.coverage.file>${project.build.directory}/jacoco-output/jacoco-it-tests.exec</it.coverage.file>
         <merged.coverage.file>${project.build.directory}/jacoco-output/merged.exec</merged.coverage.file>
         <jacoco.maven.opts>-javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile=${it.coverage.file},append=true</jacoco.maven.opts>
+        <!-- the default-timeout ITs wait ~50s each; run them with -Dit.excludedGroups=none -->
+        <it.excludedGroups>slow</it.excludedGroups>
     </properties>
 
     <dependencies>
@@ -289,6 +291,7 @@
                     <excludes>
                         <exclude>**/*Test.java</exclude>
                     </excludes>
+                    <excludedGroups>${it.excludedGroups}</excludedGroups>
 
                     <!-- based on https://github.com/khmarbaise/maven-it-extension/discussions/328 , to be able to track coverage of IT tests -->
                     <environmentVariables>
